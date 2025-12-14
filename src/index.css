@@ -1,0 +1,21 @@
+/* Tailwind 样式 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 扩展根容器 - 使用 !important 覆盖 Tailwind base */
+#enplus-root,
+#enplus-root * {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif !important;
+}
+
+#enplus-root {
+  line-height: 1.5;
+}
+
+#enplus-root *,
+#enplus-root *::before,
+#enplus-root *::after {
+  box-sizing: border-box;
+}
+

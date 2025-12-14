@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EventerNote Plus</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- 头部 -->
+    <header class="popup-header">
+      <div class="popup-logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>
+        <h1>EventerNote Plus</h1>
+      </div>
+      <div class="popup-version">v1.0.0</div>
+    </header>
+
+    <!-- 状态信息 -->
+    <section class="popup-status">
+      <div class="status-item">
+        <span class="status-label">状态</span>
+        <span class="status-value status-active">✓ 已激活</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">搜索索引</span>
+        <span class="status-value" id="indexSize">加载中...</span>
+      </div>
+    </section>
+
+    <!-- 主题切换 -->
+    <section class="popup-section">
+      <h3 class="section-title">外观设置</h3>
+      <div class="theme-options">
+        <button class="theme-btn" data-theme="modern">
+          <span class="theme-icon">☀️</span>
+          <span class="theme-name">浅色</span>
+        </button>
+        <button class="theme-btn" data-theme="dark">
+          <span class="theme-icon">🌙</span>
+          <span class="theme-name">深色</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 功能开关 -->
+    <section class="popup-section">
+      <h3 class="section-title">功能选项</h3>
+      <div class="option-list">
+        <label class="option-item">
+          <div class="option-info">
+            <span class="option-name">动画效果</span>
+            <span class="option-desc">启用平滑过渡动画</span>
+          </div>
+          <input type="checkbox" id="animationsToggle" class="toggle-input">
+          <span class="toggle-slider"></span>
+        </label>
+        
+        <label class="option-item">
+          <div class="option-info">
+            <span class="option-name">紧凑模式</span>
+            <span class="option-desc">减少间距，显示更多内容</span>
+          </div>
+          <input type="checkbox" id="compactToggle" class="toggle-input">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- 操作按钮 -->
+    <section class="popup-section">
+      <h3 class="section-title">快捷操作</h3>
+      <div class="action-buttons">
+        <button class="action-btn" id="rebuildIndex">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M13.65 2.35A7 7 0 1 0 14 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M14 2V8H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          重建搜索索引
+        </button>
+        
+        <button class="action-btn" id="clearCache">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 4H14M6 4V2H10V4M3 4L4 14H12L13 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          清除缓存
+        </button>
+      </div>
+    </section>
+
+    <!-- 关于 -->
+    <section class="popup-section">
+      <div class="about-info">
+        <p>为 EventerNote 提供现代化UI和高级搜索功能</p>
+        <div class="about-links">
+          <a href="https://github.com/yourusername/eventernote-plus" target="_blank">GitHub</a>
+          <span>•</span>
+          <a href="#" id="reportIssue">反馈问题</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 通知 -->
+    <div class="notification" id="notification"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

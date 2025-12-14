@@ -1,0 +1,551 @@
+/**
+ * EventerNote Plus - 现代化UI样式
+ */
+
+:root {
+  /* 主题色 */
+  --enplus-primary: #6366f1;
+  --enplus-primary-dark: #4f46e5;
+  --enplus-primary-light: #818cf8;
+  
+  /* 中性色 */
+  --enplus-bg: #ffffff;
+  --enplus-bg-secondary: #f8fafc;
+  --enplus-bg-tertiary: #f1f5f9;
+  --enplus-text: #1e293b;
+  --enplus-text-secondary: #64748b;
+  --enplus-text-muted: #94a3b8;
+  
+  /* 边框 */
+  --enplus-border: #e2e8f0;
+  --enplus-border-hover: #cbd5e1;
+  
+  /* 阴影 */
+  --enplus-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --enplus-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --enplus-shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  --enplus-shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+  
+  /* 圆角 */
+  --enplus-radius: 8px;
+  --enplus-radius-sm: 4px;
+  --enplus-radius-lg: 12px;
+  
+  /* 间距 */
+  --enplus-space-xs: 4px;
+  --enplus-space-sm: 8px;
+  --enplus-space-md: 16px;
+  --enplus-space-lg: 24px;
+  --enplus-space-xl: 32px;
+  
+  /* 动画 */
+  --enplus-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --enplus-transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 深色主题 */
+.enplus-theme-dark {
+  --enplus-bg: #0f172a;
+  --enplus-bg-secondary: #1e293b;
+  --enplus-bg-tertiary: #334155;
+  --enplus-text: #f1f5f9;
+  --enplus-text-secondary: #cbd5e1;
+  --enplus-text-muted: #94a3b8;
+  --enplus-border: #334155;
+  --enplus-border-hover: #475569;
+}
+
+/* 主容器样式 */
+.enplus-enhanced {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: var(--enplus-text);
+  line-height: 1.6;
+}
+
+/* 当仅添加命名空间时，对常见标签提供基础美化（保证可见变化）*/
+.enplus-enhanced header,
+.enplus-enhanced nav,
+.enplus-enhanced main,
+.enplus-enhanced aside,
+.enplus-enhanced footer {
+  transition: var(--enplus-transition);
+}
+
+.enplus-enhanced header {
+  background: var(--enplus-bg);
+  border-bottom: 1px solid var(--enplus-border);
+  backdrop-filter: blur(8px);
+}
+
+.enplus-enhanced nav a {
+  color: var(--enplus-text-secondary);
+}
+
+.enplus-enhanced main {
+  background: var(--enplus-bg-secondary);
+}
+
+.enplus-enhanced footer {
+  border-top: 1px solid var(--enplus-border);
+  color: var(--enplus-text-muted);
+}
+
+/* 主页整体背景与头部强化 */
+.enplus-home {
+  background: var(--enplus-bg-secondary);
+}
+.enplus-home .enplus-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #111827 100%);
+  color: #e5e7eb;
+  border: none;
+}
+
+/* 头部样式 */
+.enplus-header {
+  background: var(--enplus-bg);
+  border-bottom: 1px solid var(--enplus-border);
+  padding: var(--enplus-space-md) var(--enplus-space-lg);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.9);
+  transition: var(--enplus-transition);
+}
+
+.enplus-theme-dark .enplus-header {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+/* 导航样式 */
+.enplus-nav {
+  display: flex;
+  gap: var(--enplus-space-sm);
+  align-items: center;
+}
+
+.enplus-nav a,
+.enplus-nav button {
+  padding: var(--enplus-space-sm) var(--enplus-space-md);
+  border-radius: var(--enplus-radius);
+  color: var(--enplus-text-secondary);
+  text-decoration: none;
+  transition: var(--enplus-transition);
+  font-weight: 500;
+}
+
+.enplus-nav a:hover,
+.enplus-nav button:hover {
+  color: var(--enplus-primary);
+  background: var(--enplus-bg-secondary);
+}
+
+/* 主内容区域 */
+.enplus-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--enplus-space-xl);
+}
+
+/* 紧凑模式 */
+.enplus-compact .enplus-main {
+  padding: var(--enplus-space-md);
+}
+
+/* 卡片样式 */
+.enplus-card {
+  background: var(--enplus-bg);
+  border: 1px solid var(--enplus-border);
+  border-radius: var(--enplus-radius-lg);
+  padding: var(--enplus-space-lg);
+  margin-bottom: var(--enplus-space-md);
+  transition: var(--enplus-transition);
+  box-shadow: var(--enplus-shadow-sm);
+}
+.enplus-home .enplus-card {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: var(--enplus-space-md);
+  align-items: center;
+}
+.enplus-home .enplus-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+.enplus-home .enplus-card h2,
+.enplus-home .enplus-card h3 {
+  margin: 0 0 var(--enplus-space-xs);
+}
+.enplus-home .enplus-card p {
+  color: var(--enplus-text-secondary);
+}
+.enplus-home .cta-group,
+.enplus-home .actions,
+.enplus-home .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--enplus-space-sm);
+}
+
+/* 主页：功能区卡片网格、主英雄区与CTA */
+.enplus-home .enplus-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--enplus-space-lg);
+  margin-top: var(--enplus-space-xl);
+}
+.enplus-home .enplus-feature-grid .enplus-card {
+  margin: 0;
+}
+
+.enplus-home .enplus-hero {
+  max-width: 960px;
+  margin: 0 auto;
+  text-align: center;
+  padding: var(--enplus-space-xl) var(--enplus-space-lg);
+}
+.enplus-home .enplus-hero h1,
+.enplus-home .enplus-hero h2 {
+  font-size: 32px;
+  line-height: 1.2;
+  margin-bottom: var(--enplus-space-md);
+}
+.enplus-home .enplus-hero p {
+  color: var(--enplus-text-secondary);
+  font-size: 18px;
+}
+.enplus-home .enplus-cta-bar {
+  display: flex;
+  justify-content: center;
+  gap: var(--enplus-space-sm);
+  margin-top: var(--enplus-space-lg);
+}
+.enplus-home .enplus-cta-bar .enplus-button {
+  padding: 12px 18px;
+  font-size: 15px;
+}
+
+/* 主页：testimonial 栅格 */
+.enplus-home .enplus-testimonials {
+  max-width: 1100px;
+  margin: var(--enplus-space-xl) auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--enplus-space-md);
+}
+.enplus-home .enplus-testimonials .enplus-card {
+  min-height: 140px;
+}
+
+.enplus-card:hover {
+  border-color: var(--enplus-primary-light);
+  box-shadow: var(--enplus-shadow-md);
+  transform: translateY(-2px);
+}
+
+.enplus-card-hover {
+  box-shadow: var(--enplus-shadow-lg) !important;
+  transform: translateY(-4px) !important;
+}
+
+/* 侧边栏 */
+.enplus-sidebar {
+  background: var(--enplus-bg-secondary);
+  border-radius: var(--enplus-radius-lg);
+  padding: var(--enplus-space-lg);
+  position: sticky;
+  top: 80px;
+}
+
+/* 页脚 */
+.enplus-footer {
+  margin-top: var(--enplus-space-xl);
+  padding: var(--enplus-space-lg);
+  border-top: 1px solid var(--enplus-border);
+  color: var(--enplus-text-muted);
+  text-align: center;
+}
+
+/* 动画效果 */
+.enplus-animations-enabled .enplus-card {
+  animation: enplus-fadeInUp 0.4s ease-out;
+}
+
+@keyframes enplus-fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 闪烁效果（用于搜索结果高亮） */
+.enplus-flash {
+  animation: enplus-flash 2s ease-in-out;
+}
+
+@keyframes enplus-flash {
+  0%, 100% {
+    background: transparent;
+  }
+  50% {
+    background: rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+  }
+}
+
+/* 滚动条样式 */
+.enplus-enhanced ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.enplus-enhanced ::-webkit-scrollbar-track {
+  background: var(--enplus-bg-secondary);
+}
+
+.enplus-enhanced ::-webkit-scrollbar-thumb {
+  background: var(--enplus-border);
+  border-radius: 4px;
+}
+
+.enplus-enhanced ::-webkit-scrollbar-thumb:hover {
+  background: var(--enplus-border-hover);
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+  .enplus-main {
+    padding: var(--enplus-space-md);
+  }
+  
+  .enplus-card {
+    padding: var(--enplus-space-md);
+  }
+  
+  .enplus-sidebar {
+    position: relative;
+    top: 0;
+    margin-top: var(--enplus-space-lg);
+  }
+
+  .enplus-home .enplus-feature-grid {
+    grid-template-columns: 1fr;
+  }
+  .enplus-home .enplus-testimonials {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 无障碍改进 */
+.enplus-enhanced :focus-visible {
+  outline: 2px solid var(--enplus-primary);
+  outline-offset: 2px;
+}
+
+/* 打印样式 */
+@media print {
+  .enplus-header,
+  .enplus-nav,
+  .enplus-sidebar,
+  .enplus-footer,
+  .enplus-search-container {
+    display: none !important;
+  }
+  
+  .enplus-card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    page-break-inside: avoid;
+  }
+}
+
+/* ==================== 发现型主页布局（Bandsintown风格）==================== */
+/* 全面重构：不依赖原网站CSS，强制覆盖 */
+
+.enplus-home {
+  background: #f5f7fa !important;
+  color: #1a202c !important;
+}
+
+/* === 通用元素覆盖：确保风格统一 === */
+.enplus-home * {
+  box-sizing: border-box !important;
+}
+
+.enplus-home p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Hero区：深色渐变+大标题 */
+.enplus-discovery-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%) !important;
+  color: white !important;
+  padding: 80px var(--enplus-space-lg) !important;
+  text-align: center !important;
+  border-radius: 0 !important;
+  margin-bottom: 60px !important;
+}
+.enplus-discovery-hero h1 {
+  font-size: 48px !important;
+  font-weight: 700 !important;
+  margin-bottom: var(--enplus-space-md) !important;
+  line-height: 1.2 !important;
+  color: white !important;
+}
+.enplus-discovery-hero p {
+  font-size: 18px !important;
+  color: #cbd5e1 !important;
+  margin-bottom: var(--enplus-space-lg) !important;
+}
+.enplus-discovery-hero .enplus-cta-group {
+  display: flex;
+  justify-content: center;
+  gap: var(--enplus-space-md);
+  flex-wrap: wrap;
+}
+
+/* 分区标题 */
+.enplus-section-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--enplus-text);
+  margin: var(--enplus-space-xl) 0 var(--enplus-space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--enplus-space-sm);
+}
+.enplus-section-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 24px;
+  background: var(--enplus-primary);
+  border-radius: 2px;
+}
+
+/* 发现模块：三列栅格 */
+.enplus-discovery-module {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--enplus-space-lg);
+  margin-bottom: var(--enplus-space-xl);
+}
+
+/* 发现卡片：轻盈设计，仅展示核心信息 */
+.enplus-discovery-card {
+  background: var(--enplus-bg);
+  border: 1px solid var(--enplus-border);
+  border-radius: var(--enplus-radius-lg);
+  padding: var(--enplus-space-lg);
+  transition: var(--enplus-transition);
+  box-shadow: var(--enplus-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+.enplus-discovery-card:hover {
+  border-color: var(--enplus-primary);
+  box-shadow: var(--enplus-shadow-md);
+  transform: translateY(-4px);
+}
+.enplus-discovery-card h3,
+.enplus-discovery-card .title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--enplus-text);
+  margin: 0 0 var(--enplus-space-sm);
+}
+.enplus-discovery-card p,
+.enplus-discovery-card .desc {
+  font-size: 14px;
+  color: var(--enplus-text-secondary);
+  flex-grow: 1;
+  margin: 0;
+}
+.enplus-discovery-card .meta {
+  margin-top: var(--enplus-space-sm);
+  font-size: 12px;
+  color: var(--enplus-text-muted);
+}
+.enplus-discovery-card img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: var(--enplus-radius);
+  margin-bottom: var(--enplus-space-md);
+}
+
+/* 证言卡片模块 */
+.enplus-testimonials-module {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--enplus-space-md);
+  margin: var(--enplus-space-xl) 0;
+  background: var(--enplus-bg-secondary);
+  padding: var(--enplus-space-xl);
+  border-radius: var(--enplus-radius-lg);
+}
+.enplus-testimonial-card {
+  background: var(--enplus-bg);
+  padding: var(--enplus-space-lg);
+  border-radius: var(--enplus-radius);
+  border-left: 4px solid var(--enplus-primary);
+  font-size: 14px;
+  color: var(--enplus-text-secondary);
+  line-height: 1.6;
+  box-shadow: var(--enplus-shadow-sm);
+}
+.enplus-testimonial-card::before {
+  content: '❝';
+  font-size: 24px;
+  color: var(--enplus-primary);
+}
+
+/* 底部导航 */
+.enplus-footer-nav {
+  background: var(--enplus-bg-secondary);
+  padding: var(--enplus-space-xl) var(--enplus-space-lg);
+  text-align: center;
+  margin-top: var(--enplus-space-xl);
+}
+.enplus-footer-nav a {
+  margin: 0 var(--enplus-space-md);
+  font-size: 14px;
+  color: var(--enplus-text-secondary);
+  text-decoration: none;
+  transition: var(--enplus-transition);
+}
+.enplus-footer-nav a:hover {
+  color: var(--enplus-primary);
+}
+
+/* 响应式：移动端折至一列 */
+@media (max-width: 1024px) {
+  .enplus-discovery-module,
+  .enplus-testimonials-module {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .enplus-discovery-hero h1 {
+    font-size: 28px;
+  }
+  .enplus-discovery-module,
+  .enplus-testimonials-module {
+    grid-template-columns: 1fr;
+  }
+  .enplus-section-title {
+    font-size: 18px;
+  }
+}

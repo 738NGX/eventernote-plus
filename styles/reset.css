@@ -1,0 +1,30 @@
+/**
+ * EventerNote Plus - CSS Reset
+ * 确保插件样式不被原网站覆盖
+ */
+
+/* 为所有增强元素添加命名空间 */
+.enplus-enhanced * {
+  box-sizing: border-box;
+}
+
+/* 清除插件添加元素的默认样式 */
+[class^="enplus-"],
+[class*=" enplus-"] {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* 确保插件样式优先级 */
+.enplus-search-container,
+.enplus-search-wrapper,
+.enplus-filter-panel {
+  all: initial;
+  * {
+    all: unset;
+  }
+}

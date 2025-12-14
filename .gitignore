@@ -1,0 +1,38 @@
+# 操作系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志
+*.log
+npm-debug.log*
+
+# 临时文件
+*.tmp
+*.bak
+
+# 打包文件
+*.zip
+*.crx
+*.pem
+
+# Node.js (如果未来添加构建工具)
+node_modules/
+package-lock.json
+yarn.lock
+dist/
+
+# 测试
+coverage/
+.nyc_output/
+
+# 其他
+.env
+.env.local
