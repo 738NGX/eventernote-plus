@@ -1,5 +1,6 @@
-import { Card, Avatar, Button, Statistic } from 'antd';
-import { UserOutlined, UserAddOutlined } from '@ant-design/icons';
+import { useState } from 'react';
+import { Card, Avatar, Button, Statistic, message } from 'antd';
+import { UserOutlined, UserAddOutlined, UserDeleteOutlined } from '@ant-design/icons';
 import type { UserProfileData } from '../../pages/UserProfilePage';
 
 interface UserHeaderProps {
@@ -8,10 +9,55 @@ interface UserHeaderProps {
   isOwner: boolean;
 }
 
+// 通过 postMessage 调用页面上下文中的原网站关注函数
+function callFollowAction(action: 'follow' | 'unfollow', userId: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    const handler = (event: MessageEvent) => {
+      if (event.data?.type === 'ENP_FOLLOW_RESULT') {
+        window.removeEventListener('message', handler);
+        resolve(event.data.success);
+      }
+    };
+    window.addEventListener('message', handler);
+    
+    // 发送消息到页面上下文
+    window.postMessage({ type: 'ENP_FOLLOW_ACTION', action, userId }, '*');
+    
+    // 超时处理
+    setTimeout(() => {
+      window.removeEventListener('message', handler);
+      resolve(false);
+    }, 3000);
+  });
+}
+
 export default function UserHeader({ profile, theme, isOwner }: UserHeaderProps) {
   const isDark = theme === 'dark';
+  const [isFollowing, setIsFollowing] = useState(profile?.isFollowing || false);
+  const [loading, setLoading] = useState(false);
 
   if (!profile) return null;
+
+  const handleFollow = async () => {
+    if (!profile.userId) {
+      message.error('无法获取用户ID');
+      return;
+    }
+    
+    const userId = parseInt(profile.userId, 10);
+    
+    setLoading(true);
+    const action = isFollowing ? 'unfollow' : 'follow';
+    const success = await callFollowAction(action, userId);
+    
+    if (success) {
+      setIsFollowing(!isFollowing);
+      message.success(isFollowing ? '已取消关注' : '关注成功');
+    } else {
+      message.error('操作失败，请刷新页面重试');
+    }
+    setLoading(false);
+  };
 
   return (
     <Card
@@ -72,19 +118,17 @@ export default function UserHeader({ profile, theme, isOwner }: UserHeaderProps)
       </div>
 
       {/* 操作按钮 - 仅非本人时显示关注按钮 */}
-      {!isOwner && (
+      {!isOwner && profile.userId && (
         <div className="flex gap-3">
           <Button
-            type="primary"
-            icon={<UserAddOutlined />}
+            type={isFollowing ? 'default' : 'primary'}
+            danger={isFollowing}
+            icon={isFollowing ? <UserDeleteOutlined /> : <UserAddOutlined />}
             block
-            onClick={() => {
-              // 调用关注 API
-              // @ts-ignore
-              if (typeof addFollow === 'function') addFollow(profile.username);
-            }}
+            loading={loading}
+            onClick={handleFollow}
           >
-            关注
+            {isFollowing ? '取消关注' : '关注'}
           </Button>
         </div>
       )}

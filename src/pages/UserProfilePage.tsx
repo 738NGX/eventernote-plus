@@ -17,6 +17,8 @@ interface InitialData {
     followerCount: number;
     eventCount: number;
     overlapCount: number;
+    userId: string;
+    isFollowing: boolean;
   };
   events: any[];
   overlapEvents: any[];
@@ -38,6 +40,7 @@ export interface UserProfileData {
   followerCount: number;
   eventCount: number;
   overlapCount?: number;
+  userId?: string;
   isFollowing?: boolean;
 }
 

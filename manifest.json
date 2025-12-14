@@ -29,7 +29,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "dist/scripts/*"
+        "dist/scripts/*",
+        "inject.js"
       ],
       "matches": [
         "https://www.eventernote.com/*",

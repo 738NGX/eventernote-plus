@@ -43,6 +43,25 @@ function parseUserPageData() {
     else if (href === `/users/${username}/events/same`) overlapCount = num;
   });
 
+  // 解析用户ID和关注状态
+  // 关注按钮: <a href="javascript:addFollow(206530)">フォローする</a>
+  // 取消关注按钮: <a href="javascript:removeFollow(206530)">フォローをやめる</a>
+  let userId = '';
+  let isFollowing = false;
+  
+  const followLink = document.querySelector('a[href^="javascript:addFollow"]');
+  const unfollowLink = document.querySelector('a[href^="javascript:removeFollow"]');
+  
+  if (followLink) {
+    const match = followLink.getAttribute('href')?.match(/addFollow\((\d+)\)/);
+    if (match) userId = match[1];
+    isFollowing = false;
+  } else if (unfollowLink) {
+    const match = unfollowLink.getAttribute('href')?.match(/removeFollow\((\d+)\)/);
+    if (match) userId = match[1];
+    isFollowing = true;
+  }
+
   // 解析单个活动列表的函数
   const parseEventList = (listEl: Element | null): any[] => {
     const result: any[] = [];
@@ -155,6 +174,8 @@ function parseUserPageData() {
       followerCount: followers,
       eventCount,
       overlapCount,
+      userId,
+      isFollowing,
     },
     events,
     overlapEvents,
@@ -183,6 +204,14 @@ function init() {
     userPageData = parseUserPageData();
     //console.log('[ENP] Parsed from DOM:', userPageData);
   }
+
+  // 注入页面上下文脚本来保存原网站的关注函数
+  const injectScript = document.createElement('script');
+  injectScript.src = chrome.runtime.getURL('inject.js');
+  injectScript.onload = function() {
+    (this as HTMLScriptElement).remove();
+  };
+  (document.head || document.documentElement).appendChild(injectScript);
 
   // 清空页面
   document.body.innerHTML = '';

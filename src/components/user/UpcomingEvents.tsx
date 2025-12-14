@@ -47,13 +47,13 @@ export default function UpcomingEvents({ events, theme, username, title = '将�
                 {/* 活动封面 */}
                 <a 
                   href={`/events/${event.id}`} 
-                  className="flex-shrink-0 w-28 h-28 md:w-32 md:h-32 overflow-hidden"
+                  className="flex-shrink-0 w-28 md:w-32 aspect-square"
                 >
                   {event.imageUrl ? (
                     <img
                       src={event.imageUrl}
                       alt={event.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain bg-black"
                     />
                   ) : (
                     <div className={`w-full h-full flex items-center justify-center ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`}>
@@ -65,8 +65,8 @@ export default function UpcomingEvents({ events, theme, username, title = '将�
                 {/* 活动信息 */}
                 <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
                   <div>
-                    <a href={`/events/${event.id}`}>
-                      <h3 className={`font-semibold text-sm md:text-base mb-2 hover:text-primary-500 transition ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <a href={`/events/${event.id}`} className="block">
+                      <h3 className={`font-semibold text-sm md:text-base mb-2 hover:text-primary-500 transition line-clamp-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                         {event.title}
                       </h3>
                     </a>
