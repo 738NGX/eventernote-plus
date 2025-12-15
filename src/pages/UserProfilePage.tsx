@@ -108,7 +108,7 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
   const [selectedContent, setSelectedContent] = useState<'upcomingEvents' | 'overlapEvents'>('upcomingEvents');
   const [fetchedEvents, setFetchedEvents] = useState<EventData[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(true);
-  const [additionalEvents, setAdditionalEvents] = useState<EventData[]>([]);
+  const [userEvents, setUserEvents] = useState<EventData[]>([]);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -118,7 +118,7 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
         const username = profile?.username || ''; // 从 profile 获取用户名
         if (userId && username) {
           const events = await fetchAllUserEvents(username, userId);
-          setFetchedEvents(events);
+          setFetchedEvents(events as any[]);
         }
       } catch (error) {
         console.error('Error fetching user events:', error);
@@ -137,8 +137,8 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
         const username = profile?.username || ''; // 从 profile 获取用户名
         if (userId && username) {
           const events = await fetchAllUserEvents(username, userId);
-          console.log('Fetched additional events:', events); // 在控制台输出解析结果
-          setAdditionalEvents(events);
+          //console.log('Fetched additional events:', events); // 在控制台输出解析结果
+          setUserEvents(events as any[]);
         }
       } catch (error) {
         console.error('Error fetching additional user events:', error);

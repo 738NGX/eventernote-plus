@@ -81,7 +81,7 @@ export interface EventData {
   openTime?: string;
   startTime?: string;
   endTime?: string;
-  venue: {
+  venue?: {
     id: string;
     name: string;
     prefecture: {
@@ -89,12 +89,10 @@ export interface EventData {
       name: string;
     };
   };
-  performers: {
+  performers?: {
     id: string;
     name: string;
   }[];
-  imageUrl?: string; // Optional field
-  participantCount?: number; // Optional field
 }
 
 /**
@@ -142,7 +140,7 @@ export async function fetchAllUserEvents(username: string, userId: string): Prom
                 name: '',
               },
             }
-          : null; // 如果没有场地信息，设置为 null
+          : undefined; // 如果没有场地信息，设置为 undefined
 
         if (venue) {
           const prefectureInfo = $(element).find('.place').text().match(/\(([^)]+)\)/);
@@ -167,7 +165,7 @@ export async function fetchAllUserEvents(username: string, userId: string): Prom
             openTime,
             startTime,
             endTime,
-            venue, // 允许 venue 为 null
+            venue,
             performers,
           });
         }
@@ -230,19 +228,13 @@ export async function fetchAllUserEvents(username: string, userId: string): Prom
       // Update venue prefecture based on prefectureId
       for (const event of pageEvents) {
         if (!event.venue) {
-          console.warn('Skipping event due to missing venue:', event);
           continue; // 跳过没有场地信息的事件
         }
 
-        const venueMatch = venueData.find(v => String(v.venueId) === String(event.venue.id));
+        const venueMatch = venueData.find(v => String(v.id) === String((event.venue as any).id)); 
         if (venueMatch) {
-          event.venue.prefecture.id = venueMatch.prefectureId;
-          event.venue.prefecture.name = prefectureMap[String(venueMatch.prefectureId)] || '';
-
-          // Debugging: Log matched venue data and prefecture mapping
-          console.log('Matching venue:', venueMatch);
-          console.log('Prefecture ID:', venueMatch.prefectureId);
-          console.log('Prefecture Name:', prefectureMap[String(venueMatch.prefectureId)]);
+          event.venue.prefecture.id = venueMatch.prefecture.id; // 修复 prefectureId 错误
+          event.venue.prefecture.name = prefectureMap[String(venueMatch.prefecture.id)] || '';
         }
       }
 
