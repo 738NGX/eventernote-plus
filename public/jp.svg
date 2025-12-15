@@ -110,7 +110,7 @@
   </circle>
  </g>
  <g id="overseas">
-  <path d="M900 800l10 0l0 10l-10 0z" id="JP99" name="Overseas" fill="#cccccc" stroke="#ffffff" stroke-width="0.5"/>
+  <path d="M900 800l10 0l0 10l-10 0z" id="JP90" name="Overseas" fill="#cccccc" stroke="#ffffff" stroke-width="0.5"/>
  </g>
  <g id="label_points">
   <circle class="Kagoshima" cx="266.4" cy="553.1" id="JP46">

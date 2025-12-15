@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Card, ConfigProvider, theme as antTheme } from 'antd';
 import { StyleProvider } from '@ant-design/cssinjs';
 import UserHeader from '../components/user/UserHeader';
@@ -10,7 +10,8 @@ import Footer from '../components/Footer';
 import type { UserInfo } from '../utils/user';
 import { Menu } from 'antd';
 import type { MenuProps } from 'antd';
-import { fetchAllUserEvents } from '../utils/user'; // Updated to use the correct function name
+import { fetchAllUserEvents } from '../utils/user';
+import { getIdByPrefectureName } from '../utils/prefecture';
 
 interface InitialData {
   profile: {
@@ -94,7 +95,7 @@ interface PrefectureCount {
 const calculateVenueRanking = (events: EventData[]): [string, number][] => {
   const venueCount: VenueCount = {};
   events.forEach((event: EventData) => {
-    const venueName = event.venue.prefecture.name + ' - ' + event.venue.name;
+    const venueName = event.venue.name;
     if (venueCount[venueName]) {
       venueCount[venueName] += 1;
     } else {
@@ -122,66 +123,75 @@ const generateHeatmapData = (events: EventData[]): PrefectureCount => {
       });
     }
   });
-  console.log('Generated heatmap data:', prefectureCount); // 输出生成的 heatmap 数据
   return prefectureCount;
 };
 
 const PrefectureMap = ({ heatmapData }: { heatmapData: PrefectureCount }) => {
-  const [hoveredPrefecture, setHoveredPrefecture] = useState<string | null>(null);
-
-  const handleMouseEnter = (prefecture: string) => {
-    setHoveredPrefecture(prefecture);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredPrefecture(null);
-  };
+  const [svgContent, setSvgContent] = useState<string | null>(null);
+  const svgContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const svgObject = document.querySelector('object[type="image/svg+xml"]') as HTMLObjectElement | null;
-    if (svgObject) {
-      const handleLoad = () => {
-        const svgDoc = svgObject.contentDocument;
-        if (svgDoc) {
-          Object.entries(heatmapData).forEach(([prefecture, count]) => {
-            const path = svgDoc.getElementById(prefecture);
-            if (path) {
-              path.setAttribute('fill', `rgba(255, 0, 0, ${count / 10})`);
-              path.addEventListener('mouseenter', () => handleMouseEnter(prefecture));
-              path.addEventListener('mouseleave', handleMouseLeave);
-            } else {
-              console.warn(`Path for prefecture ${prefecture} not found in SVG.`);
-            }
-          });
-        } else {
-          console.error('Failed to access SVG contentDocument. Ensure the SVG file is correctly loaded and accessible.');
+    const loadSvg = async () => {
+      try {
+        const svgPath = chrome.runtime.getURL('dist/jp.svg');
+        const response = await fetch(svgPath);
+        if (!response.ok) {
+          throw new Error('无法加载SVG文件');
         }
-      };
+        const svgText = await response.text();
+        setSvgContent(svgText);
+      } catch (error) {
+        console.error('加载SVG文件时出错:', error);
+      }
+    };
 
-      svgObject.addEventListener('load', handleLoad);
+    loadSvg();
+  }, []);
 
-      return () => {
-        svgObject.removeEventListener('load', handleLoad);
-      };
-    } else {
-      console.error('SVG object element not found. Ensure the <object> tag is correctly rendered and the data attribute points to the correct SVG file.');
+  useEffect(() => {
+    if (!svgContainerRef.current || !svgContent) return;
+
+    const parser = new DOMParser();
+    const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+    const svgElement = svgDoc.documentElement;
+
+    // 确保SVG有viewBox和preserveAspectRatio
+    if (!svgElement.hasAttribute('viewBox')) {
+      svgElement.setAttribute('viewBox', '0 0 1000 846');
     }
-  }, [heatmapData]);
+    svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
 
-  console.log('Rendering PrefectureMap with heatmapData:', heatmapData);
+    // 设置宽度为100%，高度自动
+    svgElement.setAttribute('width', '100%');
+    svgElement.setAttribute('height', 'auto');
+
+    // 获取颜色深度函数
+    const getColor = (count: number): string => {
+      if (count === 0) return '#e5e7eb'; // Gray-100
+      if (count <= 2) return '#93c5fd'; // Blue-300
+      if (count <= 5) return '#3b82f6'; // Blue-500
+      return '#1e40af'; // Blue-900
+    };
+
+    // 应用热力图数据
+    Object.entries(heatmapData).forEach(([prefecture, count]) => {
+      const prefectureId = getIdByPrefectureName(prefecture);
+      const path = svgElement.querySelector(`#JP${prefectureId}`) as SVGPathElement | null;
+      if (path) {
+        path.setAttribute('fill', getColor(count));
+      } else {
+        console.warn(`SVG中找不到id或name为${prefecture}的元素`);
+      }
+    });
+
+    // 清空容器并插入SVG
+    svgContainerRef.current.innerHTML = '';
+    svgContainerRef.current.appendChild(svgElement);
+  }, [svgContent, heatmapData]);
 
   return (
-    <div className="relative">
-      <object
-        type="image/svg+xml"
-        data="dist/jp.svg"
-        className="w-full h-auto"
-      />
-      {hoveredPrefecture && (
-        <div className="absolute top-0 left-0 bg-white p-2 border">
-          {hoveredPrefecture}
-        </div>
-      )}
+    <div ref={svgContainerRef} style={{ width: '100%', height: 'auto' }}>
+      {!svgContent && <p>无法加载地图，请检查路径或文件。</p>}
     </div>
   );
 };
@@ -241,7 +251,7 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
         const username = profile?.username || ''; // 从 profile 获取用户名
         if (userId && username) {
           const events = await fetchAllUserEvents(username, userId);
-          console.log('Fetched additional events:', events); // 在控制台输出解析结果
+          //console.log('Fetched additional events:', events); // 在控制台输出解析结果
           setUserEvents(events as any[]);
         }
       } catch (error) {
@@ -267,6 +277,28 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
 
   const venueRanking = useMemo<[string, number][]>(() => calculateVenueRanking(userEvents), [userEvents]);
   const heatmapData = useMemo<PrefectureCount>(() => generateHeatmapData(userEvents), [userEvents]);
+
+  useEffect(() => { }, [heatmapData]);
+
+  useEffect(() => {
+    const svgPath = chrome.runtime.getURL('dist/jp.svg');
+
+    const checkSVGObject = () => {
+      const svgObject = document.querySelector('object[type="image/svg+xml"]');
+      if (svgObject) {
+        svgObject.setAttribute('data', svgPath);
+
+        svgObject.addEventListener('load', () => {
+        });
+      } else {
+        setTimeout(checkSVGObject, 500);
+      }
+    };
+
+    checkSVGObject();
+  }, [userEvents]);
+
+  useEffect(() => { generateHeatmapData(userEvents); }, [userEvents]);
 
   return (
     <StyleProvider hashPriority="high">
@@ -305,15 +337,14 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
                     )}
                     {selectedContent === 'venueRanking' && (
                       <div>
-                        <h3 className="text-lg font-bold mb-4">场馆排行榜</h3>
+                        <h3 className="text-lg font-bold mt-6 mb-4">活动地图</h3>
+                        <PrefectureMap heatmapData={heatmapData} />
+                        <h3 className="text-lg font-bold mb-4">常去场馆</h3>
                         <ul className="list-disc pl-5">
                           {venueRanking.map(([venue, count], index) => (
                             <li key={index}>{venue}: {count} 次</li>
                           ))}
                         </ul>
-
-                        <h3 className="text-lg font-bold mt-6 mb-4">都道府县热力图</h3>
-                        <PrefectureMap heatmapData={heatmapData} />
                       </div>
                     )}
                   </div>
