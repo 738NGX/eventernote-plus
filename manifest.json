@@ -29,7 +29,8 @@
     {
       "resources": [
         "dist/scripts/*",
-        "inject.js"
+        "inject.js",
+        "dist/venues.json"
       ],
       "matches": [
         "https://www.eventernote.com/*",
