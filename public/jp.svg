@@ -109,8 +109,8 @@
   <circle class="44.454997038357476|152.43323403952064" cx="909.1" cy="82.6" id="2">
   </circle>
  </g>
- <g id="overseas">
-  <path d="M900 800l10 0l0 10l-10 0z" id="JP90" name="Overseas" fill="#cccccc" stroke="#ffffff" stroke-width="0.5"/>
+ <g id="overseas" transform="scale(4)" transform-origin="925 771">
+  <path d="M925 771l10 0l0 10l-10 0z" id="JP90" name="Overseas" fill="#cccccc" stroke="#ffffff" stroke-width="0.5"/>
  </g>
  <g id="label_points">
   <circle class="Kagoshima" cx="266.4" cy="553.1" id="JP46">

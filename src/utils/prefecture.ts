@@ -53,7 +53,9 @@ export function getPrefectureNameById(id: string): string {
   return prefectureMap[id] || '';
 }
 
-export function getIdByPrefectureName(name: string): string | null {
+export function getIdByPrefectureName(name: string, prefixZero: boolean = false): string | null {
   const entry = Object.entries(prefectureMap).find(([_, prefectureName]) => prefectureName === name);
-  return entry ? entry[0] : null;
+  if (!entry) return null;
+  const id = entry[0];
+  return prefixZero && id.length === 1 ? `0${id}` : id;
 }

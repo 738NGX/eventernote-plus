@@ -133,7 +133,7 @@ const PrefectureMap = ({ heatmapData }: { heatmapData: PrefectureCount }) => {
   useEffect(() => {
     const loadSvg = async () => {
       try {
-        const svgPath = chrome.runtime.getURL('dist/jp.svg');
+        const svgPath = chrome.runtime.getURL('dist/jp.svg'); // 保留dist路径
         const response = await fetch(svgPath);
         if (!response.ok) {
           throw new Error('无法加载SVG文件');
@@ -175,10 +175,38 @@ const PrefectureMap = ({ heatmapData }: { heatmapData: PrefectureCount }) => {
 
     // 应用热力图数据
     Object.entries(heatmapData).forEach(([prefecture, count]) => {
-      const prefectureId = getIdByPrefectureName(prefecture);
+      const prefectureId = getIdByPrefectureName(prefecture, true)
       const path = svgElement.querySelector(`#JP${prefectureId}`) as SVGPathElement | null;
       if (path) {
         path.setAttribute('fill', getColor(count));
+
+        // 添加鼠标悬停事件
+        path.addEventListener('mouseenter', (e: MouseEvent) => {
+          path.setAttribute('stroke', '#000'); // 鼠标悬停时添加边框
+          path.setAttribute('stroke-width', '2');
+          const tooltip = document.createElement('div');
+          tooltip.id = 'svg-tooltip';
+          tooltip.style.position = 'absolute';
+          tooltip.style.background = 'rgba(0, 0, 0, 0.7)';
+          tooltip.style.color = '#fff';
+          tooltip.style.padding = '4px 8px';
+          tooltip.style.borderRadius = '4px';
+          tooltip.style.fontSize = '12px';
+          tooltip.style.pointerEvents = 'none';
+          tooltip.style.top = `${e.clientY + 10}px`; // 鼠标位置 + 偏移量
+          tooltip.style.left = `${e.clientX + 10}px`;
+          tooltip.innerText = `${prefecture}: ${count} 次活动`;
+          document.body.appendChild(tooltip);
+        });
+
+        path.addEventListener('mouseleave', () => {
+          path.removeAttribute('stroke');
+          path.removeAttribute('stroke-width');
+          const tooltip = document.getElementById('svg-tooltip');
+          if (tooltip) {
+            tooltip.remove();
+          }
+        });
       } else {
         console.warn(`SVG中找不到id或name为${prefecture}的元素`);
       }
@@ -190,7 +218,7 @@ const PrefectureMap = ({ heatmapData }: { heatmapData: PrefectureCount }) => {
   }, [svgContent, heatmapData]);
 
   return (
-    <div ref={svgContainerRef} style={{ width: '100%', height: 'auto' }}>
+    <div ref={svgContainerRef} style={{ width: '100%', height: 'auto', position: 'relative' }}>
       {!svgContent && <p>无法加载地图，请检查路径或文件。</p>}
     </div>
   );
