@@ -22,7 +22,6 @@
         "http://www.eventernote.com/*"
       ],
       "js": ["dist/scripts/content.js"],
-      "css": ["dist/scripts/style.css"],
       "run_at": "document_end"
     }
   ],

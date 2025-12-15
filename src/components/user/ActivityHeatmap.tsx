@@ -33,7 +33,7 @@ export default function ActivityHeatmap({ activities, theme }: ActivityHeatmapPr
       styles={{ body: { padding: 16 } }}
     >
       <div className="space-y-4">
-        {activities.slice(0, 3).map(yearData => (
+        {activities.map(yearData => (
           <div key={yearData.year}>
             <div className="flex items-center justify-between mb-2">
               <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>

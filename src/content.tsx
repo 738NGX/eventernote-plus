@@ -4,6 +4,7 @@ import App from './App';
 import UserProfilePage from './pages/UserProfilePage';
 import './index.css';
 import { detectCurrentUser } from './utils/user';
+import { StyleProvider } from '@ant-design/cssinjs';
 
 // 获取当前页面类型
 function getPageType(): 'home' | 'user' | 'unknown' {
@@ -216,26 +217,40 @@ function init() {
   // 清空页面
   document.body.innerHTML = '';
 
-  // 创建 React 挂载点
+  // 创建 ShadowRoot 容器
   const root = document.createElement('div');
   root.id = 'enplus-root';
   document.body.appendChild(root);
+  const shadow = root.attachShadow({ mode: 'open' });
+
+  // 创建 React 挂载点
+  const reactRoot = document.createElement('div');
+  reactRoot.id = 'enplus-react-root';
+  shadow.appendChild(reactRoot);
+
+  // 注入样式（style.css）到 ShadowRoot
+  const styleLink = document.createElement('link');
+  styleLink.rel = 'stylesheet';
+  styleLink.href = chrome.runtime.getURL('dist/scripts/style.css');
+  shadow.appendChild(styleLink);
 
   // 根据页面类型渲染不同组件
   let component: React.ReactNode;
-  
+  // 传递 getPopupContainer 到 App
+  const getPopupContainer = () => shadow;
   if (pageType === 'home') {
-    component = <App initialUser={currentUser} />;
+    component = <App initialUser={currentUser} getPopupContainer={getPopupContainer} />;
   } else if (pageType === 'user') {
-    // 从 URL 提取用户名
     const username = location.pathname.split('/')[2];
-    component = <UserProfilePage username={username} currentUser={currentUser} initialData={userPageData} />;
+    component = <UserProfilePage username={username} currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
   }
 
-  // 渲染 React 应用
-  ReactDOM.createRoot(root).render(
+  // 渲染 React 应用到 ShadowRoot，并用 StyleProvider 隔离 Antd 动态样式
+  ReactDOM.createRoot(reactRoot).render(
     <React.StrictMode>
-      {component}
+      <StyleProvider container={shadow} hashPriority="high">
+        {component}
+      </StyleProvider>
     </React.StrictMode>
   );
 }

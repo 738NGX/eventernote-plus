@@ -5,11 +5,13 @@ import Features from './components/Features';
 import Footer from './components/Footer';
 import { UserInfo } from './utils/user';
 
+
 interface AppProps {
   initialUser: UserInfo | null;
+  getPopupContainer?: () => HTMLElement | ShadowRoot;
 }
 
-export default function App({ initialUser }: AppProps) {
+export default function App({ initialUser, getPopupContainer }: AppProps) {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const stored = localStorage.getItem('enplus-theme');
     if (stored === 'dark' || stored === 'light') return stored;
@@ -27,7 +29,7 @@ export default function App({ initialUser }: AppProps) {
 
   return (
     <div className={`min-h-screen flex flex-col ${isDark ? 'bg-slate-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
-      <Header theme={theme} onToggleTheme={toggleTheme} user={initialUser} />
+      <Header theme={theme} onToggleTheme={toggleTheme} user={initialUser} getPopupContainer={getPopupContainer} />
       <Hero theme={theme} />
       <Features theme={theme} />
       <Footer theme={theme} />

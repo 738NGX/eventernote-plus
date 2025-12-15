@@ -9,7 +9,7 @@ interface UpcomingEventsProps {
   title?: string;
 }
 
-export default function UpcomingEvents({ events, theme, username, title = '将要参加的活动' }: UpcomingEventsProps) {
+export default function UpcomingEvents({ events, theme, username, title = '最近参加的活动' }: UpcomingEventsProps) {
   const isDark = theme === 'dark';
 
   return (

@@ -4,13 +4,15 @@ import { StyleProvider } from '@ant-design/cssinjs';
 import { UserOutlined, SunOutlined, MoonOutlined } from '@ant-design/icons';
 import type { UserInfo } from '../utils/user';
 
+
 interface HeaderProps {
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
   user: UserInfo | null;
+  getPopupContainer?: () => HTMLElement | ShadowRoot;
 }
 
-export default function Header({ theme, onToggleTheme, user }: HeaderProps) {
+export default function Header({ theme, onToggleTheme, user, getPopupContainer }: HeaderProps) {
   const [keyword, setKeyword] = useState('');
   const [options, setOptions] = useState<any[]>([]);
   const controllerRef = useRef<AbortController | null>(null);
@@ -110,7 +112,7 @@ export default function Header({ theme, onToggleTheme, user }: HeaderProps) {
           algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
           token: { colorPrimary: '#1677ff' },
         }}
-        getPopupContainer={() => document.getElementById('enplus-root') || document.body}
+        getPopupContainer={getPopupContainer}
       >
       <header
         style={{

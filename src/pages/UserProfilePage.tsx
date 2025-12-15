@@ -30,6 +30,7 @@ interface UserProfilePageProps {
   username: string;
   currentUser: UserInfo | null;
   initialData: InitialData | null;
+  getPopupContainer?: () => HTMLElement | ShadowRoot;
 }
 
 export interface UserProfileData {
@@ -69,7 +70,7 @@ export interface ActivityData {
   total: number;
 }
 
-export default function UserProfilePage({ username, currentUser, initialData }: UserProfilePageProps) {
+export default function UserProfilePage({ username, currentUser, initialData, getPopupContainer }: UserProfilePageProps) {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const stored = localStorage.getItem('enplus-theme');
     if (stored === 'dark' || stored === 'light') return stored;
@@ -107,7 +108,7 @@ export default function UserProfilePage({ username, currentUser, initialData }: 
           algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
           token: { colorPrimary: '#1677ff' },
         }}
-        getPopupContainer={() => document.getElementById('enplus-root') || document.body}
+        getPopupContainer={getPopupContainer}
       >
         <div className={`min-h-screen flex flex-col ${isDark ? 'bg-slate-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
           <Header theme={theme} onToggleTheme={toggleTheme} user={currentUser} />
@@ -129,7 +130,7 @@ export default function UserProfilePage({ username, currentUser, initialData }: 
 
                   {/* 右侧主内容 */}
                   <div className="lg:col-span-2 space-y-6">
-                    <UpcomingEvents events={events} theme={theme} username={username} title="将要参加的活动" />
+                    <UpcomingEvents events={events} theme={theme} username={username} title="最近参加的活动" />
                     {overlapEvents.length > 0 && (
                       <UpcomingEvents events={overlapEvents} theme={theme} username={username} title="共同参加的活动" />
                     )}
