@@ -133,13 +133,13 @@ export async function fetchAllUserEvents(username: string, userId: string): Prom
         const venueElement = $(element).find('.place a');
         const venue = venueElement.length
           ? {
-              id: venueElement.attr('href')?.split('/').pop() || '',
-              name: venueElement.text().trim(),
-              prefecture: {
-                id: '',
-                name: '',
-              },
-            }
+            id: venueElement.attr('href')?.split('/').pop() || '',
+            name: venueElement.text().trim(),
+            prefecture: {
+              id: '',
+              name: '',
+            },
+          }
           : undefined; // 如果没有场地信息，设置为 undefined
 
         if (venue) {
@@ -231,10 +231,10 @@ export async function fetchAllUserEvents(username: string, userId: string): Prom
           continue; // 跳过没有场地信息的事件
         }
 
-        const venueMatch = venueData.find(v => String(v.id) === String((event.venue as any).id)); 
+        const venueMatch = venueData.find(v => String(v.venueId) === String((event.venue as any).id));
         if (venueMatch) {
-          event.venue.prefecture.id = venueMatch.prefecture.id; // 修复 prefectureId 错误
-          event.venue.prefecture.name = prefectureMap[String(venueMatch.prefecture.id)] || '';
+          event.venue.prefecture.id = venueMatch.prefectureId.toString();
+          event.venue.prefecture.name = prefectureMap[venueMatch.prefectureId.toString()] || '';
         }
       }
 
@@ -254,7 +254,7 @@ export async function fetchAllUserEvents(username: string, userId: string): Prom
 }
 
 // Updated fetchVenueData to use chrome.runtime.getURL for browser extension compatibility
-export async function fetchVenueData(): Promise<Venue[]> {
+export async function fetchVenueData(): Promise<[{ venueId: string, prefectureId: number }]> {
   const url = chrome.runtime.getURL('dist/venues.json'); // Get the correct URL for the extension environment
   const response = await fetch(url);
   if (!response.ok) {

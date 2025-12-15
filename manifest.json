@@ -30,7 +30,8 @@
       "resources": [
         "dist/scripts/*",
         "inject.js",
-        "dist/venues.json"
+        "dist/venues.json",
+        "dist/jp.svg"
       ],
       "matches": [
         "https://www.eventernote.com/*",
