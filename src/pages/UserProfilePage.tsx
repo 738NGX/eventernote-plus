@@ -101,11 +101,11 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
         const username = profile?.username || ''; // 从 profile 获取用户名
         if (userId && username) {
           const events = await fetchAllUserEvents(username, userId);
-          //console.log('Fetched additional events:', events); // 在控制台输出解析结果
+          console.log('Fetched all events:', events); // 在控制台输出解析结果
           setUserEvents(events as any[]);
         }
       } catch (error) {
-        console.error('Error fetching additional user events:', error);
+        console.error('Error fetching all user events:', error);
         setFetchError('无法加载所有用户活动，请稍后重试。');
       } finally {
         setIsFetching(false);

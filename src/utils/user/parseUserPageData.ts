@@ -61,8 +61,11 @@ export function parseUserPageData() {
       const dateEl = item.querySelector('.date p');
       const dateText = dateEl?.textContent?.trim() || '';
       const dateMatch = dateText.match(/(\d{4}-\d{2}-\d{2})/);
-      const wday = item.querySelector('.date .day0 .wday0')?.textContent?.trim() || '';
-      const dateWithWday = dateMatch ? `${dateMatch[1]} (${wday})` : '';
+      // 动态获取星期信息
+      const dayElement = Array.from(item.querySelectorAll('.date [class^="day"]'))
+        .find(el => el.className.match(/day[0-6]/));
+      const wday = dayElement?.textContent?.trim() || '';
+      const dateWithWday = wday ? wday : dateMatch ? dateMatch[1] : '';
 
       // 场馆
       const venueName = item.querySelector('.place a')?.textContent?.trim() || '';

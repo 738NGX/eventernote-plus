@@ -6,13 +6,12 @@ import { EventData } from '../events/eventdata';
 // 日期和时间解析工具函数
 function parseDateAndTime(dateText: string, timeText: string) {
   const dateMatch = dateText.match(/(\d{4}-\d{2}-\d{2})/);
-  const wdayMatch = dateText.match(/\((.*?)\)/);
   const openMatch = timeText.match(/开场\s*(\d+:\d+)/);
   const startMatch = timeText.match(/开演\s*(\d+:\d+)/);
   const endMatch = timeText.match(/终演\s*(\d+:\d+)/);
 
   return {
-    date: dateMatch ? `${dateMatch[1]} (${wdayMatch ? wdayMatch[1] : ''})` : '',
+    date: dateMatch ? `${dateMatch[1]}` : '',
     times: {
       open: openMatch ? openMatch[1] : '',
       start: startMatch ? startMatch[1] : '',
