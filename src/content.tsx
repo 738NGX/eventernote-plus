@@ -22,12 +22,46 @@ function getPageType(): 'home' | 'user' | 'unknown' {
   return 'unknown';
 }
 
+// 添加全局遮罩
+function addLoadingOverlay() {
+  const overlay = document.createElement("div");
+  overlay.id = "global-loading-overlay";
+  overlay.style.position = "fixed";
+  overlay.style.top = "0";
+  overlay.style.left = "0";
+  overlay.style.width = "100%";
+  overlay.style.height = "100%";
+  overlay.style.backgroundColor = "rgba(0, 0, 0, 1)";
+  overlay.style.zIndex = "9999";
+  overlay.style.display = "flex";
+  overlay.style.justifyContent = "center";
+  overlay.style.alignItems = "center";
+  overlay.style.fontSize = "24px";
+  overlay.style.color = "#fff";
+  overlay.innerText = "加载中...";
+  if (document.body) {
+    document.body.appendChild(overlay);
+  } else {
+    document.documentElement.appendChild(overlay);
+  }
+}
+
+// 移除全局遮罩
+function removeLoadingOverlay() {
+  const overlay = document.getElementById("global-loading-overlay");
+  if (overlay) {
+    overlay.remove();
+  }
+}
+
 // Content script 入口
 function init() {
+  // 获取当前页面类型
   const pageType = getPageType();
   
   // 只处理首页和用户页
   if (pageType === 'unknown') {
+    removeLoadingOverlay();
     return;
   }
 
@@ -90,10 +124,22 @@ function init() {
       </StyleProvider>
     </React.StrictMode>
   );
+
+  // 等待 DOM 就绪
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("DOM 加载完成");
+      removeLoadingOverlay();
+    });
+  } else {
+    console.log("DOM 已加载完成");
+    removeLoadingOverlay();
+  }
 }
 
 // 等待 DOM 就绪
 if (document.readyState === 'loading') {
+  addLoadingOverlay();
   document.addEventListener('DOMContentLoaded', init);
 } else {
   init();
