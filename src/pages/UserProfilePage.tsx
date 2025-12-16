@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import { Card, ConfigProvider, Skeleton, Table, theme as antTheme } from 'antd';
+import { useState, useEffect, useMemo } from 'react';
+import { Card, ConfigProvider, Skeleton, theme as antTheme } from 'antd';
 import { StyleProvider } from '@ant-design/cssinjs';
 import UserHeader from '../components/user/UserHeader';
 import EventsList from '../components/user/EventsList';
@@ -11,10 +11,11 @@ import type { UserInfo } from '../utils/user/fetchAllUserEvents';
 import { Menu } from 'antd';
 import type { MenuProps } from 'antd';
 import { fetchAllUserEvents } from '../utils/user/fetchAllUserEvents';
-import { generatePrefectureMapData, PrefectureCount, PrefectureMap } from '../components/user/PrefectureMap';
+import { generatePrefectureMapData, PrefectureCount } from '../components/user/PrefectureMap';
 import { EventData } from '../utils/events/eventdata';
 import { parseUserPageData } from '../utils/user/parseUserPageData';
 import { VenueCount } from '../components/user/VenueCount';
+import { ActorWordCloud, WordData } from '../components/user/ActorWordCloud';
 
 type InitialData = ReturnType<typeof parseUserPageData>;
 
@@ -65,6 +66,25 @@ const calculateVenueRanking = (events: EventData[]): [string, number][] => {
   });
   return Object.entries(venueCount).sort((a, b) => b[1] - a[1]);
 };
+
+const generateActorData = (events: EventData[], artists: ArtistData[]): { allActorData: WordData[], favouriteActorData: WordData[] } => {
+  const actorCount: { [key: string]: number } = {};
+  events.forEach((event: EventData) => {
+    event.performers.forEach((performer) => {
+      if (actorCount[performer.name]) {
+        actorCount[performer.name] += 1;
+      } else {
+        actorCount[performer.name] = 1;
+      }
+    });
+  });
+  const allActorData: WordData[] = Object.entries(actorCount).map(([text, value]) => ({ text, value }));
+  // 根据artists筛选，只筛选在artists内的
+  const favouriteActorData: WordData[] = allActorData.filter(actor =>
+    artists.some(artist => artist.name === actor.text)
+  );
+  return { allActorData, favouriteActorData };
+}
 
 export default function UserProfilePage({ username, currentUser, initialData, getPopupContainer }: UserProfilePageProps) {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -128,8 +148,7 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
 
   const venueRanking = useMemo<[string, number][]>(() => calculateVenueRanking(userEvents), [userEvents]);
   const prefectureMapData = useMemo<PrefectureCount>(() => generatePrefectureMapData(userEvents), [userEvents]);
-
-  useEffect(() => { }, [prefectureMapData]);
+  const { allActorData, favouriteActorData } = useMemo(() => generateActorData(userEvents, artists), [userEvents, artists]);
 
   useEffect(() => {
     const svgPath = chrome.runtime.getURL('dist/jp.svg');
@@ -186,8 +205,11 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
                       </>
                     )}
                     {
-                      selectedContent !== 'eventsList' && isFetching && <Skeleton active/>
+                      selectedContent !== 'eventsList' && isFetching && <Skeleton active />
                     }
+                    {selectedContent === 'actorRanking' && !isFetching && (
+                      <ActorWordCloud data={allActorData} />
+                    )}
                     {selectedContent === 'venueRanking' && !isFetching && (
                       <VenueCount prefectureMapData={prefectureMapData} venueRanking={venueRanking} userEvents={userEvents} />
                     )}
@@ -203,7 +225,8 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
                         onClick={handleContentChange}
                         selectedKeys={[selectedContent]}
                         items={[
-                          { key: 'eventsList', label: '📅 活动列表' },
+                          { key: 'eventsList', label: '🏠 主页' },
+                          { key: 'actorRanking', label: '⭐ 艺人统计' },
                           { key: 'venueRanking', label: '📍 场馆统计' },
                         ]}
                       />
