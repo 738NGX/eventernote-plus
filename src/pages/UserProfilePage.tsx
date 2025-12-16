@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Card, ConfigProvider, Skeleton, theme as antTheme } from 'antd';
+import { Card, ConfigProvider, Skeleton, Switch, theme as antTheme } from 'antd';
 import { StyleProvider } from '@ant-design/cssinjs';
 import UserHeader from '../components/user/UserHeader';
 import EventsList from '../components/user/EventsList';
@@ -15,7 +15,8 @@ import { generatePrefectureMapData, PrefectureCount } from '../components/user/P
 import { EventData } from '../utils/events/eventdata';
 import { parseUserPageData } from '../utils/user/parseUserPageData';
 import { VenueCount } from '../components/user/VenueCount';
-import { ActorWordCloud, WordData } from '../components/user/ActorWordCloud';
+import { ActorWordCloud, ActorCountData } from '../components/user/ActorWordCloud';
+import { ActorTable } from '../components/user/ActorTable';
 
 type InitialData = ReturnType<typeof parseUserPageData>;
 
@@ -67,24 +68,35 @@ const calculateVenueRanking = (events: EventData[]): [string, number][] => {
   return Object.entries(venueCount).sort((a, b) => b[1] - a[1]);
 };
 
-const generateActorData = (events: EventData[], artists: ArtistData[]): { allActorData: WordData[], favouriteActorData: WordData[] } => {
-  const actorCount: { [key: string]: number } = {};
+const generateActorData = (
+  events: EventData[],
+  artists: ArtistData[]
+): { allActorData: ActorCountData[]; favouriteActorData: ActorCountData[] } => {
+  const actorCount: { [key: string]: { id: string; value: number } } = {};
+
   events.forEach((event: EventData) => {
     event.performers.forEach((performer) => {
       if (actorCount[performer.name]) {
-        actorCount[performer.name] += 1;
+        actorCount[performer.name].value += 1;
       } else {
-        actorCount[performer.name] = 1;
+        actorCount[performer.name] = { id: performer.id, value: 1 };
       }
     });
   });
-  const allActorData: WordData[] = Object.entries(actorCount).map(([text, value]) => ({ text, value }));
-  // 根据artists筛选，只筛选在artists内的
-  const favouriteActorData: WordData[] = allActorData.filter(actor =>
-    artists.some(artist => artist.name === actor.text)
+
+  const allActorData: ActorCountData[] = Object.entries(actorCount).map(([text, { id, value }]) => ({
+    id,
+    text,
+    value,
+  }));
+
+  // 根据 artists 筛选，只保留在 artists 内的
+  const favouriteActorData: ActorCountData[] = allActorData.filter((actor) =>
+    artists.some((artist) => artist.name === actor.text)
   );
+
   return { allActorData, favouriteActorData };
-}
+};
 
 export default function UserProfilePage({ username, currentUser, initialData, getPopupContainer }: UserProfilePageProps) {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -106,6 +118,7 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
   const [scheduledEvents] = useState<EventData[]>(initialData?.scheduledEvents || []);
   const [overlapEvents] = useState<EventData[]>(initialData?.overlapEvents || []);
   const [artists] = useState<ArtistData[]>(initialData?.artists || []);
+  const [showFavoriteArtists, setShowFavoriteArtists] = useState<boolean>(true);
   const [activities] = useState<ActivityData[]>(initialData?.activities || []);
   const [loading] = useState(false);
   const [selectedContent, setSelectedContent] = useState<string>('eventsList');
@@ -208,7 +221,14 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
                       selectedContent !== 'eventsList' && isFetching && <Skeleton active />
                     }
                     {selectedContent === 'actorRanking' && !isFetching && (
-                      <ActorWordCloud data={allActorData} />
+                      <>
+                        <div className="flex flex-row items-center justify-between">
+                          <h3 className="text-lg font-bold ">⭐ 艺人统计</h3>
+                          <Switch checkedChildren="只看收藏" unCheckedChildren="展示全部" onChange={(checked: boolean) => setShowFavoriteArtists(checked)} value={showFavoriteArtists} />
+                        </div>
+                        <ActorWordCloud data={showFavoriteArtists ? favouriteActorData.slice(0, 20) : allActorData.slice(0, 20)} dark={theme === 'dark'} />
+                        <ActorTable actorCountData={showFavoriteArtists ? favouriteActorData : allActorData} />
+                      </>
                     )}
                     {selectedContent === 'venueRanking' && !isFetching && (
                       <VenueCount prefectureMapData={prefectureMapData} venueRanking={venueRanking} userEvents={userEvents} />

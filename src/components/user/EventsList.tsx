@@ -15,9 +15,9 @@ export default function EventsList({ events, theme, username, title }: EventsLis
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+        <h3 className="text-lg font-bold mb-4">
           📅 {title}
-        </h2>
+        </h3>
         <Button
           type="link"
           href={`/users/${username}/events`}
