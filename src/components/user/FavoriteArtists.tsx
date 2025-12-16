@@ -16,7 +16,7 @@ export default function FavoriteArtists({ artists, theme }: FavoriteArtistsProps
       className={isDark ? 'bg-slate-800 border-slate-700' : ''}
       title={
         <span className={isDark ? 'text-white' : ''}>
-          ⭐ 喜欢的声优/艺术家
+          ⭐ 喜欢的艺人
         </span>
       }
       extra={

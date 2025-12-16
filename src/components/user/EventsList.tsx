@@ -1,15 +1,15 @@
 import { Card, Tag, Button } from 'antd';
 import { CalendarOutlined, EnvironmentOutlined, TeamOutlined, RightOutlined } from '@ant-design/icons';
-import type { EventData } from '../../pages/UserProfilePage';
+import { EventData } from '../../utils/events/eventdata';
 
-interface UpcomingEventsProps {
+interface EventsListProps {
   events: EventData[];
   theme: 'light' | 'dark';
   username: string;
   title?: string;
 }
 
-export default function UpcomingEvents({ events, theme, username, title = '最近参加的活动' }: UpcomingEventsProps) {
+export default function EventsList({ events, theme, username, title }: EventsListProps) {
   const isDark = theme === 'dark';
 
   return (
@@ -18,11 +18,10 @@ export default function UpcomingEvents({ events, theme, username, title = '最�
         <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
           📅 {title}
         </h2>
-        <Button 
-          type="link" 
+        <Button
+          type="link"
           href={`/users/${username}/events`}
           icon={<RightOutlined />}
-          iconPosition="end"
         >
           查看全部
         </Button>
@@ -31,7 +30,7 @@ export default function UpcomingEvents({ events, theme, username, title = '最�
       {events.length === 0 ? (
         <Card className={isDark ? 'bg-slate-800 border-slate-700' : ''}>
           <div className={`text-center py-8 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-            暂无即将参加的活动
+            暂无活动
           </div>
         </Card>
       ) : (
@@ -45,21 +44,15 @@ export default function UpcomingEvents({ events, theme, username, title = '最�
             >
               <div className="flex">
                 {/* 活动封面 */}
-                <a 
-                  href={`/events/${event.id}`} 
+                <a
+                  href={`/events/${event.id}`}
                   className="flex-shrink-0 w-28 md:w-32 aspect-square"
                 >
-                  {event.imageUrl ? (
-                    <img
-                      src={event.imageUrl}
-                      alt={event.title}
-                      className="w-full h-full object-contain bg-black"
-                    />
-                  ) : (
-                    <div className={`w-full h-full flex items-center justify-center ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`}>
-                      <CalendarOutlined className="text-3xl opacity-50" />
-                    </div>
-                  )}
+                  <img
+                    src={`https://eventernote.s3.amazonaws.com/images/events/${event.id}_s.jpg`}
+                    alt={event.title}
+                    className="w-full h-full object-contain bg-black"
+                  />
                 </a>
 
                 {/* 活动信息 */}
@@ -70,20 +63,20 @@ export default function UpcomingEvents({ events, theme, username, title = '最�
                         {event.title}
                       </h3>
                     </a>
-                    
+
                     <div className={`space-y-1 text-xs md:text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                       {event.date && (
                         <div className="flex items-center gap-2">
                           <CalendarOutlined />
                           <span>{event.date}</span>
-                          {event.startTime && <span className="text-primary-500">{event.startTime} 开演</span>}
+                          {event.times.start && <span className="text-primary-500">{event.times.start} 开演</span>}
                         </div>
                       )}
-                      
+
                       {event.venue && (
                         <div className="flex items-center gap-2">
                           <EnvironmentOutlined />
-                          <span className="truncate">{event.venue}</span>
+                          <span className="truncate">{event.venue.name}</span>
                         </div>
                       )}
                     </div>
@@ -92,8 +85,8 @@ export default function UpcomingEvents({ events, theme, username, title = '最�
                   {/* 出演者标签 */}
                   <div className="mt-2 flex flex-wrap gap-1">
                     {event.performers.slice(0, 5).map(p => (
-                      <Tag 
-                        key={p.id} 
+                      <Tag
+                        key={p.id}
                         color={isDark ? 'blue' : 'processing'}
                         className="text-xs"
                         style={{ margin: 0 }}

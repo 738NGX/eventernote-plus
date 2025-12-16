@@ -1,6 +1,25 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { getPrefectureNameById } from './prefecture';
+import { getPrefectureNameById } from '../prefecture';
+import { EventData } from '../events/eventdata';
+
+// 日期和时间解析工具函数
+function parseDateAndTime(dateText: string, timeText: string) {
+  const dateMatch = dateText.match(/(\d{4}-\d{2}-\d{2})/);
+  const wdayMatch = dateText.match(/\((.*?)\)/);
+  const openMatch = timeText.match(/开场\s*(\d+:\d+)/);
+  const startMatch = timeText.match(/开演\s*(\d+:\d+)/);
+  const endMatch = timeText.match(/终演\s*(\d+:\d+)/);
+
+  return {
+    date: dateMatch ? `${dateMatch[1]} (${wdayMatch ? wdayMatch[1] : ''})` : '',
+    times: {
+      open: openMatch ? openMatch[1] : '',
+      start: startMatch ? startMatch[1] : '',
+      end: endMatch ? endMatch[1] : '',
+    },
+  };
+}
 
 // 从页面检测当前登录用户
 export interface UserInfo {
@@ -61,41 +80,6 @@ export function detectCurrentUser(): UserInfo | null {
   return null;
 }
 
-interface Venue {
-  id: string;
-  name: string;
-  prefecture: {
-    id: string;
-    name: string;
-  };
-}
-
-interface Performer {
-  name: string;
-  id: string;
-}
-
-export interface EventData {
-  id: string;
-  title: string;
-  date: string;
-  openTime?: string;
-  startTime?: string;
-  endTime?: string;
-  venue?: {
-    id: string;
-    name: string;
-    prefecture: {
-      id: string;
-      name: string;
-    };
-  };
-  performers?: {
-    id: string;
-    name: string;
-  }[];
-}
-
 /**
  * Fetches all events for a user from Eventernote across all pages.
  * @param username The username of the user.
@@ -108,17 +92,12 @@ export async function fetchAllUserEvents(username: string, userId: string): Prom
   try {
     let page = 1;
     let hasMorePages = true;
+    const venueData = await fetchVenueData();
 
     while (hasMorePages) {
       const url = `https://www.eventernote.com/users/${username}/events?page=${page}&user_id=${userId}`;
       const response = await axios.get(url);
       const $ = cheerio.load(response.data);
-
-      // Conditionally import 'fs' for development environment
-      if (process.env.NODE_ENV === 'development') {
-        const fs = await import('fs');
-        fs.writeFileSync(`./debug_user_events_page_${page}.html`, response.data, 'utf-8');
-      }
 
       const pageEvents: EventData[] = [];
 
@@ -127,9 +106,9 @@ export async function fetchAllUserEvents(username: string, userId: string): Prom
         const eventLink = $(element).find('h4 a').attr('href');
         const eventId = eventLink?.split('/').pop() || '';
 
-        const date = $(element).find('.date p').first().text().trim();
-        const timeInfo = $(element).find('.place span.s').text().trim();
-        const [openTime, startTime, endTime] = timeInfo.match(/\d{2}:\d{2}/g) || [];
+        const dateText = $(element).find('.date p').first().text().trim();
+        const timeText = $(element).find('.place span.s').text().trim();
+        const { date, times } = parseDateAndTime(dateText, timeText);
 
         const venueElement = $(element).find('.place a');
         const venue = venueElement.length
@@ -141,12 +120,14 @@ export async function fetchAllUserEvents(username: string, userId: string): Prom
               name: '',
             },
           }
-          : undefined; // 如果没有场地信息，设置为 undefined
+          : { id: '', name: '', prefecture: { id: '', name: '' } };
 
         if (venue) {
-          const prefectureInfo = $(element).find('.place').text().match(/\(([^)]+)\)/);
-          if (prefectureInfo) {
-            venue.prefecture.name = prefectureInfo[1];
+          const venueMatch = venueData.find(v => String(v.venueId) === String(venue.id));
+          if (venueMatch) {
+            const prefectureId = venueMatch.prefectureId.toString();
+            venue.prefecture.id = prefectureId;
+            venue.prefecture.name = getPrefectureNameById(prefectureId);
           }
         }
 
@@ -163,33 +144,13 @@ export async function fetchAllUserEvents(username: string, userId: string): Prom
             id: eventId,
             title: eventTitle,
             date,
-            openTime,
-            startTime,
-            endTime,
+            times,
+            participantCount: parseInt($(element).find('.note_count p').text().trim()) || 0,
             venue,
             performers,
           });
         }
       });
-
-      // Ensure venue data from venues.json is matched with fetched events
-      const venueData = await fetchVenueData();
-      // Mapping of prefectureId to prefecture names
-      
-
-      // Update venue prefecture based on prefectureId
-      for (const event of pageEvents) {
-        if (!event.venue) {
-          continue; // 跳过没有场地信息的事件
-        }
-
-        const venueMatch = venueData.find(v => String(v.venueId) === String((event.venue as any).id));
-        if (venueMatch) {
-          const prefectureId = venueMatch.prefectureId.toString();
-          event.venue.prefecture.id = prefectureId;
-          event.venue.prefecture.name = getPrefectureNameById(prefectureId);
-        }
-      }
 
       if (pageEvents.length > 0) {
         events.push(...pageEvents);
