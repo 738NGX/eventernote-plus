@@ -142,7 +142,7 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
               gap: 6,
             }}
           >
-            🎵 EventerNote
+            EventerNote Plus
           </a>
           
           <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -176,21 +176,18 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
           <AutoComplete
             value={keyword}
             options={options}
-            onSearch={onSearch}
             onSelect={onSelect}
+            showSearch={{ onSearch }}
             style={{ width: '100%', maxWidth: 560 }}
             popupMatchSelectWidth={500}
           >
-            <Input
+            <Input.Search
               size="large"
               placeholder="搜索声优、活动、会场..."
-              style={{ borderRadius: 8, height: 44 }}
               onPressEnter={doSearch}
+              enterButton
             />
           </AutoComplete>
-          <Button type="primary" size="large" onClick={doSearch} style={{ borderRadius: 8, height: 44 }}>
-            搜索
-          </Button>
         </div>
 
         {/* 右侧：主题切换 + 用户 */}

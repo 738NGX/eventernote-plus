@@ -11,7 +11,7 @@ import type { UserInfo } from '../utils/user/fetchAllUserEvents';
 import { Menu } from 'antd';
 import type { MenuProps } from 'antd';
 import { fetchAllUserEvents } from '../utils/user/fetchAllUserEvents';
-import { generatePrefectureMapData, PrefectureCount } from '../components/user/PrefectureMap';
+import { generatePrefectureMapData, PrefectureCount, PrefectureMap } from '../components/user/PrefectureMap';
 import { EventData } from '../utils/events/eventdata';
 import { parseUserPageData } from '../utils/user/parseUserPageData';
 import { VenueCount } from '../components/user/VenueCount';
@@ -229,7 +229,16 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
                       </>
                     )}
                     {selectedContent === 'venueRanking' && !isFetching && (
-                      <VenueCount prefectureMapData={prefectureMapData} venueRanking={venueRanking} userEvents={userEvents} />
+                      <>
+                        <h3 className="text-lg font-bold mb-4">📍 场馆统计</h3>
+                        <Card
+                          className={isDark ? 'bg-slate-800 border-slate-700' : ''}
+                          styles={{ body: { padding: 6 } }}
+                        >
+                          <PrefectureMap data={prefectureMapData} />
+                        </Card>
+                        <VenueCount venueRanking={venueRanking} userEvents={userEvents} />
+                      </>
                     )}
                   </div>
 

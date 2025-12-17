@@ -6,16 +6,19 @@ import { EventData } from '../events/eventdata';
 // 日期和时间解析工具函数
 function parseDateAndTime(dateText: string, timeText: string) {
   const dateMatch = dateText.match(/(\d{4}-\d{2}-\d{2})/);
-  const openMatch = timeText.match(/开场\s*(\d+:\d+)/);
-  const startMatch = timeText.match(/开演\s*(\d+:\d+)/);
-  const endMatch = timeText.match(/终演\s*(\d+:\d+)/);
+  const openMatch = timeText.match(/開場\s*(\d+:\d+)/);
+  const startMatch = timeText.match(/開演\s*(\d+:\d+)/);
+  const endMatch = timeText.match(/終演\s*(\d+:\d+)/);
+  const startTime = startMatch ? startMatch[1] : '';
+  const openTime = openMatch ? openMatch[1] : startTime;
+  const endTime = endMatch ? endMatch[1] : '';
 
   return {
     date: dateMatch ? `${dateMatch[1]}` : '',
     times: {
-      open: openMatch ? openMatch[1] : '',
-      start: startMatch ? startMatch[1] : '',
-      end: endMatch ? endMatch[1] : '',
+      open: openTime,
+      start: startTime,
+      end: endTime,
     },
   };
 }

@@ -72,6 +72,7 @@ export const PrefectureMap = ({ data }: { data: PrefectureCount }) => {
 
     // 应用热力图数据
     Object.entries(data).forEach(([prefecture, count]) => {
+      if (!prefecture) return;
       const prefectureId = getIdByPrefectureName(prefecture, true)
       const path = svgElement.querySelector(`#JP${prefectureId}`) as SVGPathElement | null;
       if (path) {

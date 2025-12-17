@@ -13,10 +13,10 @@ export default function Hero({ theme }: HeroProps) {
     >
       <div className="relative z-10 max-w-3xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-          发现日本声优活动
+          发现日本艺人活动
         </h1>
         <p className="text-lg text-white/80 mb-8">
-          追踪你喜欢的声优、艺术家的演唱会、活动和见面会
+          追踪你喜欢的声优、艺人的演唱会、活动和见面会
         </p>
 
         <div className="flex justify-center gap-4">

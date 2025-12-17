@@ -1,11 +1,8 @@
-import { PrefectureCount, PrefectureMap } from "./PrefectureMap";
 import { EventData } from "../../utils/events/eventdata";
 import { Table } from "antd";
 
-export const VenueCount = ({ prefectureMapData, venueRanking, userEvents }: { prefectureMapData: PrefectureCount, venueRanking: [string, number][], userEvents: EventData[] }) => {
+export const VenueCount = ({ venueRanking, userEvents }: { venueRanking: [string, number][], userEvents: EventData[] }) => {
   return <div>
-    <h3 className="text-lg font-bold mb-4">场馆统计</h3>
-    <PrefectureMap data={prefectureMapData} />
     <Table
       dataSource={venueRanking.map(([venue, count], index) => {
         const venueId = userEvents.find(event => event.venue.name === venue)?.venue.id || 'unknown';

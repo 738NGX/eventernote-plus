@@ -87,6 +87,7 @@ function init() {
 
   // 清空页面
   document.body.innerHTML = '';
+  document.documentElement.setAttribute('lang', 'zh-CN');
 
   // 创建 ShadowRoot 容器
   const root = document.createElement('div');
