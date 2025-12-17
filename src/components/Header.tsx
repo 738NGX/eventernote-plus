@@ -201,7 +201,7 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
 
           {user ? (
             <a 
-              href={user.profileUrl || '/users/'} 
+              href={'/users'} 
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 

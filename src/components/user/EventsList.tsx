@@ -7,7 +7,7 @@ interface EventsListProps {
   events: EventData[];
   theme: 'light' | 'dark';
   username: string;
-  title?: string;
+  title?: '最近参加的活动' | '共同参加的活动' | '收藏的艺人的近期活动';
 }
 
 export default function EventsList({ events, theme, username, title }: EventsListProps) {
@@ -15,13 +15,13 @@ export default function EventsList({ events, theme, username, title }: EventsLis
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-bold mb-4">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-lg font-bold">
           📅 {title}
         </h3>
         <Button
           type="link"
-          href={`/users/${username}/events`}
+          href={`/users/${username}/events${title === '共同参加的活动' ? '/same' : title === '收藏的艺人的近期活动' ? '/?type=3' : ''}`}
           icon={<RightOutlined />}
         >
           查看全部

@@ -11,7 +11,7 @@ export function parseUserPageData() {
   const signature = document.querySelector('.gb_users_side_profile .text p')?.textContent?.trim() || '';
 
   // 统计数据 - 查找 parent class 为 "number" 的链接
-  const username = location.pathname.split('/')[2];
+  const username = location.pathname.split('/')[2] || display_username;
   let following = 0, followers = 0, eventCount = 0, overlapCount = 0;
 
   document.querySelectorAll('.number a').forEach(a => {
@@ -115,16 +115,18 @@ export function parseUserPageData() {
   // 解析活动列表
   const allEventLists = document.querySelectorAll('.gb_event_list');
   let scheduledEvents = [] as EventData[];
-  let overlapEvents = [] as EventData[];   
+  let overlapEvents = [] as EventData[]; 
+  let favouriteArtistsEvents = [] as EventData[];  
   allEventLists.forEach(list => {
     const header = list.previousElementSibling;
 
     if (header && header.textContent) {
       if (header.textContent.includes('参加予定')) {
         scheduledEvents = parseEventList(list);
-      }
-      else if (header.textContent.includes('被っている')) {
+      } else if (header.textContent.includes('被っている')) {
         overlapEvents = parseEventList(list);
+      } else if (header.textContent.includes('お気に入り声優')) {
+        favouriteArtistsEvents = parseEventList(list);
       }
     }
   });
@@ -180,7 +182,8 @@ export function parseUserPageData() {
 
   return {
     profile: {
-      displayName: displayname || display_username,
+      username,
+      displayName: displayname || username,
       avatarUrl: avatar,
       followingCount: following,
       followerCount: followers,
@@ -191,6 +194,7 @@ export function parseUserPageData() {
     },
     scheduledEvents,
     overlapEvents,
+    favouriteArtistsEvents,
     artists,
     activities,
   };

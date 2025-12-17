@@ -8,42 +8,69 @@ import { StyleProvider } from '@ant-design/cssinjs';
 import { parseUserPageData } from './utils/user/parseUserPageData';
 
 // 获取当前页面类型
-function getPageType(): 'home' | 'user' | 'unknown' {
+function getPageType(): string {
   const path = location.pathname;
   
   if (path === '/' || /eventernote\.com\/?$/.test(location.href)) {
     return 'home';
   }
   
-  if (/^\/users\/[^/]+\/?$/.test(path)) {
+  if (/^\/users(\/[^/]+)?\/?$/.test(path)) {
     return 'user';
   }
   
   return 'unknown';
 }
 
-// 添加全局遮罩
-function addLoadingOverlay() {
-  const overlay = document.createElement("div");
-  overlay.id = "global-loading-overlay";
-  overlay.style.position = "fixed";
-  overlay.style.top = "0";
-  overlay.style.left = "0";
-  overlay.style.width = "100%";
-  overlay.style.height = "100%";
-  overlay.style.backgroundColor = "rgba(0, 0, 0, 1)";
-  overlay.style.zIndex = "9999";
-  overlay.style.display = "flex";
-  overlay.style.justifyContent = "center";
-  overlay.style.alignItems = "center";
-  overlay.style.fontSize = "24px";
-  overlay.style.color = "#fff";
-  overlay.innerText = "加载中...";
-  if (document.body) {
-    document.body.appendChild(overlay);
-  } else {
-    document.documentElement.appendChild(overlay);
+// 根据唯一确定的方式获取主题
+function getThemeColors() {
+  let theme = localStorage.getItem('enplus-theme');
+
+  // 如果 localStorage 中没有值，根据系统偏好初始化主题
+  if (!theme) {
+    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    localStorage.setItem('enplus-theme', theme);
   }
+
+  if (theme === 'dark') {
+    return {
+      backgroundColor: '#000',
+      color: '#fff'
+    };
+  } else if (theme === 'light') {
+    return {
+      backgroundColor: '#fff',
+      color: '#000'
+    };
+  }
+
+  console.error('localStorage 中未找到有效的主题值，请检查主题初始化逻辑。');
+  throw new Error('未定义的主题');
+}
+
+const themeColors = getThemeColors();
+
+// 设置全局遮罩样式
+const overlay = document.createElement("div");
+overlay.lang = "zh-CN";
+overlay.id = "global-loading-overlay";
+overlay.style.position = "fixed";
+overlay.style.top = "0";
+overlay.style.left = "0";
+overlay.style.width = "100%";
+overlay.style.height = "100%";
+overlay.style.backgroundColor = themeColors.backgroundColor;
+overlay.style.zIndex = "9999";
+overlay.style.display = "flex";
+overlay.style.justifyContent = "center";
+overlay.style.alignItems = "center";
+overlay.style.fontSize = "24px";
+overlay.style.color = themeColors.color;
+overlay.innerText = "加载中...";
+if (document.body) {
+  document.body.appendChild(overlay);
+} else {
+  document.documentElement.appendChild(overlay);
 }
 
 // 移除全局遮罩
@@ -85,6 +112,22 @@ function init() {
   };
   (document.head || document.documentElement).appendChild(injectScript);
 
+  // 在清空页面之前，将遮罩移到 document.documentElement
+  const overlay = document.getElementById("global-loading-overlay");
+  if (overlay) {
+    document.documentElement.appendChild(overlay);
+  }
+
+  // 在清空页面之前，注入基础样式以避免白屏
+  const baseStyle = document.createElement('style');
+  baseStyle.textContent = `
+    body {
+      background-color: ${themeColors.backgroundColor};
+      color: ${themeColors.color};
+    }
+  `;
+  document.head.appendChild(baseStyle);
+
   // 清空页面
   document.body.innerHTML = '';
   document.documentElement.setAttribute('lang', 'zh-CN');
@@ -106,6 +149,11 @@ function init() {
   styleLink.href = chrome.runtime.getURL('dist/scripts/style.css');
   shadow.appendChild(styleLink);
 
+  // 在样式加载完成后移除基础样式
+  styleLink.onload = () => {
+    baseStyle.remove();
+  };
+
   // 根据页面类型渲染不同组件
   let component: React.ReactNode;
   // 传递 getPopupContainer 到 App
@@ -113,8 +161,7 @@ function init() {
   if (pageType === 'home') {
     component = <App initialUser={currentUser} getPopupContainer={getPopupContainer} />;
   } else if (pageType === 'user') {
-    const username = location.pathname.split('/')[2];
-    component = <UserProfilePage username={username} currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
+    component = <UserProfilePage currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
   }
 
   // 渲染 React 应用到 ShadowRoot，并用 StyleProvider 隔离 Antd 动态样式
@@ -125,6 +172,11 @@ function init() {
       </StyleProvider>
     </React.StrictMode>
   );
+
+  // 确保遮罩仍然存在
+  if (overlay) {
+    document.documentElement.appendChild(overlay);
+  }
 
   // 等待 DOM 就绪
   if (document.readyState === "loading") {
@@ -140,7 +192,7 @@ function init() {
 
 // 等待 DOM 就绪
 if (document.readyState === 'loading') {
-  addLoadingOverlay();
+  overlay;
   document.addEventListener('DOMContentLoaded', init);
 } else {
   init();

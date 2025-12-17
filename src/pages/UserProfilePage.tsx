@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Card, ConfigProvider, Skeleton, Switch, theme as antTheme } from 'antd';
+import { Breadcrumb, Card, ConfigProvider, Skeleton, Switch, theme as antTheme } from 'antd';
 import { StyleProvider } from '@ant-design/cssinjs';
 import UserHeader from '../components/user/UserHeader';
 import EventsList from '../components/user/EventsList';
@@ -17,11 +17,11 @@ import { parseUserPageData } from '../utils/user/parseUserPageData';
 import { VenueCount } from '../components/user/VenueCount';
 import { ActorWordCloud, ActorCountData } from '../components/user/ActorWordCloud';
 import { ActorTable } from '../components/user/ActorTable';
+import ActivityHeatmapDetailed from '../components/user/ActivityHeatmapDetailed';
 
 type InitialData = ReturnType<typeof parseUserPageData>;
 
 interface UserProfilePageProps {
-  username: string;
   currentUser: UserInfo | null;
   initialData: InitialData | null;
   getPopupContainer?: () => HTMLElement | ShadowRoot;
@@ -68,6 +68,25 @@ const calculateVenueRanking = (events: EventData[]): [string, number][] => {
   return Object.entries(venueCount).sort((a, b) => b[1] - a[1]);
 };
 
+const calculateActivityHeatmapDetailedData = (events: EventData[]): Record<string, Record<string, number>> => {
+  const heatmapData: Record<string, Record<string, number>> = {};
+  events.forEach((event: EventData) => {
+    const year = event.date.slice(0, 4);
+    const monthDay = event.date.slice(5, 10); // MM-DD
+
+    if (!heatmapData[year]) {
+      heatmapData[year] = {};
+    }
+    if (heatmapData[year][monthDay]) {
+      heatmapData[year][monthDay] += 1;
+    }
+    else {
+      heatmapData[year][monthDay] = 1;
+    }
+  });
+  return heatmapData;
+}
+
 const generateActorData = (
   events: EventData[],
   artists: ArtistData[]
@@ -98,26 +117,26 @@ const generateActorData = (
   return { allActorData, favouriteActorData };
 };
 
-export default function UserProfilePage({ username, currentUser, initialData, getPopupContainer }: UserProfilePageProps) {
+export default function UserProfilePage({ currentUser, initialData, getPopupContainer }: UserProfilePageProps) {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const stored = localStorage.getItem('enplus-theme');
     if (stored === 'dark' || stored === 'light') return stored;
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
 
+  const isMyPage = !location.pathname.split('/')[2];
+
   // 使用从 DOM 解析的初始数据
   const [profile] = useState<UserProfileData | null>(() => {
     console.log('Initial data from DOM:', initialData);
     if (initialData?.profile) {
-      return {
-        username,
-        ...initialData.profile,
-      };
+      return initialData.profile;
     }
     return null;
   });
   const [scheduledEvents] = useState<EventData[]>(initialData?.scheduledEvents || []);
   const [overlapEvents] = useState<EventData[]>(initialData?.overlapEvents || []);
+  const [favouriteArtistsEvents] = useState<EventData[]>(initialData?.favouriteArtistsEvents || []);
   const [artists] = useState<ArtistData[]>(initialData?.artists || []);
   const [showFavoriteArtists, setShowFavoriteArtists] = useState<boolean>(true);
   const [activities] = useState<ActivityData[]>(initialData?.activities || []);
@@ -129,10 +148,10 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
 
   useEffect(() => {
     const fetchEvents = async () => {
-      console.log('Fetching all user events for', username);
+      if (!profile) return;
       setIsFetching(true);
       try {
-        const events = await fetchAllUserEvents(username);
+        const events = await fetchAllUserEvents(profile.username);
         console.log('Fetched all events:', events); // 在控制台输出解析结果
         setUserEvents(events as any[]);
       } catch (error) {
@@ -160,6 +179,7 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
   const venueRanking = useMemo<[string, number][]>(() => calculateVenueRanking(userEvents), [userEvents]);
   const prefectureMapData = useMemo<PrefectureCount>(() => generatePrefectureMapData(userEvents), [userEvents]);
   const { allActorData, favouriteActorData } = useMemo(() => generateActorData(userEvents, artists), [userEvents, artists]);
+  const activityHeatmapDetailedData = useMemo<Record<string, Record<string, number>>>(() => calculateActivityHeatmapDetailedData(userEvents), [userEvents]);
 
   useEffect(() => {
     const svgPath = chrome.runtime.getURL('dist/jp.svg');
@@ -192,31 +212,55 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
       >
         <div className={`min-h-screen flex flex-col ${isDark ? 'bg-slate-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
           <Header theme={theme} onToggleTheme={toggleTheme} user={currentUser} />
-
           <main className="flex-1 py-8 px-6">
             <div className="max-w-7xl mx-auto">
+              <Breadcrumb
+                items={[
+                  {
+                    title: <a href="/">首页</a>,
+                  },
+                  {
+                    title: isMyPage ? '我的活动笔记' : `${profile?.username}的活动笔记`,
+                  }
+                ]}
+                className='!mb-2'
+              />
               {loading ? (
                 <div className="flex justify-center items-center py-20">
                   <div className="text-lg">加载中...</div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-11 gap-8">
+                profile && <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                   {/* 左侧边栏 */}
                   <div className="lg:col-span-3 space-y-6">
-                    <UserHeader profile={profile} theme={theme} isOwner={currentUser?.name === username} />
+                    <UserHeader profile={profile} theme={theme} isOwner={currentUser?.name === profile?.username} />
                     <FavoriteArtists artists={artists} theme={theme} />
                     <ActivityHeatmap activities={activities} theme={theme} />
                   </div>
                   {/* 中间主内容 */}
-                  <div className="lg:col-span-6 space-y-6">
+                  <div className="lg:col-span-7 space-y-6">
                     {selectedContent === 'eventsList' && (
                       <>
-                        <EventsList events={scheduledEvents} theme={theme} username={username} title="最近参加的活动" />
-                        <EventsList events={overlapEvents} theme={theme} username={username} title="共同参加的活动" />
+                        <EventsList events={scheduledEvents} theme={theme} username={profile.username} title="最近参加的活动" />
+                        {overlapEvents.length > 0 && <EventsList events={overlapEvents} theme={theme} username={profile.username} title="共同参加的活动" />}
+                        {favouriteArtistsEvents.length > 0 && <EventsList events={favouriteArtistsEvents} theme={theme} username={profile.username} title="收藏的艺人的近期活动" />}
                       </>
                     )}
                     {
                       selectedContent !== 'eventsList' && isFetching && <Skeleton active />
+                    }
+                    {
+                      selectedContent === 'eventCalendar' && !isFetching && (
+                        <>
+                          <h3 className="text-lg font-bold mb-4">📅 活动日程</h3>
+                          {Object.entries(activityHeatmapDetailedData).sort((a, b) => b[0].localeCompare(a[0])).map(([year, data]) => (
+                            <>
+                              <h4>{year}年</h4>
+                              <ActivityHeatmapDetailed key={year} year={parseInt(year)} data={data} theme={theme} />
+                            </>
+                          ))}
+                        </>
+                      )
                     }
                     {selectedContent === 'actorRanking' && !isFetching && (
                       <>
@@ -252,7 +296,8 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
                         onClick={handleContentChange}
                         selectedKeys={[selectedContent]}
                         items={[
-                          { key: 'eventsList', label: '🏠 主页' },
+                          { key: 'eventsList', label: '🏠 用户主页' },
+                          { key: 'eventCalendar', label: '📅 活动日程' },
                           { key: 'actorRanking', label: '⭐ 艺人统计' },
                           { key: 'venueRanking', label: '📍 场馆统计' },
                         ]}
@@ -263,7 +308,6 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
               )}
             </div>
           </main>
-
           <Footer theme={theme} />
         </div>
       </ConfigProvider>
