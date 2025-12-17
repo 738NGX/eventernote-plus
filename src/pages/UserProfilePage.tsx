@@ -107,6 +107,7 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
 
   // 使用从 DOM 解析的初始数据
   const [profile] = useState<UserProfileData | null>(() => {
+    console.log('Initial data from DOM:', initialData);
     if (initialData?.profile) {
       return {
         username,
@@ -128,15 +129,12 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
 
   useEffect(() => {
     const fetchEvents = async () => {
+      console.log('Fetching all user events for', username);
       setIsFetching(true);
       try {
-        const userId = profile?.userId || ''; // 从 profile 获取用户 ID
-        const username = profile?.username || ''; // 从 profile 获取用户名
-        if (userId && username) {
-          const events = await fetchAllUserEvents(username, userId);
-          console.log('Fetched all events:', events); // 在控制台输出解析结果
-          setUserEvents(events as any[]);
-        }
+        const events = await fetchAllUserEvents(username);
+        console.log('Fetched all events:', events); // 在控制台输出解析结果
+        setUserEvents(events as any[]);
       } catch (error) {
         console.error('Error fetching all user events:', error);
         setFetchError('无法加载所有用户活动，请稍后重试。');
@@ -226,7 +224,7 @@ export default function UserProfilePage({ username, currentUser, initialData, ge
                           <h3 className="text-lg font-bold ">⭐ 艺人统计</h3>
                           <Switch checkedChildren="只看收藏" unCheckedChildren="展示全部" onChange={(checked: boolean) => setShowFavoriteArtists(checked)} value={showFavoriteArtists} />
                         </div>
-                        <ActorWordCloud data={showFavoriteArtists ? favouriteActorData.slice(0, 20) : allActorData.slice(0, 20)} dark={theme === 'dark'} />
+                        <ActorWordCloud data={showFavoriteArtists ? favouriteActorData.slice(0, 40) : allActorData.slice(0, 40)} dark={theme === 'dark'} />
                         <ActorTable actorCountData={showFavoriteArtists ? favouriteActorData : allActorData} />
                       </>
                     )}

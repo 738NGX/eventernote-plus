@@ -26,7 +26,7 @@ const CloudInner = React.memo(
       () =>
         scaleLog({
           domain: [Math.min(...data.map((w) => w.value)), Math.max(...data.map((w) => w.value))],
-          range: [12, 48],
+          range: [12, 36],
         }),
       [data]
     );
@@ -40,7 +40,7 @@ const CloudInner = React.memo(
           width={width}
           height={height}
           fontSize={(d) => fontScale(d.value)}
-          padding={6}
+          padding={4}
           spiral="rectangular"
           rotate={0}
           random={fixedRandom}

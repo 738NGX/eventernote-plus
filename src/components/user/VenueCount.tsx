@@ -4,9 +4,8 @@ import { Table } from "antd";
 
 export const VenueCount = ({ prefectureMapData, venueRanking, userEvents }: { prefectureMapData: PrefectureCount, venueRanking: [string, number][], userEvents: EventData[] }) => {
   return <div>
-    <h3 className="text-lg font-bold mt-6 mb-4">活动足迹</h3>
+    <h3 className="text-lg font-bold mb-4">场馆统计</h3>
     <PrefectureMap data={prefectureMapData} />
-    <h3 className="text-lg font-bold mb-4">常去场馆</h3>
     <Table
       dataSource={venueRanking.map(([venue, count], index) => {
         const venueId = userEvents.find(event => event.venue.name === venue)?.venue.id || 'unknown';

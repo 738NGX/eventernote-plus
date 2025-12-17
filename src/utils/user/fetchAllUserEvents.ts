@@ -85,7 +85,7 @@ export function detectCurrentUser(): UserInfo | null {
  * @param userId The user ID of the user.
  * @returns A promise that resolves to an array of event objects.
  */
-export async function fetchAllUserEvents(username: string, userId: string): Promise<EventData[]> {
+export async function fetchAllUserEvents(username: string): Promise<EventData[]> {
   const events: EventData[] = [];
 
   try {
@@ -94,7 +94,7 @@ export async function fetchAllUserEvents(username: string, userId: string): Prom
     const venueData = await fetchVenueData();
 
     while (hasMorePages) {
-      const url = `https://www.eventernote.com/users/${username}/events?page=${page}&user_id=${userId}`;
+      const url = `https://www.eventernote.com/users/${username}/events?page=${page}`;
       const response = await axios.get(url);
       const $ = cheerio.load(response.data);
 
