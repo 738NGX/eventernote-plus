@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { AutoComplete, Input, Button, Avatar, ConfigProvider, theme as antTheme } from 'antd';
 import { StyleProvider } from '@ant-design/cssinjs';
-import { UserOutlined, SunOutlined, MoonOutlined } from '@ant-design/icons';
+import { UserOutlined, SunOutlined, MoonOutlined, GithubFilled } from '@ant-design/icons';
 import type { UserInfo } from '../utils/user/fetchAllUserEvents';
 
 
@@ -33,7 +33,7 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
         { signal: controllerRef.current.signal }
       );
       const data = await resp.json();
-      
+
       if (data.code === 200 && data.results?.[0]) {
         const result = data.results[0];
         const newOptions: any[] = [];
@@ -114,129 +114,137 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
         }}
         getPopupContainer={getPopupContainer}
       >
-      <header
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 1000,
-          height: 56,
-          background: isDark ? '#1f2937' : '#ffffff',
-          borderBottom: `1px solid ${isDark ? '#374151' : '#e5e7eb'}`,
-          padding: '0 24px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 24,
-        }}
-      >
-        {/* 左侧：Logo + 导航 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexShrink: 0 }}>
-          <a 
-            href="/" 
-            style={{ 
-              fontSize: 18, 
-              fontWeight: 700, 
-              color: '#1677ff', 
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
-          >
-            EventerNote Plus
-          </a>
-          
-          <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {[
-              { href: '/events', label: '活动情报' },
-              { href: '/actors', label: '艺人情报' },
-              { href: '/places', label: '会场情报' },
-            ].map(item => (
-              <a
-                key={item.href}
-                href={item.href}
-                style={{
-                  padding: '6px 12px',
-                  borderRadius: 6,
-                  color: textColor,
-                  textDecoration: 'none',
-                  fontSize: 14,
-                  transition: 'background 0.2s',
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-        </div>
-
-        {/* 中间：搜索栏（填满剩余空间） */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-          <AutoComplete
-            value={keyword}
-            options={options}
-            onSelect={onSelect}
-            showSearch={{ onSearch }}
-            style={{ width: '100%', maxWidth: 560 }}
-            popupMatchSelectWidth={500}
-          >
-            <Input.Search
-              size="large"
-              placeholder="搜索声优、活动、会场..."
-              onPressEnter={doSearch}
-              enterButton
-            />
-          </AutoComplete>
-        </div>
-
-        {/* 右侧：主题切换 + 用户 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-          <Button
-            type="text"
-            icon={isDark ? <SunOutlined /> : <MoonOutlined />}
-            onClick={onToggleTheme}
-            style={{ color: textColor }}
-          />
-
-          {user ? (
-            <a 
-              href={'/users'} 
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 8, 
+        <header
+          style={{
+            position: 'sticky',
+            top: 0,
+            zIndex: 1000,
+            height: 56,
+            background: isDark ? '#1f2937' : '#ffffff',
+            borderBottom: `1px solid ${isDark ? '#374151' : '#e5e7eb'}`,
+            padding: '0 24px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 24,
+          }}
+        >
+          {/* 左侧：Logo + 导航 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 24, flexShrink: 0 }}>
+            <a
+              href="/"
+              style={{
+                fontSize: 18,
+                fontWeight: 700,
+                color: '#1677ff',
                 textDecoration: 'none',
-                padding: '4px 12px 4px 4px',
-                borderRadius: 20,
-                background: isDark ? '#374151' : '#f3f4f6',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
               }}
             >
-              <Avatar src={user.avatar} size={28} icon={<UserOutlined />} />
-              <span style={{ color: textColor, fontSize: 14, fontWeight: 500 }}>{user.name}</span>
+              EventerNote Plus
             </a>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <a 
-                href="/users/sign_in" 
-                style={{ 
-                  color: textColor, 
-                  textDecoration: 'none', 
-                  fontSize: 14,
-                  padding: '6px 12px',
-                  borderRadius: 6,
+
+            <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              {[
+                { href: '/events', label: '活动情报' },
+                { href: '/actors', label: '艺人情报' },
+                { href: '/places', label: '会场情报' },
+              ].map(item => (
+                <a
+                  key={item.href}
+                  href={item.href}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: 6,
+                    color: textColor,
+                    textDecoration: 'none',
+                    fontSize: 14,
+                    transition: 'background 0.2s',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.background = hoverBg)}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </nav>
+          </div>
+
+          {/* 中间：搜索栏（填满剩余空间） */}
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <AutoComplete
+              value={keyword}
+              options={options}
+              onSelect={onSelect}
+              showSearch={{ onSearch }}
+              style={{ width: '100%', maxWidth: 560 }}
+              popupMatchSelectWidth={500}
+            >
+              <Input.Search
+                size="large"
+                placeholder="搜索声优、活动、会场..."
+                onPressEnter={doSearch}
+                enterButton
+              />
+            </AutoComplete>
+          </div>
+
+          {/* 右侧：主题切换 + 用户 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+            <div className='flex flex-row gap-1'>
+              <Button
+                type="text"
+                icon={<GithubFilled />}
+                onClick={() => window.open('https://github.com/738NGX/eventernote-plus', '_blank')}
+                style={{ color: textColor }}
+              />
+              <Button
+                type="text"
+                icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+                onClick={onToggleTheme}
+                style={{ color: textColor }}
+              />
+            </div>
+
+            {user ? (
+              <a
+                href={'/users'}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  textDecoration: 'none',
+                  padding: '4px 12px 4px 4px',
+                  borderRadius: 20,
+                  background: isDark ? '#374151' : '#f3f4f6',
                 }}
               >
-                登录
+                <Avatar src={user.avatar} size={28} icon={<UserOutlined />} />
+                <span style={{ color: textColor, fontSize: 14, fontWeight: 500 }}>{user.name}</span>
               </a>
-              <Button type="primary" size="small" href="/users/sign_up">
-                注册
-              </Button>
-            </div>
-          )}
-        </div>
-      </header>
-    </ConfigProvider>
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <a
+                  href="/users/sign_in"
+                  style={{
+                    color: textColor,
+                    textDecoration: 'none',
+                    fontSize: 14,
+                    padding: '6px 12px',
+                    borderRadius: 6,
+                  }}
+                >
+                  登录
+                </a>
+                <Button type="primary" size="small" href="/users/sign_up">
+                  注册
+                </Button>
+              </div>
+            )}
+          </div>
+        </header>
+      </ConfigProvider>
     </StyleProvider>
   );
 }

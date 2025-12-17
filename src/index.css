@@ -19,3 +19,118 @@
   box-sizing: border-box;
 }
 
+/* 添加默认 HTML 标签样式 */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  margin: 1em 0 0.5em;
+  line-height: 1.25;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h2 {
+  font-size: 1.75em;
+}
+
+h3 {
+  font-size: 1.5em;
+}
+
+h4 {
+  font-size: 1.25em;
+}
+
+h5 {
+  font-size: 1em;
+}
+
+h6 {
+  font-size: 0.875em;
+}
+
+p {
+  margin: 0.5em 0;
+  line-height: 1.6;
+  font-size: 1em;
+}
+
+ul, ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+ul {
+  list-style-type: disc;
+}
+
+ol {
+  list-style-type: decimal;
+}
+
+li {
+  margin: 0.25em 0;
+  font-size: 1em;
+}
+
+a {
+  color: #1d4ed8;
+}
+
+a:hover {
+  color: #2563eb;
+}
+
+strong {
+  font-weight: bold;
+}
+
+em {
+  font-style: italic;
+}
+
+blockquote {
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  border-left: 4px solid #d1d5db;
+  background-color: #f9fafb;
+}
+
+code {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #f3f4f6;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+}
+
+pre {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #f3f4f6;
+  padding: 1em;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+table th, table td {
+  border: 1px solid #d1d5db;
+  padding: 0.5em;
+  text-align: left;
+}
+
+table th {
+  background-color: #f3f4f6;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #d1d5db;
+  margin: 1em 0;
+}
+

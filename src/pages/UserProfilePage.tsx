@@ -173,7 +173,7 @@ export default function UserProfilePage({ currentUser, initialData, getPopupCont
   const isDark = theme === 'dark';
 
   const handleContentChange: MenuProps['onClick'] = (e) => {
-    setSelectedContent(e.key as 'upcomingEvents' | 'overlapEvents');
+    setSelectedContent(e.key);
   };
 
   const venueRanking = useMemo<[string, number][]>(() => calculateVenueRanking(userEvents), [userEvents]);

@@ -6,17 +6,25 @@ import './index.css';
 import { detectCurrentUser } from './utils/user/fetchAllUserEvents';
 import { StyleProvider } from '@ant-design/cssinjs';
 import { parseUserPageData } from './utils/user/parseUserPageData';
+import { AboutPage } from './pages/AboutPage';
 
 // 获取当前页面类型
 function getPageType(): string {
   const path = location.pathname;
   
+  // 主页 /
   if (path === '/' || /eventernote\.com\/?$/.test(location.href)) {
     return 'home';
   }
   
+  // 用户页 /users 或 /users/username/
   if (/^\/users(\/[^/]+)?\/?$/.test(path)) {
     return 'user';
+  }
+
+  // 关于页 /pages/comapny, /pages/termsofservice, /pages/privacy
+  if (/^\/pages\/(company|termsofservice|privacy)\/?$/.test(path)) {
+    return 'about';
   }
   
   return 'unknown';
@@ -85,8 +93,6 @@ function removeLoadingOverlay() {
 function init() {
   // 获取当前页面类型
   const pageType = getPageType();
-  
-  // 只处理首页和用户页
   if (pageType === 'unknown') {
     removeLoadingOverlay();
     return;
@@ -162,6 +168,8 @@ function init() {
     component = <App initialUser={currentUser} getPopupContainer={getPopupContainer} />;
   } else if (pageType === 'user') {
     component = <UserProfilePage currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
+  } else if (pageType === 'about') {
+    component = <AboutPage currentUser={currentUser} type={ location.pathname.match(/^\/pages\/(company|termsofservice|privacy)\/?$/)?.[1] as 'company' | 'privacy' | 'termsofservice'} />;
   }
 
   // 渲染 React 应用到 ShadowRoot，并用 StyleProvider 隔离 Antd 动态样式
