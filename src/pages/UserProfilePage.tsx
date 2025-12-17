@@ -29,6 +29,7 @@ interface UserProfilePageProps {
 
 export interface UserProfileData {
   username: string;
+  signature: string;
   displayName: string;
   avatarUrl: string;
   followingCount: number;
@@ -255,7 +256,12 @@ export default function UserProfilePage({ currentUser, initialData, getPopupCont
                           <h3 className="text-lg font-bold mb-4">📅 活动日程</h3>
                           {Object.entries(activityHeatmapDetailedData).sort((a, b) => b[0].localeCompare(a[0])).map(([year, data]) => (
                             <>
-                              <h4>{year}年</h4>
+                              <div className='flex flex-row items-center justify-between'>
+                                <h4>{year}年</h4>
+                                <span className={`${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                                  共 {activities.find((avtivity)=>{ return avtivity.year.toString() === year})!.total} 场
+                                </span>
+                              </div>
                               <ActivityHeatmapDetailed key={year} year={parseInt(year)} data={data} theme={theme} />
                             </>
                           ))}

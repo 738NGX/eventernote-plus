@@ -16,9 +16,9 @@ export default function ActivityHeatmap({ activities, theme }: ActivityHeatmapPr
   // 获取颜色深度
   const getColor = (count: number): string => {
     if (count === 0) return isDark ? 'bg-slate-700' : 'bg-gray-100';
-    if (count === 1) return isDark ? 'bg-blue-900' : 'bg-blue-100';
-    if (count <= 2) return isDark ? 'bg-blue-700' : 'bg-blue-300';
-    if (count <= 4) return isDark ? 'bg-blue-500' : 'bg-blue-500';
+    if (count <= 2) return isDark ? 'bg-blue-900' : 'bg-blue-100';
+    if (count <= 4) return isDark ? 'bg-blue-700' : 'bg-blue-300';
+    if (count <= 8) return isDark ? 'bg-blue-500' : 'bg-blue-500';
     return isDark ? 'bg-blue-400' : 'bg-blue-700';
   };
 

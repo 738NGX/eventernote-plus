@@ -104,33 +104,3 @@ code {
   border-radius: 4px;
 }
 
-pre {
-  font-family: 'Courier New', Courier, monospace;
-  background-color: #f3f4f6;
-  padding: 1em;
-  border-radius: 4px;
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1em 0;
-}
-
-table th, table td {
-  border: 1px solid #d1d5db;
-  padding: 0.5em;
-  text-align: left;
-}
-
-table th {
-  background-color: #f3f4f6;
-}
-
-hr {
-  border: none;
-  border-top: 1px solid #d1d5db;
-  margin: 1em 0;
-}
-

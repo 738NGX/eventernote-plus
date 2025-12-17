@@ -65,21 +65,23 @@ export default function UserHeader({ profile, theme, isOwner }: UserHeaderProps)
       styles={{ body: { padding: 24 } }}
     >
       {/* 头像和用户名 */}
-      <div className="flex flex-col items-center text-center mb-6">
+      <div className="flex flex-col items-center text-center mb-4">
         <Avatar
           size={100}
           src={profile.avatarUrl}
           icon={<UserOutlined />}
           style={{ 
             border: `3px solid ${isDark ? '#3b82f6' : '#2563eb'}`,
-            marginBottom: 16,
           }}
         />
-        <h1 className={`text-xl font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+        <h1 className={`text-lg font-bold`}>
           {profile.displayName}
         </h1>
         <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
           @{profile.username}
+        </p>
+        <p className={`text-sm text-start italic`}>
+          {profile.signature}
         </p>
       </div>
 

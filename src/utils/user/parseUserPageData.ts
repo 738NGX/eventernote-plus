@@ -184,6 +184,7 @@ export function parseUserPageData() {
     profile: {
       username,
       displayName: displayname || username,
+      signature,
       avatarUrl: avatar,
       followingCount: following,
       followerCount: followers,

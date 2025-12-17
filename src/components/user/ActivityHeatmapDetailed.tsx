@@ -15,11 +15,11 @@ const ActivityHeatmap = ({ year, data, theme }: ActivityHeatmapProps) => {
   const WEEK_WIDTH = BLOCK_SIZE + BLOCK_GAP; // 一列的实际宽度
 
   const getColor = (count: number): string => {
-    if (count === 0) return isDark ? 'bg-slate-800' : 'bg-gray-100'; // 调整了空状态颜色以匹配你的截图
-    if (count === 1) return isDark ? 'bg-blue-900/60' : 'bg-blue-100';
-    if (count <= 2) return isDark ? 'bg-blue-800' : 'bg-blue-300';
-    if (count <= 4) return isDark ? 'bg-blue-600' : 'bg-blue-500';
-    return isDark ? 'bg-blue-500' : 'bg-blue-700';
+    if (count === 0) return isDark ? 'bg-slate-700' : 'bg-gray-100';
+    if (count <= 1) return isDark ? 'bg-blue-900' : 'bg-blue-100';
+    if (count <= 2) return isDark ? 'bg-blue-700' : 'bg-blue-300';
+    if (count <= 3) return isDark ? 'bg-blue-500' : 'bg-blue-500';
+    return isDark ? 'bg-blue-400' : 'bg-blue-700';
   };
 
   const { calendarData, monthLabels } = useMemo(() => {
