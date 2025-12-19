@@ -2,7 +2,7 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { getPrefectureNameById } from '../prefecture';
 import { EventData } from '../events/eventdata';
-import { parseDate, parseTime } from '../../utils/times';
+import { parseDate, parseTime } from '../times';
 
 // 从页面检测当前登录用户
 export interface UserInfo {
@@ -69,7 +69,7 @@ export function detectCurrentUser(): UserInfo | null {
  * @param userId The user ID of the user.
  * @returns A promise that resolves to an array of event objects.
  */
-export async function fetchAllUserEvents(username: string): Promise<EventData[]> {
+export async function fetchAllUserEvents(username: string, year?: string): Promise<EventData[]> {
   const events: EventData[] = [];
 
   try {
@@ -78,7 +78,7 @@ export async function fetchAllUserEvents(username: string): Promise<EventData[]>
     const venueData = await fetchVenueData();
 
     while (hasMorePages) {
-      const url = `https://www.eventernote.com/users/${username}/events?page=${page}&limit=1000`;
+      const url = `https://www.eventernote.com/users/${username}/events?page=${page}&limit=1000${year ? `&year=${year}` : ''}`;
       const response = await axios.get(url);
       const $ = cheerio.load(response.data);
 

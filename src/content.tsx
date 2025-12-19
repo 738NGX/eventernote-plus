@@ -9,6 +9,7 @@ import { parseUserPageData } from './utils/user/parseUserPageData';
 import { AboutPage } from './pages/AboutPage';
 import { parseEventDetailData } from './utils/events/parseEventDetailData';
 import { EventDetailPage } from './pages/EventDetailPage';
+import { AnnualReportPage } from './pages/AnnualReportPage';
 
 // 获取当前页面类型
 function getPageType(disabled: boolean): string {
@@ -22,6 +23,15 @@ function getPageType(disabled: boolean): string {
   // 用户页 /users 或 /users/${username}
   if (/^\/users(\/(?!notice|timeline|setting)[^/]+)?\/?$/.test(path)) {
     return disabled ? 'disabled' : 'user';
+  }
+
+  // 年度报告 /annual-report/${username}/${year}
+  if (/^\/annual-report\/[^/]+\/\d{4}\/?$/.test(path)) {
+    // 年份不为2025直接unknown
+    if(!/^\/annual-report\/[^/]+\/2025\/?$/.test(path)) {
+      return 'unknown';
+    }
+    return 'annual-report';
   }
 
   // 活动详情页 /events/${id}
@@ -187,6 +197,9 @@ function init() {
       component = <AboutPage currentUser={currentUser} getPopupContainer={getPopupContainer} type={ location.pathname.match(/^\/pages\/(company|termsofservice|privacy)\/?$/)?.[1] as 'company' | 'privacy' | 'termsofservice'} />;
     } else if (pageType === 'eventDetail') {
       component = <EventDetailPage  initialData={eventDetailData!} currentUser={currentUser} getPopupContainer={getPopupContainer} />;
+    } else if (pageType === 'annual-report') {
+      console.log('Rendering AnnualReportPage');
+      component = <AnnualReportPage username='SUFE_IDOL' year='2025' />
     }
 
     // 渲染 React 应用到 ShadowRoot，并用 StyleProvider 隔离 Antd 动态样式
