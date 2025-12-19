@@ -9,7 +9,7 @@ import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
 import { UserInfo } from "../utils/user/fetchAllUserEvents";
 
-export const AboutPage = ({ type, currentUser }: { type: 'company' | 'privacy' | 'termsofservice', currentUser: UserInfo | null }) => {
+export const AboutPage = ({ type, currentUser, getPopupContainer }: { type: 'company' | 'privacy' | 'termsofservice', currentUser: UserInfo | null, getPopupContainer?: () => HTMLElement | ShadowRoot; }) => {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const stored = localStorage.getItem('enplus-theme');
     if (stored === 'dark' || stored === 'light') return stored;
@@ -50,6 +50,7 @@ export const AboutPage = ({ type, currentUser }: { type: 'company' | 'privacy' |
         algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
         token: { colorPrimary: '#1677ff' },
       }}
+      getPopupContainer={getPopupContainer}
     >
       <div className={`min-h-screen flex flex-col ${isDark ? 'bg-slate-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
         <Header theme={theme} onToggleTheme={toggleTheme} user={currentUser} />

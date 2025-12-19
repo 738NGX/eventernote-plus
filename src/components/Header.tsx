@@ -105,6 +105,14 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
   const textColor = isDark ? '#e5e7eb' : '#374151';
   const hoverBg = isDark ? '#374151' : '#f3f4f6';
 
+  const UserSettings = () => {
+    return <div className='flex flex-col'>
+      <Button type='text' icon={<BellOutlined />} href='/users/notice' style={{ color: textColor }}>系统通知</Button>
+      <Button type='text' icon={<UsergroupAddOutlined />} href='/users/friends' style={{ color: textColor }}>好友动态</Button>
+      <Button type='text' icon={<SettingOutlined />} href='/users/setting' style={{ color: textColor }}>用户设置</Button>
+    </div>
+  }
+
   return (
     <StyleProvider hashPriority="high">
       <ConfigProvider
@@ -193,64 +201,42 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
           {/* 右侧：主题切换 + 用户 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
             <div className='flex flex-row gap-1'>
-              <Popover content={<p>Github页面</p>} placement='bottom'></Popover>
+              <Popover content="Github页面" placement='bottom'>
                 <Button
                   type='text'
                   icon={<GithubFilled />}
                   onClick={() => window.open('https://github.com/738NGX/eventernote-plus', '_blank')}
                   style={{ color: textColor }}
                 />
-              
-              <Popover content={<p>切换主题</p>} placement='bottom'></Popover>
+              </Popover>
+              <Popover content="切换主题" placement='bottom'>
                 <Button
                   type='text'
                   icon={isDark ? <SunOutlined /> : <MoonOutlined />}
                   onClick={onToggleTheme}
                   style={{ color: textColor }}
                 />
-              
-              <Popover content={<p>通知</p>} placement='bottom'></Popover>
-                <Button
-                  type='text'
-                  icon={<BellOutlined />}
-                  onClick={() => (window.location.href = '/users/notice')}
-                  style={{ color: textColor }}
-                />
-              
-              <Popover content={<p>好友动态</p>} placement='bottom'></Popover>
-                <Button
-                  type='text'
-                  icon={<UsergroupAddOutlined />}
-                  onClick={() => window.location.href = '/users/timeline'}
-                  style={{ color: textColor }}
-                />
-              
-              <Popover content={<p>设置</p>} placement='bottom'></Popover>
-                <Button
-                  type='text'
-                  icon={<SettingOutlined />}
-                  onClick={() => window.location.href = '/users/setting'}
-                  style={{ color: textColor }}
-                />
-              
+              </Popover>
             </div>
 
             {user ? (
-              <a
-                href={'/users'}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  textDecoration: 'none',
-                  padding: '4px 12px 4px 4px',
-                  borderRadius: 20,
-                  background: isDark ? '#374151' : '#f3f4f6',
-                }}
-              >
-                <Avatar src={user.avatar} size={28} icon={<UserOutlined />} />
-                <span style={{ color: textColor, fontSize: 14, fontWeight: 500 }}>{user.name}</span>
-              </a>
+              <Popover content={<UserSettings />} placement='bottom'>
+                <a
+                  href={'/users'}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    textDecoration: 'none',
+                    padding: '4px 12px 4px 4px',
+                    borderRadius: 20,
+                    background: isDark ? '#374151' : '#f3f4f6',
+                  }}
+                >
+                  <Avatar src={user.avatar} size={28} icon={<UserOutlined />} />
+                  <span style={{ color: textColor, fontSize: 14, fontWeight: 500 }}>{user.name}</span>
+                </a>
+              </Popover>
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <a

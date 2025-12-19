@@ -13,9 +13,10 @@ const { Timer } = Statistic;
 interface EventDetailPageProps {
   initialData: ReturnType<typeof parseEventDetailData>;
   currentUser: UserInfo | null;
+  getPopupContainer?: () => HTMLElement | ShadowRoot;
 }
 
-export const EventDetailPage = ({ initialData, currentUser }: EventDetailPageProps) => {
+export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }: EventDetailPageProps) => {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const stored = localStorage.getItem('enplus-theme');
     if (stored === 'dark' || stored === 'light') return stored;
@@ -61,6 +62,7 @@ export const EventDetailPage = ({ initialData, currentUser }: EventDetailPagePro
         algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
         token: { colorPrimary: '#1677ff' },
       }}
+      getPopupContainer={getPopupContainer}
     >
       <div className={`min-h-screen flex flex-col ${isDark ? 'bg-slate-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
         <Header theme={theme} onToggleTheme={toggleTheme} user={currentUser} />
@@ -168,15 +170,12 @@ export const EventDetailPage = ({ initialData, currentUser }: EventDetailPagePro
                                 key={index}
                                 color={isDark ? 'blue' : 'processing'}
                                 icon={<LinkOutlined />}
+                                href={link}
+                                target="_blank"
                                 className="cursor-pointer hover:opacity-80 transition"
                                 style={{ margin: 0, padding: '4px 10px', fontSize: 13 }}
                               >
-                                <a
-                                  href={link}
-                                  target="_blank"
-                                >
-                                  {new URL(link).hostname}
-                                </a>
+                                {new URL(link).hostname}
                               </Tag>
                             ))}
                           </div>
@@ -184,7 +183,7 @@ export const EventDetailPage = ({ initialData, currentUser }: EventDetailPagePro
                       }
                     </div>
                     <div className="col-span-1">
-                      <Image src={initialData.info.image} fallback={fallbackImage} preview={false}></Image>
+                      <Image src={initialData.info.image} fallback={fallbackImage}></Image>
                     </div>
                   </div>
                 </Card>
@@ -197,14 +196,11 @@ export const EventDetailPage = ({ initialData, currentUser }: EventDetailPagePro
                             key={performer.id}
                             color={isDark ? 'blue' : 'processing'}
                             icon={<LinkOutlined />}
+                            href={performer.url}
                             className="cursor-pointer hover:opacity-80 transition"
                             style={{ margin: 0, padding: '4px 10px', fontSize: 13 }}
                           >
-                            <a
-                              href={performer.url}
-                            >
-                              {performer.name}
-                            </a>
+                            {performer.name}
                           </Tag>
                         ))}
                       </div>

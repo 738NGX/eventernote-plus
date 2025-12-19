@@ -181,9 +181,9 @@ function init() {
   } else if (pageType === 'user') {
     component = <UserProfilePage currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
   } else if (pageType === 'about') {
-    component = <AboutPage currentUser={currentUser} type={ location.pathname.match(/^\/pages\/(company|termsofservice|privacy)\/?$/)?.[1] as 'company' | 'privacy' | 'termsofservice'} />;
+    component = <AboutPage currentUser={currentUser} getPopupContainer={getPopupContainer} type={ location.pathname.match(/^\/pages\/(company|termsofservice|privacy)\/?$/)?.[1] as 'company' | 'privacy' | 'termsofservice'} />;
   } else if (pageType === 'eventDetail') {
-    component = <EventDetailPage initialData={eventDetailData!} currentUser={currentUser} />;
+    component = <EventDetailPage  initialData={eventDetailData!} currentUser={currentUser} getPopupContainer={getPopupContainer} />;
   }
 
   // 渲染 React 应用到 ShadowRoot，并用 StyleProvider 隔离 Antd 动态样式
