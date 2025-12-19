@@ -259,10 +259,10 @@ export default function UserProfilePage({ currentUser, initialData, getPopupCont
                               <div className='flex flex-row items-center justify-between'>
                                 <h4>{year}年</h4>
                                 <span className={`${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                                  共 {activities.find((avtivity)=>{ return avtivity.year.toString() === year})!.total} 场
+                                  共 {Object.values(data).reduce((sum, count) => sum + count, 0)} 场
                                 </span>
                               </div>
-                              <ActivityHeatmapDetailed key={year} year={parseInt(year)} data={data} theme={theme} />
+                              <ActivityHeatmapDetailed key={year} username={profile.username} year={parseInt(year)} data={data} theme={theme} />
                             </>
                           ))}
                         </>

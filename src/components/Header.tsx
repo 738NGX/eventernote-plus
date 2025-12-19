@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { AutoComplete, Input, Button, Avatar, ConfigProvider, theme as antTheme } from 'antd';
+import { AutoComplete, Input, Button, Avatar, ConfigProvider, theme as antTheme, Popover } from 'antd';
 import { StyleProvider } from '@ant-design/cssinjs';
-import { UserOutlined, SunOutlined, MoonOutlined, GithubFilled } from '@ant-design/icons';
+import { UserOutlined, SunOutlined, MoonOutlined, GithubFilled, UsergroupAddOutlined, SettingOutlined, BellOutlined } from '@ant-design/icons';
 import type { UserInfo } from '../utils/user/fetchAllUserEvents';
 
 
@@ -193,18 +193,46 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
           {/* 右侧：主题切换 + 用户 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
             <div className='flex flex-row gap-1'>
-              <Button
-                type="text"
-                icon={<GithubFilled />}
-                onClick={() => window.open('https://github.com/738NGX/eventernote-plus', '_blank')}
-                style={{ color: textColor }}
-              />
-              <Button
-                type="text"
-                icon={isDark ? <SunOutlined /> : <MoonOutlined />}
-                onClick={onToggleTheme}
-                style={{ color: textColor }}
-              />
+              <Popover content={<p>Github页面</p>} placement='bottom'></Popover>
+                <Button
+                  type='text'
+                  icon={<GithubFilled />}
+                  onClick={() => window.open('https://github.com/738NGX/eventernote-plus', '_blank')}
+                  style={{ color: textColor }}
+                />
+              
+              <Popover content={<p>切换主题</p>} placement='bottom'></Popover>
+                <Button
+                  type='text'
+                  icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+                  onClick={onToggleTheme}
+                  style={{ color: textColor }}
+                />
+              
+              <Popover content={<p>通知</p>} placement='bottom'></Popover>
+                <Button
+                  type='text'
+                  icon={<BellOutlined />}
+                  onClick={() => (window.location.href = '/users/notice')}
+                  style={{ color: textColor }}
+                />
+              
+              <Popover content={<p>好友动态</p>} placement='bottom'></Popover>
+                <Button
+                  type='text'
+                  icon={<UsergroupAddOutlined />}
+                  onClick={() => window.location.href = '/users/timeline'}
+                  style={{ color: textColor }}
+                />
+              
+              <Popover content={<p>设置</p>} placement='bottom'></Popover>
+                <Button
+                  type='text'
+                  icon={<SettingOutlined />}
+                  onClick={() => window.location.href = '/users/setting'}
+                  style={{ color: textColor }}
+                />
+              
             </div>
 
             {user ? (

@@ -2,26 +2,7 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { getPrefectureNameById } from '../prefecture';
 import { EventData } from '../events/eventdata';
-
-// 日期和时间解析工具函数
-function parseDateAndTime(dateText: string, timeText: string) {
-  const dateMatch = dateText.match(/(\d{4}-\d{2}-\d{2})/);
-  const openMatch = timeText.match(/開場\s*(\d+:\d+)/);
-  const startMatch = timeText.match(/開演\s*(\d+:\d+)/);
-  const endMatch = timeText.match(/終演\s*(\d+:\d+)/);
-  const startTime = startMatch ? startMatch[1] : '';
-  const openTime = openMatch ? openMatch[1] : startTime;
-  const endTime = endMatch ? endMatch[1] : '';
-
-  return {
-    date: dateMatch ? `${dateMatch[1]}` : '',
-    times: {
-      open: openTime,
-      start: startTime,
-      end: endTime,
-    },
-  };
-}
+import { parseDate, parseTime } from '../../utils/times';
 
 // 从页面检测当前登录用户
 export interface UserInfo {
@@ -110,7 +91,8 @@ export async function fetchAllUserEvents(username: string): Promise<EventData[]>
 
         const dateText = $(element).find('.date p').first().text().trim();
         const timeText = $(element).find('.place span.s').text().trim();
-        const { date, times } = parseDateAndTime(dateText, timeText);
+        const date = parseDate(dateText);
+        const times = parseTime(timeText);
 
         const venueElement = $(element).find('.place a');
         const venue = venueElement.length

@@ -4,9 +4,10 @@ export type ActivityHeatmapProps = {
   year: number;
   data: Record<string, number>;
   theme: 'light' | 'dark';
+  username: string;
 }
 
-const ActivityHeatmap = ({ year, data, theme }: ActivityHeatmapProps) => {
+const ActivityHeatmap = ({ year, data, theme, username }: ActivityHeatmapProps) => {
   const isDark = theme === 'dark';
 
   // --- 配置项 ---
@@ -120,9 +121,8 @@ const ActivityHeatmap = ({ year, data, theme }: ActivityHeatmapProps) => {
                   style={{ width: BLOCK_SIZE, height: BLOCK_SIZE }}
                   className={`rounded-[2px] ${getColor(item.level)} relative group box-border hover:ring-1 hover:ring-gray-400/50`}
                   onClick={()=>{ 
-                    const username = location.pathname.split('/')[2];
                     const [year, month, day] = item.date.split('-');
-                    window.location.href = `https://www.eventernote.com/users/${username}/events?year=${year}&month=${Number(month)}&day=${Number(day)}`
+                    window.open(`https://www.eventernote.com/users/${username}/events?year=${year}&month=${Number(month)}&day=${Number(day)}`, '_blank');
                   }}
                 >
                   <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-50 whitespace-nowrap bg-gray-800 text-white text-xs px-2 py-1 rounded shadow-lg pointer-events-none">

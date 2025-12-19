@@ -7,6 +7,8 @@ import { detectCurrentUser } from './utils/user/fetchAllUserEvents';
 import { StyleProvider } from '@ant-design/cssinjs';
 import { parseUserPageData } from './utils/user/parseUserPageData';
 import { AboutPage } from './pages/AboutPage';
+import { parseEventDetailData } from './utils/events/parseEventDetailData';
+import { EventDetailPage } from './pages/EventDetailPage';
 
 // 获取当前页面类型
 function getPageType(): string {
@@ -17,9 +19,14 @@ function getPageType(): string {
     return 'home';
   }
   
-  // 用户页 /users 或 /users/username/
-  if (/^\/users(\/[^/]+)?\/?$/.test(path)) {
+  // 用户页 /users 或 /users/${username}
+  if (/^\/users(\/(?!notice|timeline|setting)[^/]+)?\/?$/.test(path)) {
     return 'user';
+  }
+
+  // 活动详情页 /events/${id}
+  if (/^\/events\/\d+\/?$/.test(path)) {
+    return 'eventDetail';
   }
 
   // 关于页 /pages/comapny, /pages/termsofservice, /pages/privacy
@@ -103,11 +110,16 @@ function init() {
   // 在清空页面前检测用户
   const currentUser = detectCurrentUser();
   
-  // 在清空页面前解析用户页面数据
+  // 在清空页面前解析页面数据
   let userPageData: ReturnType<typeof parseUserPageData> | null = null;
   if (pageType === 'user') {
     userPageData = parseUserPageData();
     //console.log('[ENP] Parsed from DOM:', userPageData);
+  }
+  let eventDetailData: ReturnType<typeof parseEventDetailData> | null = null;
+  if (pageType === 'eventDetail') {
+    eventDetailData = parseEventDetailData();
+    console.log('[ENP] Parsed from DOM:', eventDetailData);
   }
 
   // 注入页面上下文脚本来保存原网站的关注函数
@@ -170,6 +182,8 @@ function init() {
     component = <UserProfilePage currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
   } else if (pageType === 'about') {
     component = <AboutPage currentUser={currentUser} type={ location.pathname.match(/^\/pages\/(company|termsofservice|privacy)\/?$/)?.[1] as 'company' | 'privacy' | 'termsofservice'} />;
+  } else if (pageType === 'eventDetail') {
+    component = <EventDetailPage initialData={eventDetailData!} currentUser={currentUser} />;
   }
 
   // 渲染 React 应用到 ShadowRoot，并用 StyleProvider 隔离 Antd 动态样式
