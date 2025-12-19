@@ -78,7 +78,7 @@ export async function fetchAllUserEvents(username: string): Promise<EventData[]>
     const venueData = await fetchVenueData();
 
     while (hasMorePages) {
-      const url = `https://www.eventernote.com/users/${username}/events?page=${page}`;
+      const url = `https://www.eventernote.com/users/${username}/events?page=${page}&limit=1000`;
       const response = await axios.get(url);
       const $ = cheerio.load(response.data);
 

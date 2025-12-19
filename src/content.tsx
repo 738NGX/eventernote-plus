@@ -11,27 +11,27 @@ import { parseEventDetailData } from './utils/events/parseEventDetailData';
 import { EventDetailPage } from './pages/EventDetailPage';
 
 // 获取当前页面类型
-function getPageType(): string {
+function getPageType(disabled: boolean): string {
   const path = location.pathname;
   
   // 主页 /
   if (path === '/' || /eventernote\.com\/?$/.test(location.href)) {
-    return 'home';
+    return disabled ? 'disabled' : 'home';
   }
   
   // 用户页 /users 或 /users/${username}
   if (/^\/users(\/(?!notice|timeline|setting)[^/]+)?\/?$/.test(path)) {
-    return 'user';
+    return disabled ? 'disabled' : 'user';
   }
 
   // 活动详情页 /events/${id}
   if (/^\/events\/\d+\/?$/.test(path)) {
-    return 'eventDetail';
+    return disabled ? 'disabled' : 'eventDetail';
   }
 
   // 关于页 /pages/comapny, /pages/termsofservice, /pages/privacy
   if (/^\/pages\/(company|termsofservice|privacy)\/?$/.test(path)) {
-    return 'about';
+    return disabled ? 'disabled' : 'about';
   }
   
   return 'unknown';
@@ -98,118 +98,122 @@ function removeLoadingOverlay() {
 
 // Content script 入口
 function init() {
-  // 获取当前页面类型
-  const pageType = getPageType();
-  if (pageType === 'unknown') {
-    removeLoadingOverlay();
-    return;
-  }
+  chrome.storage.sync.get(['disableUIReplace'], (result) => {
+    const disabled = result.disableUIReplace || false;
 
-  console.log(`[EventerNote Plus] 开始重建页面 (${pageType})...`);
-
-  // 在清空页面前检测用户
-  const currentUser = detectCurrentUser();
-  
-  // 在清空页面前解析页面数据
-  let userPageData: ReturnType<typeof parseUserPageData> | null = null;
-  if (pageType === 'user') {
-    userPageData = parseUserPageData();
-    //console.log('[ENP] Parsed from DOM:', userPageData);
-  }
-  let eventDetailData: ReturnType<typeof parseEventDetailData> | null = null;
-  if (pageType === 'eventDetail') {
-    eventDetailData = parseEventDetailData();
-    console.log('[ENP] Parsed from DOM:', eventDetailData);
-  }
-
-  // 注入页面上下文脚本来保存原网站的关注函数
-  const injectScript = document.createElement('script');
-  injectScript.src = chrome.runtime.getURL('inject.js');
-  injectScript.onload = function() {
-    (this as HTMLScriptElement).remove();
-  };
-  (document.head || document.documentElement).appendChild(injectScript);
-
-  // 在清空页面之前，将遮罩移到 document.documentElement
-  const overlay = document.getElementById("global-loading-overlay");
-  if (overlay) {
-    document.documentElement.appendChild(overlay);
-  }
-
-  // 在清空页面之前，注入基础样式以避免白屏
-  const baseStyle = document.createElement('style');
-  baseStyle.textContent = `
-    body {
-      background-color: ${themeColors.backgroundColor};
-      color: ${themeColors.color};
-    }
-  `;
-  document.head.appendChild(baseStyle);
-
-  // 清空页面
-  document.body.innerHTML = '';
-  document.documentElement.setAttribute('lang', 'zh-CN');
-
-  // 创建 ShadowRoot 容器
-  const root = document.createElement('div');
-  root.id = 'enplus-root';
-  document.body.appendChild(root);
-  const shadow = root.attachShadow({ mode: 'open' });
-
-  // 创建 React 挂载点
-  const reactRoot = document.createElement('div');
-  reactRoot.id = 'enplus-react-root';
-  shadow.appendChild(reactRoot);
-
-  // 注入样式（style.css）到 ShadowRoot
-  const styleLink = document.createElement('link');
-  styleLink.rel = 'stylesheet';
-  styleLink.href = chrome.runtime.getURL('dist/scripts/style.css');
-  shadow.appendChild(styleLink);
-
-  // 在样式加载完成后移除基础样式
-  styleLink.onload = () => {
-    baseStyle.remove();
-  };
-
-  // 根据页面类型渲染不同组件
-  let component: React.ReactNode;
-  // 传递 getPopupContainer 到 App
-  const getPopupContainer = () => shadow;
-  if (pageType === 'home') {
-    component = <App initialUser={currentUser} getPopupContainer={getPopupContainer} />;
-  } else if (pageType === 'user') {
-    component = <UserProfilePage currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
-  } else if (pageType === 'about') {
-    component = <AboutPage currentUser={currentUser} getPopupContainer={getPopupContainer} type={ location.pathname.match(/^\/pages\/(company|termsofservice|privacy)\/?$/)?.[1] as 'company' | 'privacy' | 'termsofservice'} />;
-  } else if (pageType === 'eventDetail') {
-    component = <EventDetailPage  initialData={eventDetailData!} currentUser={currentUser} getPopupContainer={getPopupContainer} />;
-  }
-
-  // 渲染 React 应用到 ShadowRoot，并用 StyleProvider 隔离 Antd 动态样式
-  ReactDOM.createRoot(reactRoot).render(
-    <React.StrictMode>
-      <StyleProvider container={shadow} hashPriority="high">
-        {component}
-      </StyleProvider>
-    </React.StrictMode>
-  );
-
-  // 确保遮罩仍然存在
-  if (overlay) {
-    document.documentElement.appendChild(overlay);
-  }
-
-  // 等待 DOM 就绪
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      console.log("DOM 加载完成");
+    // 获取当前页面类型
+    const pageType = getPageType(disabled);
+    if (pageType === 'unknown' || pageType === 'disabled') {
       removeLoadingOverlay();
-    });
-  } else {
-    console.log("DOM 已加载完成");
-    removeLoadingOverlay();
-  }
+      return;
+    }
+
+    console.log(`[EventerNote Plus] 开始重建页面 (${pageType})...`);
+
+    // 在清空页面前检测用户
+    const currentUser = detectCurrentUser();
+    
+    // 在清空页面前解析页面数据
+    let userPageData: ReturnType<typeof parseUserPageData> | null = null;
+    if (pageType === 'user') {
+      userPageData = parseUserPageData();
+      //console.log('[ENP] Parsed from DOM:', userPageData);
+    }
+    let eventDetailData: ReturnType<typeof parseEventDetailData> | null = null;
+    if (pageType === 'eventDetail') {
+      eventDetailData = parseEventDetailData();
+      console.log('[ENP] Parsed from DOM:', eventDetailData);
+    }
+
+    // 注入页面上下文脚本来保存原网站的关注函数
+    const injectScript = document.createElement('script');
+    injectScript.src = chrome.runtime.getURL('inject.js');
+    injectScript.onload = function() {
+      (this as HTMLScriptElement).remove();
+    };
+    (document.head || document.documentElement).appendChild(injectScript);
+
+    // 在清空页面之前，将遮罩移到 document.documentElement
+    const overlay = document.getElementById("global-loading-overlay");
+    if (overlay) {
+      document.documentElement.appendChild(overlay);
+    }
+
+    // 在清空页面之前，注入基础样式以避免白屏
+    const baseStyle = document.createElement('style');
+    baseStyle.textContent = `
+      body {
+        background-color: ${themeColors.backgroundColor};
+        color: ${themeColors.color};
+      }
+    `;
+    document.head.appendChild(baseStyle);
+
+    // 清空页面
+    document.body.innerHTML = '';
+    document.documentElement.setAttribute('lang', 'zh-CN');
+
+    // 创建 ShadowRoot 容器
+    const root = document.createElement('div');
+    root.id = 'enplus-root';
+    document.body.appendChild(root);
+    const shadow = root.attachShadow({ mode: 'open' });
+
+    // 创建 React 挂载点
+    const reactRoot = document.createElement('div');
+    reactRoot.id = 'enplus-react-root';
+    shadow.appendChild(reactRoot);
+
+    // 注入样式（style.css）到 ShadowRoot
+    const styleLink = document.createElement('link');
+    styleLink.rel = 'stylesheet';
+    styleLink.href = chrome.runtime.getURL('dist/scripts/style.css');
+    shadow.appendChild(styleLink);
+
+    // 在样式加载完成后移除基础样式
+    styleLink.onload = () => {
+      baseStyle.remove();
+    };
+
+    // 根据页面类型渲染不同组件
+    let component: React.ReactNode;
+    // 传递 getPopupContainer 到 App
+    const getPopupContainer = () => shadow;
+    if (pageType === 'home') {
+      component = <App initialUser={currentUser} getPopupContainer={getPopupContainer} />;
+    } else if (pageType === 'user') {
+      component = <UserProfilePage currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
+    } else if (pageType === 'about') {
+      component = <AboutPage currentUser={currentUser} getPopupContainer={getPopupContainer} type={ location.pathname.match(/^\/pages\/(company|termsofservice|privacy)\/?$/)?.[1] as 'company' | 'privacy' | 'termsofservice'} />;
+    } else if (pageType === 'eventDetail') {
+      component = <EventDetailPage  initialData={eventDetailData!} currentUser={currentUser} getPopupContainer={getPopupContainer} />;
+    }
+
+    // 渲染 React 应用到 ShadowRoot，并用 StyleProvider 隔离 Antd 动态样式
+    ReactDOM.createRoot(reactRoot).render(
+      <React.StrictMode>
+        <StyleProvider container={shadow} hashPriority="high">
+          {component}
+        </StyleProvider>
+      </React.StrictMode>
+    );
+
+    // 确保遮罩仍然存在
+    if (overlay) {
+      document.documentElement.appendChild(overlay);
+    }
+
+    // 等待 DOM 就绪
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => {
+        console.log("DOM 加载完成");
+        removeLoadingOverlay();
+      });
+    } else {
+      console.log("DOM 已加载完成");
+      removeLoadingOverlay();
+    }
+  });
 }
 
 // 等待 DOM 就绪
@@ -219,3 +223,5 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
+
+

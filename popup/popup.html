@@ -27,25 +27,6 @@
         <span class="status-label">状态</span>
         <span class="status-value status-active">✓ 已激活</span>
       </div>
-      <div class="status-item">
-        <span class="status-label">搜索索引</span>
-        <span class="status-value" id="indexSize">加载中...</span>
-      </div>
-    </section>
-
-    <!-- 主题切换 -->
-    <section class="popup-section">
-      <h3 class="section-title">外观设置</h3>
-      <div class="theme-options">
-        <button class="theme-btn" data-theme="modern">
-          <span class="theme-icon">☀️</span>
-          <span class="theme-name">浅色</span>
-        </button>
-        <button class="theme-btn" data-theme="dark">
-          <span class="theme-icon">🌙</span>
-          <span class="theme-name">深色</span>
-        </button>
-      </div>
     </section>
 
     <!-- 功能开关 -->
@@ -54,36 +35,19 @@
       <div class="option-list">
         <label class="option-item">
           <div class="option-info">
-            <span class="option-name">动画效果</span>
-            <span class="option-desc">启用平滑过渡动画</span>
+            <span class="option-name">UI替换</span>
+            <span class="option-desc">启用后可以使用现代风格的EN+ UI</span>
           </div>
-          <input type="checkbox" id="animationsToggle" class="toggle-input">
-          <span class="toggle-slider"></span>
-        </label>
-        
-        <label class="option-item">
-          <div class="option-info">
-            <span class="option-name">紧凑模式</span>
-            <span class="option-desc">减少间距，显示更多内容</span>
-          </div>
-          <input type="checkbox" id="compactToggle" class="toggle-input">
+          <input type="checkbox" id="uiReplaceToggle" class="toggle-input">
           <span class="toggle-slider"></span>
         </label>
       </div>
     </section>
 
     <!-- 操作按钮 -->
-    <section class="popup-section">
+    <!--section class="popup-section">
       <h3 class="section-title">快捷操作</h3>
       <div class="action-buttons">
-        <button class="action-btn" id="rebuildIndex">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M13.65 2.35A7 7 0 1 0 14 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <path d="M14 2V8H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          重建搜索索引
-        </button>
-        
         <button class="action-btn" id="clearCache">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M2 4H14M6 4V2H10V4M3 4L4 14H12L13 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -91,14 +55,14 @@
           清除缓存
         </button>
       </div>
-    </section>
+    </section-->
 
     <!-- 关于 -->
     <section class="popup-section">
       <div class="about-info">
-        <p>为 EventerNote 提供现代化UI和高级搜索功能</p>
+        <p></p>
         <div class="about-links">
-          <a href="https://github.com/yourusername/eventernote-plus" target="_blank">GitHub</a>
+          <a href="https://github.com/738NGX/eventernote-plus" target="_blank">GitHub</a>
           <span>•</span>
           <a href="#" id="reportIssue">反馈问题</a>
         </div>
@@ -110,5 +74,8 @@
   </div>
 
   <script src="popup.js"></script>
+  <script>
+    console.log('popup.html 已加载');
+  </script>
 </body>
 </html>
