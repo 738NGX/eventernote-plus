@@ -285,7 +285,7 @@ export default function UserProfilePage({ currentUser, initialData, getPopupCont
                           className={isDark ? 'bg-slate-800 border-slate-700' : ''}
                           styles={{ body: { padding: 6 } }}
                         >
-                          <PrefectureMap data={prefectureMapData} />
+                          <PrefectureMap data={prefectureMapData} isDark={isDark} />
                         </Card>
                         <VenueCount venueRanking={venueRanking} userEvents={userEvents} />
                       </>

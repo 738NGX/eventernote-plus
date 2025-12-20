@@ -66,7 +66,7 @@ export const EventCard = ({ event, isDark }: { event: EventData, isDark: boolean
             {event.performers.slice(0, 5).map(p => (
               <Tag
                 key={p.id}
-                color={isDark ? 'magenta' : 'processing'}
+                color='magenta'
                 className="text-xs"
                 style={{ margin: 0 }}
               >

@@ -171,7 +171,7 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
                             {initialData.info.related_links.map((link, index) => (
                               <Tag
                                 key={index}
-                                color={isDark ? 'magenta' : 'processing'}
+                                color='magenta'
                                 icon={<LinkOutlined />}
                                 href={link}
                                 target="_blank"
@@ -197,7 +197,7 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
                         {initialData.info.performers.map((performer) => (
                           <Tag
                             key={performer.id}
-                            color={isDark ? 'magenta' : 'processing'}
+                            color='magenta'
                             icon={<LinkOutlined />}
                             href={performer.url}
                             className="cursor-pointer hover:opacity-80 transition"
