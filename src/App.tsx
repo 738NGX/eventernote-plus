@@ -4,6 +4,8 @@ import Hero from './components/Hero';
 import Features from './components/Features';
 import Footer from './components/Footer';
 import { UserInfo } from './utils/user/fetchAllUserEvents';
+import { StyleProvider } from '@ant-design/cssinjs';
+import { ConfigProvider, theme as antTheme } from 'antd';
 
 
 interface AppProps {
@@ -28,11 +30,20 @@ export default function App({ initialUser, getPopupContainer }: AppProps) {
   const isDark = theme === 'dark';
 
   return (
-    <div className={`min-h-screen flex flex-col ${isDark ? 'bg-slate-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
-      <Header theme={theme} onToggleTheme={toggleTheme} user={initialUser} getPopupContainer={getPopupContainer} />
-      <Hero theme={theme} />
-      <Features theme={theme} />
-      <Footer theme={theme} />
-    </div>
+    <StyleProvider hashPriority="high">
+      <ConfigProvider
+        theme={{
+          algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
+          token: { colorPrimary: '#ff74b9' },
+        }}
+      >
+        <div className={`min-h-screen flex flex-col ${isDark ? 'bg-slate-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
+          <Header theme={theme} onToggleTheme={toggleTheme} user={initialUser} getPopupContainer={getPopupContainer} />
+          <Hero theme={theme} />
+          <Features theme={theme} />
+          <Footer theme={theme} />
+        </div>
+      </ConfigProvider>
+    </StyleProvider>
   );
 }

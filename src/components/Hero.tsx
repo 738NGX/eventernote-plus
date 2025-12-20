@@ -9,7 +9,7 @@ export default function Hero({ theme }: HeroProps) {
 
   return (
     <section
-      className={`relative py-24 px-6 text-center ${isDark ? 'bg-gradient-to-br from-slate-800 to-slate-900' : 'bg-gradient-to-br from-primary-500 to-primary-700'}`}
+      className={`relative py-24 px-6 text-center ${isDark ? 'bg-gradient-to-br from-slate-800 to-slate-900' : 'bg-gradient-to-br from-pink-500 to-pink-700'}`}
     >
       <div className="relative z-10 max-w-3xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">

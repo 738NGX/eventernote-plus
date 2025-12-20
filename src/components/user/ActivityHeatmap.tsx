@@ -16,10 +16,10 @@ export default function ActivityHeatmap({ activities, theme }: ActivityHeatmapPr
   // 获取颜色深度
   const getColor = (count: number): string => {
     if (count === 0) return isDark ? 'bg-slate-700' : 'bg-gray-100';
-    if (count <= 2) return isDark ? 'bg-blue-900' : 'bg-blue-100';
-    if (count <= 4) return isDark ? 'bg-blue-700' : 'bg-blue-300';
-    if (count <= 8) return isDark ? 'bg-blue-500' : 'bg-blue-500';
-    return isDark ? 'bg-blue-400' : 'bg-blue-700';
+    if (count <= 2) return isDark ? 'bg-pink-900' : 'bg-pink-100';
+    if (count <= 4) return isDark ? 'bg-pink-700' : 'bg-pink-300';
+    if (count <= 8) return isDark ? 'bg-pink-500' : 'bg-pink-500';
+    return isDark ? 'bg-pink-400' : 'bg-pink-700';
   };
 
   return (
@@ -61,10 +61,10 @@ export default function ActivityHeatmap({ activities, theme }: ActivityHeatmapPr
       <div className={`mt-4 flex items-center justify-end gap-1 text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
         <span>少</span>
         <div className={`w-3 h-3 rounded-sm ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`} />
-        <div className={`w-3 h-3 rounded-sm ${isDark ? 'bg-blue-900' : 'bg-blue-100'}`} />
-        <div className={`w-3 h-3 rounded-sm ${isDark ? 'bg-blue-700' : 'bg-blue-300'}`} />
-        <div className={`w-3 h-3 rounded-sm ${isDark ? 'bg-blue-500' : 'bg-blue-500'}`} />
-        <div className={`w-3 h-3 rounded-sm ${isDark ? 'bg-blue-400' : 'bg-blue-700'}`} />
+        <div className={`w-3 h-3 rounded-sm ${isDark ? 'bg-pink-900' : 'bg-pink-100'}`} />
+        <div className={`w-3 h-3 rounded-sm ${isDark ? 'bg-pink-700' : 'bg-pink-300'}`} />
+        <div className={`w-3 h-3 rounded-sm ${isDark ? 'bg-pink-500' : 'bg-pink-500'}`} />
+        <div className={`w-3 h-3 rounded-sm ${isDark ? 'bg-pink-400' : 'bg-pink-700'}`} />
         <span>多</span>
       </div>
     </Card>

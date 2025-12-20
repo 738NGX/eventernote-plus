@@ -119,7 +119,7 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
       <ConfigProvider
         theme={{
           algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-          token: { colorPrimary: '#1677ff' },
+          token: { colorPrimary: '#ff74b9' },
         }}
         getPopupContainer={getPopupContainer}
       >
@@ -144,7 +144,7 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
               style={{
                 fontSize: 18,
                 fontWeight: 700,
-                color: '#1677ff',
+                color: '#ff74b9',
                 textDecoration: 'none',
                 display: 'flex',
                 alignItems: 'center',

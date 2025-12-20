@@ -71,7 +71,7 @@ export default function UserHeader({ profile, theme, isOwner }: UserHeaderProps)
           src={profile.avatarUrl}
           icon={<UserOutlined />}
           style={{ 
-            border: `3px solid ${isDark ? '#3b82f6' : '#2563eb'}`,
+            border: `3px solid ${isDark ? '#5B3146' : '#FFF0F5'}`,
           }}
         />
         <h1 className={`text-lg font-bold`}>

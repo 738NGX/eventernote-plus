@@ -30,7 +30,7 @@ export default function FavoriteArtists({ artists, theme }: FavoriteArtistsProps
         {artists.map(artist => (
           <Tag
             key={artist.id}
-            color={isDark ? 'blue' : 'processing'}
+            color={isDark ? 'magenta' : 'processing'}
             className="cursor-pointer hover:opacity-80 transition"
             style={{ margin: 0, padding: '4px 10px', fontSize: 13 }}
           >

@@ -25,7 +25,7 @@
 }
 
 .enplus-button-primary:hover {
-  background: var(--enplus-primary-dark);
+  background: var(--enplus-pink-dark);
 }
 
 .enplus-button-secondary {
@@ -65,7 +65,7 @@
 .enplus-tag-primary {
   background: rgba(99, 102, 241, 0.1);
   color: var(--enplus-primary);
-  border-color: var(--enplus-primary-light);
+  border-color: var(--enplus-pink-light);
 }
 
 /* ==================== 徽章组件 ==================== */

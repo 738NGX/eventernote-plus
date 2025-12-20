@@ -63,7 +63,7 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
     <ConfigProvider
       theme={{
         algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-        token: { colorPrimary: '#1677ff' },
+        token: { colorPrimary: '#ff74b9' },
       }}
       getPopupContainer={getPopupContainer}
     >
@@ -73,11 +73,11 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
           <ConfigProvider
             theme={{
               algorithm: antTheme.darkAlgorithm,
-              token: { colorPrimary: '#1677ff' },
+              token: { colorPrimary: '#ff74b9' },
             }}
           >
             <div
-              className={`w-full py-8 px-6 relative ${isDark ? 'bg-gradient-to-br from-slate-800 to-slate-900' : 'bg-gradient-to-br from-primary-500 to-primary-700'}`}
+              className={`w-full py-8 px-6 relative ${isDark ? 'bg-gradient-to-br from-slate-800 to-slate-900' : 'bg-gradient-to-br from-pink-500 to-pink-700'}`}
               style={{
                 backgroundImage: initialData.info.image ? `linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${initialData.info.image})` : undefined,
                 backgroundSize: 'cover',
@@ -171,7 +171,7 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
                             {initialData.info.related_links.map((link, index) => (
                               <Tag
                                 key={index}
-                                color={isDark ? 'blue' : 'processing'}
+                                color={isDark ? 'magenta' : 'processing'}
                                 icon={<LinkOutlined />}
                                 href={link}
                                 target="_blank"
@@ -197,7 +197,7 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
                         {initialData.info.performers.map((performer) => (
                           <Tag
                             key={performer.id}
-                            color={isDark ? 'blue' : 'processing'}
+                            color={isDark ? 'magenta' : 'processing'}
                             icon={<LinkOutlined />}
                             href={performer.url}
                             className="cursor-pointer hover:opacity-80 transition"
@@ -226,7 +226,7 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
                     title={userStatus.is_participating ? "您已参加此活动" : "您未参加此活动"}
                     extra={userStatus.is_participating ? [
                       <Button type="primary" href={`/notes/${initialData.sidebar.user_status.id}/edit`} >编辑笔记</Button>,
-                      <Button color="danger" variant="solid" loading={noteLoading} onClick={async () => {
+                      <Button color="danger" loading={noteLoading} onClick={async () => {
                         setNoteLoading(true);
                         const handler = (event: MessageEvent) => {
                           if (event.data?.type === 'ENP_DELETE_NOTE_RESULT') {

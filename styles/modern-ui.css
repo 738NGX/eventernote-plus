@@ -5,8 +5,8 @@
 :root {
   /* 主题色 */
   --enplus-primary: #6366f1;
-  --enplus-primary-dark: #4f46e5;
-  --enplus-primary-light: #818cf8;
+  --enplus-pink-dark: #4f46e5;
+  --enplus-pink-light: #818cf8;
   
   /* 中性色 */
   --enplus-bg: #ffffff;
@@ -239,7 +239,7 @@
 }
 
 .enplus-card:hover {
-  border-color: var(--enplus-primary-light);
+  border-color: var(--enplus-pink-light);
   box-shadow: var(--enplus-shadow-md);
   transform: translateY(-2px);
 }

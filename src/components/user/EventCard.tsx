@@ -17,7 +17,7 @@ export const EventCard = ({ event, isDark }: { event: EventData, isDark: boolean
     <Card
       key={event.id}
       hoverable
-      className={`overflow-hidden ${isDark ? 'bg-slate-800 border-slate-700 hover:border-primary-500' : ''}`}
+      className={`overflow-hidden ${isDark ? 'bg-slate-800 border-slate-700 hover:border-pink-500' : ''}`}
       styles={{ body: { padding: 0 } }}
     >
       <div className="flex">
@@ -38,7 +38,7 @@ export const EventCard = ({ event, isDark }: { event: EventData, isDark: boolean
         <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
           <div>
             <a href={`/events/${event.id}`} className="block">
-              <h3 className={`font-semibold text-sm md:text-base mb-2 hover:text-primary-500 transition line-clamp-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <h3 className={`font-semibold text-sm md:text-base mb-2 hover:text-pink-500 transition line-clamp-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                 {event.title}
               </h3>
             </a>
@@ -48,7 +48,7 @@ export const EventCard = ({ event, isDark }: { event: EventData, isDark: boolean
                 <div className="flex items-center gap-2">
                   <CalendarOutlined />
                   <span>{event.date}</span>
-                  {event.times.start && <span className="text-primary-500">{event.times.start} 开演</span>}
+                  {event.times.start && <span className="text-pink-500">{event.times.start} 开演</span>}
                 </div>
               )}
 
@@ -66,7 +66,7 @@ export const EventCard = ({ event, isDark }: { event: EventData, isDark: boolean
             {event.performers.slice(0, 5).map(p => (
               <Tag
                 key={p.id}
-                color={isDark ? 'blue' : 'processing'}
+                color={isDark ? 'magenta' : 'processing'}
                 className="text-xs"
                 style={{ margin: 0 }}
               >
@@ -82,7 +82,7 @@ export const EventCard = ({ event, isDark }: { event: EventData, isDark: boolean
         {/* 参加人数 */}
         {event.participantCount > 0 && (
           <div className={`flex-shrink-0 w-16 md:w-20 flex flex-col items-center justify-center border-l ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
-            <TeamOutlined className="text-lg mb-1 text-primary-500" />
+            <TeamOutlined className="text-lg mb-1 text-pink-500" />
             <span className={`text-base md:text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
               {event.participantCount}
             </span>

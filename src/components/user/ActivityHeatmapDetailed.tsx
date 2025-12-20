@@ -17,10 +17,10 @@ const ActivityHeatmap = ({ year, data, theme, username }: ActivityHeatmapProps) 
 
   const getColor = (count: number): string => {
     if (count === 0) return isDark ? 'bg-slate-700' : 'bg-gray-100';
-    if (count <= 1) return isDark ? 'bg-blue-900' : 'bg-blue-100';
-    if (count <= 2) return isDark ? 'bg-blue-700' : 'bg-blue-300';
-    if (count <= 3) return isDark ? 'bg-blue-500' : 'bg-blue-500';
-    return isDark ? 'bg-blue-400' : 'bg-blue-700';
+    if (count <= 1) return isDark ? 'bg-pink-900' : 'bg-pink-100';
+    if (count <= 2) return isDark ? 'bg-pink-700' : 'bg-pink-300';
+    if (count <= 3) return isDark ? 'bg-pink-500' : 'bg-pink-500';
+    return isDark ? 'bg-pink-400' : 'bg-pink-700';
   };
 
   const { calendarData, monthLabels } = useMemo(() => {

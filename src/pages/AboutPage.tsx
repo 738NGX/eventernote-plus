@@ -48,7 +48,7 @@ export const AboutPage = ({ type, currentUser, getPopupContainer }: { type: 'com
     <ConfigProvider
       theme={{
         algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-        token: { colorPrimary: '#1677ff' },
+        token: { colorPrimary: '#ff74b9' },
       }}
       getPopupContainer={getPopupContainer}
     >

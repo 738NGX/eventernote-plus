@@ -86,8 +86,8 @@ export default function Features({ theme }: FeaturesProps) {
           {features.map((f, i) => (
             <div
               key={i}
-              className={`p-6 rounded-xl transition hover:shadow-lg flex flex-col items-center ${isDark 
-                ? 'bg-slate-800 border border-slate-700 hover:border-primary-500' 
+              className={`p-6 rounded-xl transition hover:shadow-lg flex flex-col items-center ${isDark
+                ? 'bg-slate-800 border border-slate-700 hover:border-pink-500'
                 : 'bg-white border border-gray-200 hover:shadow-md'}`}
             >
               <div className="text-4xl mb-4">{f.icon}</div>
@@ -106,13 +106,13 @@ export default function Features({ theme }: FeaturesProps) {
           <h3 className={`text-xl font-bold text-center mb-8 ${isDark ? 'text-white' : 'text-gray-900'}`}>
             受到了一致好评，从老资历到小资历都在广泛使用。
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {testimonials.map((t, i) => (
               <div
                 key={i}
-                className={`p-5 rounded-lg ${isDark 
-                  ? 'bg-slate-800 border border-slate-700' 
+                className={`p-5 rounded-lg ${isDark
+                  ? 'bg-slate-800 border border-slate-700'
                   : 'bg-white border border-gray-200'}`}
               >
                 <p className={`text-sm mb-3 italic ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>

@@ -53,7 +53,7 @@ export const NotePage = ({ type, currentUser, getPopupContainer, data }: NotePag
     <ConfigProvider
       theme={{
         algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-        token: { colorPrimary: '#1677ff' },
+        token: { colorPrimary: '#ff74b9' },
       }}
       getPopupContainer={getPopupContainer}
     >

@@ -23,7 +23,7 @@ export const generatePrefectureMapData = (events: EventData[]): PrefectureCount 
   return prefectureCount;
 };
 
-export const PrefectureMap = ({ data }: { data: PrefectureCount }) => {
+export const PrefectureMap = ({ data, isDark }: { data: PrefectureCount, isDark?: boolean }) => {
   const [svgContent, setSvgContent] = useState<string | null>(null);
   const svgContainerRef = useRef<HTMLDivElement>(null);
 
@@ -63,11 +63,12 @@ export const PrefectureMap = ({ data }: { data: PrefectureCount }) => {
     svgElement.setAttribute('height', 'auto');
 
     // 获取颜色深度函数
-    const getColor = (count: number): string => {
-      if (count === 0) return '#e5e7eb'; // Gray-100
-      if (count <= 2) return '#93c5fd'; // Blue-300
-      if (count <= 5) return '#3b82f6'; // Blue-500
-      return '#1e40af'; // Blue-900
+    const getColor = (count: number, isDark: boolean | undefined): string => {
+      if (count === 0) return isDark ? '#334155' : '#F3F4F6';
+      if (count <= 5) return isDark ? '#831843' : '#FCE7F3';
+      if (count <= 15) return isDark ? '#BE185D' : '#F9A8D4';
+      if (count <= 30) return isDark ? '#EC4899' : '#EC4899';
+      return isDark ? '#F472B6' : '#BE185D';
     };
 
     // 应用热力图数据
@@ -75,7 +76,7 @@ export const PrefectureMap = ({ data }: { data: PrefectureCount }) => {
       const prefectureId = getIdByPrefectureName(prefecture, true)
       const path = svgElement.querySelector(`#JP${prefectureId}`) as SVGPathElement | null;
       if (path) {
-        path.setAttribute('fill', getColor(count));
+        path.setAttribute('fill', getColor(count, isDark));
 
         // 添加鼠标悬停事件
         path.addEventListener('mouseenter', (e: MouseEvent) => {
