@@ -1,4 +1,4 @@
-import { Breadcrumb, Card, Statistic, ConfigProvider, Image, theme as antTheme, Tag, Button, Result } from "antd";
+import { Breadcrumb, Card, Statistic, ConfigProvider, Image, theme as antTheme, Tag, Button, Result, message } from "antd";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
@@ -22,6 +22,9 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
     if (stored === 'dark' || stored === 'light') return stored;
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
+  // 本地参加状态
+  const [userStatus, setUserStatus] = useState(initialData.sidebar.user_status);
+  const [noteLoading, setNoteLoading] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -219,12 +222,54 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
               <div className="lg:col-span-4 space-y-6">
                 <Card title="参加状态" hoverable>
                   <Result
-                    status={initialData.sidebar.user_status.is_participating ? "success" : "info"}
-                    title={initialData.sidebar.user_status.is_participating ? "您已参加此活动" : "您未参加此活动"}
-                    extra={initialData.sidebar.user_status.is_participating ? [
-                      <Button type="primary">编辑笔记</Button>,
-                      <Button variant="solid" color="danger">取消参加</Button>,
-                    ] : [<Button type="primary">参加活动</Button>]}
+                    status={userStatus.is_participating ? "success" : "info"}
+                    title={userStatus.is_participating ? "您已参加此活动" : "您未参加此活动"}
+                    extra={userStatus.is_participating ? [
+                      <Button type="primary" href={`/notes/${initialData.sidebar.user_status.id}/edit`} >编辑笔记</Button>,
+                      <Button color="danger" variant="solid" loading={noteLoading} onClick={async () => {
+                        setNoteLoading(true);
+                        const handler = (event: MessageEvent) => {
+                          if (event.data?.type === 'ENP_DELETE_NOTE_RESULT') {
+                            window.removeEventListener('message', handler);
+                            setNoteLoading(false);
+                            if (event.data.success) {
+                              setUserStatus(s => ({ ...s, is_participating: false }));
+                              message.success('已取消参加，请等待页面重定向……');
+                            } else {
+                              message.error('操作失败');
+                            }
+                          }
+                        };
+                        window.addEventListener('message', handler);
+                        window.postMessage({ type: 'ENP_DELETE_NOTE', noteId: initialData.sidebar.user_status.id }, '*');
+                        setTimeout(() => {
+                          window.removeEventListener('message', handler);
+                          setNoteLoading(false);
+                        }, 500);
+                      }}>取消参加</Button>,
+                    ] : [<Button type="primary" loading={noteLoading} onClick={async () => {
+                      setNoteLoading(true);
+                      const handler = (event: MessageEvent) => {
+                        if (event.data?.type === 'ENP_ADD_NOTE_RESULT') {
+                          window.removeEventListener('message', handler);
+                          setNoteLoading(false);
+                          if (event.data.success) {
+                            setUserStatus(s => ({ ...s, is_participating: true }));
+                            message.success('已参加活动，请等待页面重定向……');
+                          } else {
+                            message.error('操作失败');
+                          }
+                        }
+                      };
+                      window.addEventListener('message', handler);
+                      window.postMessage({ type: 'ENP_ADD_NOTE', noteId: initialData.id }, '*');
+                      setTimeout(() => {
+                        window.removeEventListener('message', handler);
+                        setNoteLoading(false);
+                        // 刷新页面
+                        window.location.reload();
+                      }, 500);
+                    }}>参加活动</Button>]}
                   />
                 </Card>
                 {initialData.sidebar.friends.exists && <Card title={`参加此活动的好友（${initialData.sidebar.friends.count}人）`} hoverable>

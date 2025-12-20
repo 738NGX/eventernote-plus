@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { AutoComplete, Input, Button, Avatar, ConfigProvider, theme as antTheme, Popover } from 'antd';
 import { StyleProvider } from '@ant-design/cssinjs';
-import { UserOutlined, SunOutlined, MoonOutlined, GithubFilled, UsergroupAddOutlined, SettingOutlined, BellOutlined } from '@ant-design/icons';
+import { UserOutlined, SunOutlined, MoonOutlined, GithubFilled, UsergroupAddOutlined, SettingOutlined, BellOutlined, LogoutOutlined } from '@ant-design/icons';
 import type { UserInfo } from '../utils/user/fetchAllUserEvents';
 
 
@@ -110,6 +110,7 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
       <Button type='text' icon={<BellOutlined />} href='/users/notice' style={{ color: textColor }}>系统通知</Button>
       <Button type='text' icon={<UsergroupAddOutlined />} href='/users/friends' style={{ color: textColor }}>好友动态</Button>
       <Button type='text' icon={<SettingOutlined />} href='/users/setting' style={{ color: textColor }}>用户设置</Button>
+      <Button type='text' icon={<LogoutOutlined />} href='/signout' style={{ color: textColor }}>退出登录</Button>
     </div>
   }
 
@@ -240,7 +241,7 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
             ) : (
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <a
-                  href="/users/sign_in"
+                  href="/login"
                   style={{
                     color: textColor,
                     textDecoration: 'none',
@@ -251,7 +252,7 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
                 >
                   登录
                 </a>
-                <Button type="primary" size="small" href="/users/sign_up">
+                <Button type="primary" size="small" href="/register">
                   注册
                 </Button>
               </div>

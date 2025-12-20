@@ -131,7 +131,7 @@ export default function Features({ theme }: FeaturesProps) {
           <Button
             type="primary"
             size="large"
-            href="/users/sign_up"
+            href="/login"
             style={{
               height: 56,
               paddingInline: 48,

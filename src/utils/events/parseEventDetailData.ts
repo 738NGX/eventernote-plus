@@ -61,7 +61,7 @@ export function parseEventInfo(): EventInfo {
 
 interface UserStatus {
   is_participating: boolean;
-  event_id: string | null;
+  id: string | null;
   action_url: string | null;
 }
 
@@ -96,7 +96,7 @@ export function parseEventDetailSidebarData(): EventDetailSidebarData {
   const data: EventDetailSidebarData = {
     user_status: {
       is_participating: false,
-      event_id: null,
+      id: null,
       action_url: null
     },
     friends: {
@@ -127,11 +127,11 @@ export function parseEventDetailSidebarData(): EventDetailSidebarData {
     if (isJoined) {
       const editBtn = editArea.querySelector('a') as HTMLAnchorElement | null;
       data.user_status.action_url = editBtn?.href || null;
-      data.user_status.event_id = editBtn?.href.match(/\/notes\/(\d+)/)?.[1] || null;
+      data.user_status.id = editBtn?.href.match(/\/notes\/(\d+)/)?.[1] || null;
     } else {
       const joinBtn = createArea?.querySelector('a') as HTMLAnchorElement | null;
       data.user_status.action_url = joinBtn?.href || null;
-      data.user_status.event_id = joinBtn?.href.match(/addNote\('(\d+)'\)/)?.[1] || null;
+      data.user_status.id = joinBtn?.href.match(/addNote\('(\d+)'\)/)?.[1] || null;
     }
   }
 

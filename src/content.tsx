@@ -10,6 +10,8 @@ import { AboutPage } from './pages/AboutPage';
 import { parseEventDetailData } from './utils/events/parseEventDetailData';
 import { EventDetailPage } from './pages/EventDetailPage';
 import { AnnualReportPage } from './pages/AnnualReportPage';
+import { parseNoteDeleteData } from './utils/notes/parseNoteDeleteData';
+import { NotePage } from './pages/NotePage';
 
 // 获取当前页面类型
 function getPageType(disabled: boolean): string {
@@ -27,16 +29,17 @@ function getPageType(disabled: boolean): string {
 
   // 年度报告 /annual-report/${username}/${year}
   if (/^\/annual-report\/[^/]+\/\d{4}\/?$/.test(path)) {
-    // 年份不为2025直接unknown
-    if(!/^\/annual-report\/[^/]+\/2025\/?$/.test(path)) {
-      return 'unknown';
-    }
     return 'annual-report';
   }
 
   // 活动详情页 /events/${id}
   if (/^\/events\/\d+\/?$/.test(path)) {
     return disabled ? 'disabled' : 'eventDetail';
+  }
+
+  // 删除笔记 /notes/${id}/remove
+  if (/^\/notes\/\d+\/remove\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'deleteNote';
   }
 
   // 关于页 /pages/comapny, /pages/termsofservice, /pages/privacy
@@ -134,6 +137,11 @@ function init() {
       eventDetailData = parseEventDetailData();
       console.log('[ENP] Parsed from DOM:', eventDetailData);
     }
+    let deleteNoteData: ReturnType<typeof parseNoteDeleteData> | null = null;
+    if (pageType === 'deleteNote') {
+      deleteNoteData = parseNoteDeleteData();
+      console.log('[ENP] Parsed from DOM:', deleteNoteData);
+    }
 
     // 注入页面上下文脚本来保存原网站的关注函数
     const injectScript = document.createElement('script');
@@ -197,6 +205,8 @@ function init() {
       component = <AboutPage currentUser={currentUser} getPopupContainer={getPopupContainer} type={ location.pathname.match(/^\/pages\/(company|termsofservice|privacy)\/?$/)?.[1] as 'company' | 'privacy' | 'termsofservice'} />;
     } else if (pageType === 'eventDetail') {
       component = <EventDetailPage  initialData={eventDetailData!} currentUser={currentUser} getPopupContainer={getPopupContainer} />;
+    } else if (pageType === 'deleteNote') {
+      component = <NotePage type='delete' currentUser={currentUser} getPopupContainer={getPopupContainer} data={deleteNoteData!} />;
     } else if (pageType === 'annual-report') {
       console.log('Rendering AnnualReportPage');
       component = <AnnualReportPage username='SUFE_IDOL' year='2025' />
