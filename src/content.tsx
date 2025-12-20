@@ -12,6 +12,8 @@ import { EventDetailPage } from './pages/EventDetailPage';
 import { AnnualReportPage } from './pages/AnnualReportPage';
 import { parseNoteDeleteData } from './utils/notes/parseNoteDeleteData';
 import { NotePage } from './pages/NotePage';
+import { parseUsersList } from './utils/user/parseUsersList';
+import { UsersPage } from './pages/UsersPage';
 
 // 获取当前页面类型
 function getPageType(disabled: boolean): string {
@@ -25,6 +27,16 @@ function getPageType(disabled: boolean): string {
   // 用户页 /users 或 /users/${username}
   if (/^\/users(\/(?!notice|timeline|setting)[^/]+)?\/?$/.test(path)) {
     return disabled ? 'disabled' : 'user';
+  }
+
+  // 关注 /users/${username}/following
+  if (/^\/users\/[^/]+\/following\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'following';
+  }
+  
+  // 粉丝 /users/${username}/follower
+  if (/^\/users\/[^/]+\/follower\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'follower';
   }
 
   // 年度报告 /annual-report/${username}/${year}
@@ -142,6 +154,11 @@ function init() {
       deleteNoteData = parseNoteDeleteData();
       console.log('[ENP] Parsed from DOM:', deleteNoteData);
     }
+    let usersListData: ReturnType<typeof parseUsersList> | null = null;
+    if (pageType === 'following' || pageType === 'follower') {
+      usersListData = parseUsersList();
+      console.log('[ENP] Parsed from DOM:', usersListData);
+    }
 
     // 注入页面上下文脚本来保存原网站的关注函数
     const injectScript = document.createElement('script');
@@ -208,8 +225,9 @@ function init() {
     } else if (pageType === 'deleteNote') {
       component = <NotePage type='delete' currentUser={currentUser} getPopupContainer={getPopupContainer} data={deleteNoteData!} />;
     } else if (pageType === 'annual-report') {
-      console.log('Rendering AnnualReportPage');
       component = <AnnualReportPage username='SUFE_IDOL' year='2025' />
+    } else if (pageType === 'following' || pageType === 'follower') {
+      component = <UsersPage type={pageType} currentUser={currentUser} getPopupContainer={getPopupContainer} data={usersListData!} />;
     }
 
     // 渲染 React 应用到 ShadowRoot，并用 StyleProvider 隔离 Antd 动态样式

@@ -226,7 +226,7 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
                     title={userStatus.is_participating ? "您已参加此活动" : "您未参加此活动"}
                     extra={userStatus.is_participating ? [
                       <Button type="primary" href={`/notes/${initialData.sidebar.user_status.id}/edit`} >编辑笔记</Button>,
-                      <Button color="danger" loading={noteLoading} onClick={async () => {
+                      <Button danger loading={noteLoading} onClick={async () => {
                         setNoteLoading(true);
                         const handler = (event: MessageEvent) => {
                           if (event.data?.type === 'ENP_DELETE_NOTE_RESULT') {

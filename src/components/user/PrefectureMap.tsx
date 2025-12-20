@@ -28,6 +28,15 @@ export const generatePrefectureMapData = (events: EventData[]): PrefectureCount 
 export const PrefectureMap = ({ data, isDark }: { data: PrefectureCount, isDark?: boolean }) => {
   const [svgContent, setSvgContent] = useState<string | null>(null);
   const svgContainerRef = useRef<HTMLDivElement>(null);
+
+  // 构造完整都道府县数据，未出现的补0（不含“海外”）
+  const allPrefNames = [
+    '北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県','茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県','新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県','徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県', '海外'
+  ];
+  const fullData: PrefectureCount = {};
+  allPrefNames.forEach(name => {
+    fullData[name] = data[name] || 0;
+  });
   const {
     showTooltip,
     hideTooltip,
@@ -76,14 +85,14 @@ export const PrefectureMap = ({ data, isDark }: { data: PrefectureCount, isDark?
     // 获取颜色深度函数
     const getColor = (count: number, isDark: boolean | undefined): string => {
       if (count === 0) return isDark ? '#334155' : '#F3F4F6';
-      if (count <= 5) return isDark ? '#831843' : '#FCE7F3';
-      if (count <= 15) return isDark ? '#BE185D' : '#F9A8D4';
-      if (count <= 30) return isDark ? '#EC4899' : '#EC4899';
-      return isDark ? '#F472B6' : '#BE185D';
+      if (count <= 5) return isDark ? '#831843' : '#F9A8D4';
+      if (count <= 15) return isDark ? '#BE185D' : '#EC4899';
+      if (count <= 30) return isDark ? '#EC4899' : '#BE185D';
+      return isDark ? '#F9A8D4' : '#831843';
     };
 
     // 应用热力图数据
-    Object.entries(data).forEach(([prefecture, count]) => {
+    Object.entries(fullData).forEach(([prefecture, count]) => {
       const prefectureId = getIdByPrefectureName(prefecture, true)
       const path = svgElement.querySelector(`#JP${prefectureId}`) as SVGPathElement | null;
       if (path) {
@@ -100,10 +109,11 @@ export const PrefectureMap = ({ data, isDark }: { data: PrefectureCount, isDark?
           setHoveredPref(prefecture);
         });
         path.addEventListener('mousemove', (e: MouseEvent) => {
-          // 让 tooltip 更贴近鼠标（偏移 8px，且考虑滚动）
+          // 让 tooltip 基于 svg 容器定位，消除页面滚动和布局偏移
+          const containerRect = svgContainerRef.current!.getBoundingClientRect();
           showTooltip({
-            tooltipLeft: e.clientX + 8 + window.scrollX,
-            tooltipTop: e.clientY + 8 + window.scrollY,
+            tooltipLeft: e.clientX - containerRect.left + 8,
+            tooltipTop: e.clientY - containerRect.top + 8,
             tooltipData: { prefecture, count },
           });
         });
@@ -116,11 +126,20 @@ export const PrefectureMap = ({ data, isDark }: { data: PrefectureCount, isDark?
       }
     });
 
-    // 高亮与淡化处理
+    // 清空容器并插入SVG
+    svgContainerRef.current.innerHTML = '';
+    svgContainerRef.current.appendChild(svgElement);
+  }, [svgContent, data, isDark]);
+
+  // 高亮与淡化处理，响应 hoveredPref 变化
+  useEffect(() => {
+    if (!svgContainerRef.current) return;
+    const svg = svgContainerRef.current.querySelector('svg');
+    if (!svg) return;
     if (hoveredPref) {
-      Object.entries(data).forEach(([prefecture]) => {
+      Object.entries(fullData).forEach(([prefecture]) => {
         const prefectureId = getIdByPrefectureName(prefecture, true)
-        const path = svgElement.querySelector(`#JP${prefectureId}`) as SVGPathElement | null;
+        const path = svg.querySelector(`#JP${prefectureId}`) as SVGPathElement | null;
         if (path) {
           if (prefecture === hoveredPref) {
             path.style.opacity = '1';
@@ -132,20 +151,16 @@ export const PrefectureMap = ({ data, isDark }: { data: PrefectureCount, isDark?
         }
       });
     } else {
-      Object.entries(data).forEach(([prefecture]) => {
+      Object.entries(fullData).forEach(([prefecture]) => {
         const prefectureId = getIdByPrefectureName(prefecture, true)
-        const path = svgElement.querySelector(`#JP${prefectureId}`) as SVGPathElement | null;
+        const path = svg.querySelector(`#JP${prefectureId}`) as SVGPathElement | null;
         if (path) {
           path.style.opacity = '1';
           path.style.filter = '';
         }
       });
     }
-
-    // 清空容器并插入SVG
-    svgContainerRef.current.innerHTML = '';
-    svgContainerRef.current.appendChild(svgElement);
-  }, [svgContent, data]);
+  }, [hoveredPref, data]);
 
   return (
     <div style={{ width: '100%', height: 'auto', position: 'relative' }}>
@@ -168,6 +183,7 @@ export const PrefectureMap = ({ data, isDark }: { data: PrefectureCount, isDark?
             padding: '8px',
             borderRadius: '4px',
             zIndex: 9999,
+            pointerEvents: 'none',
           }}
         >
           <strong>{tooltipData.prefecture}</strong>: {tooltipData.count} 次活动

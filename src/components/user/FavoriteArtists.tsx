@@ -4,9 +4,10 @@ import type { ArtistData } from '../../pages/UserProfilePage';
 interface FavoriteArtistsProps {
   artists: ArtistData[];
   theme: 'light' | 'dark';
+  canEdit?: boolean;
 }
 
-export default function FavoriteArtists({ artists, theme }: FavoriteArtistsProps) {
+export default function FavoriteArtists({ artists, theme, canEdit }: FavoriteArtistsProps) {
   const isDark = theme === 'dark';
 
   if (artists.length === 0) return null;
@@ -20,9 +21,11 @@ export default function FavoriteArtists({ artists, theme }: FavoriteArtistsProps
         </span>
       }
       extra={
-        <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-          {artists.length}
-        </span>
+        canEdit ?
+          <a href={'/users/favorite_actors/edit'}>编辑</a>
+          : <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+            {artists.length}
+          </span>
       }
       styles={{ body: { padding: 16 } }}
     >
@@ -34,7 +37,7 @@ export default function FavoriteArtists({ artists, theme }: FavoriteArtistsProps
             className="cursor-pointer hover:opacity-80 transition"
             style={{ margin: 0, padding: '4px 10px', fontSize: 13 }}
           >
-            <a 
+            <a
               href={`/actors/${encodeURIComponent(artist.name)}/${artist.id}`}
               className="hover:underline"
             >

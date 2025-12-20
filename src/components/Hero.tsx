@@ -26,7 +26,7 @@ export default function Hero({ theme }: HeroProps) {
             href="/events"
             style={{ 
               background: '#fff', 
-              color: '#2563eb', 
+              color: '#ff74b9', 
               fontWeight: 600,
               height: 48,
               paddingInline: 32,
@@ -49,7 +49,7 @@ export default function Hero({ theme }: HeroProps) {
               borderRadius: 8,
             }}
           >
-            发现声优
+            发现艺人
           </Button>
         </div>
       </div>

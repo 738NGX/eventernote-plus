@@ -1,21 +1,22 @@
-import { Breadcrumb, Button, Card, ConfigProvider, Menu, MenuProps, Result, theme as antTheme } from "antd";
+import { Avatar, Breadcrumb, Button, Card, ConfigProvider, Image, MenuProps, Result, theme as antTheme } from "antd";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
 import { UserInfo } from "../utils/user/fetchAllUserEvents";
-import { parseNoteDeleteData } from "../utils/notes/parseNoteDeleteData";
+import { parseUsersList } from "../utils/user/parseUsersList";
+import fallbackImage from "../utils/fallbackImage";
 
-type Data = ReturnType<typeof parseNoteDeleteData>
+type Data = ReturnType<typeof parseUsersList>
 
-interface NotePageProps {
-  type: 'delete' | 'edit';
+interface UsersPageProps {
+  type: 'following' | 'follower';
   currentUser: UserInfo | null;
   getPopupContainer?: () => HTMLElement | ShadowRoot;
   data: Data;
 }
 
-export const NotePage = ({ type, currentUser, getPopupContainer, data }: NotePageProps) => {
+export const UsersPage = ({ type, currentUser, getPopupContainer, data }: UsersPageProps) => {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const stored = localStorage.getItem('enplus-theme');
     if (stored === 'dark' || stored === 'light') return stored;
@@ -30,23 +31,7 @@ export const NotePage = ({ type, currentUser, getPopupContainer, data }: NotePag
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
   const isDark = theme === 'dark';
 
-  let enContent;
-  switch (type) {
-    case 'delete':
-      enContent = <Result
-        status={data.success ? "success" : "error"}
-        title={data.success ? "取消参加活动成功" : "取消参加活动失败"}
-        extra={data.success ? [
-          <Button type="primary" href={data.url} >返回活动页</Button>,
-        ] : []}
-      />
-      break;
-    case 'edit':
-      enContent = null;
-      break;
-    default:
-      break;
-  }
+
   return <StyleProvider hashPriority="high">
     <ConfigProvider
       theme={{
@@ -65,12 +50,33 @@ export const NotePage = ({ type, currentUser, getPopupContainer, data }: NotePag
                   title: <a href="/">首页</a>,
                 },
                 {
-                  title: type === 'delete' ? '删除笔记' : '编辑笔记',
+                  title: <a href={data.breadcrumb[1].href}>{data.breadcrumb[1].title}</a>,
+                },
+                {
+                  title: `${type === 'following' ? '关注' : '粉丝' }列表`,
                 }
               ]}
               className='!mb-2'
             />
-            {enContent}
+            <h3>{`${data.breadcrumb[1].title}的${type === 'following' ? '关注' : '粉丝' }列表`}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+              {data.usersList.length === 0 ? (
+                <Result status="info" title="暂无数据" />
+              ) : (
+                data.usersList.map(user => (
+                  <Card
+                    key={user.id}
+                    hoverable
+                  >
+                    <Card.Meta
+                      avatar={<Avatar shape="square" size={64} alt={user.name} src={user.avatar}/>}
+                      title={<a href={user.profileUrl}>{user.name}</a>}
+                      description={<span>UID: {user.id}</span>}
+                    />
+                  </Card>
+                ))
+              )}
+            </div>
           </div>
         </main>
         <Footer theme={theme} />

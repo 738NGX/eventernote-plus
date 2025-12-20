@@ -108,7 +108,7 @@ export default function UserHeader({ profile, theme, isOwner }: UserHeaderProps)
             valueStyle={{ fontSize: 20, color: isDark ? '#fff' : '#1f2937' }}
           />
         </a>
-        {!isOwner && profile.overlapCount !== undefined && profile.overlapCount > 0 && (
+        {!isOwner && profile.overlapCount !== undefined && (
           <a href={`/users/${profile.username}/events/same`} className="text-center hover:opacity-80">
             <Statistic
               title={<span className={isDark ? 'text-gray-400' : ''}>同场</span>}

@@ -235,7 +235,7 @@ export default function UserProfilePage({ currentUser, initialData, getPopupCont
                   {/* 左侧边栏 */}
                   <div className="lg:col-span-3 space-y-6">
                     <UserHeader profile={profile} theme={theme} isOwner={currentUser?.name === profile?.username} />
-                    <FavoriteArtists artists={artists} theme={theme} />
+                    <FavoriteArtists artists={artists} theme={theme} canEdit={isMyPage} />
                     <ActivityHeatmap activities={activities} theme={theme} />
                   </div>
                   {/* 中间主内容 */}
