@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { AutoComplete, Input, Button, Avatar, ConfigProvider, theme as antTheme, Popover } from 'antd';
 import { StyleProvider } from '@ant-design/cssinjs';
-import { UserOutlined, SunOutlined, MoonOutlined, GithubFilled, UsergroupAddOutlined, SettingOutlined, BellOutlined, LogoutOutlined } from '@ant-design/icons';
+import { UserOutlined, SunOutlined, MoonOutlined, GithubFilled, UsergroupAddOutlined, SettingOutlined, BellOutlined, LogoutOutlined, HomeOutlined } from '@ant-design/icons';
 import type { UserInfo } from '../utils/user/fetchAllUserEvents';
 
 
@@ -107,6 +107,7 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
 
   const UserSettings = () => {
     return <div className='flex flex-col'>
+      <Button type='text' icon={<HomeOutlined />} href={`/users/${user?.name}`} style={{ color: textColor }}>用户主页</Button>
       <Button type='text' icon={<BellOutlined />} href='/users/notice' style={{ color: textColor }}>系统通知</Button>
       <Button type='text' icon={<UsergroupAddOutlined />} href='/users/friends' style={{ color: textColor }}>好友动态</Button>
       <Button type='text' icon={<SettingOutlined />} href='/users/setting' style={{ color: textColor }}>用户设置</Button>
@@ -119,7 +120,6 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
       <ConfigProvider
         theme={{
           algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-          token: { colorPrimary: '#ff74b9' },
         }}
         getPopupContainer={getPopupContainer}
       >
@@ -151,7 +151,7 @@ export default function Header({ theme, onToggleTheme, user, getPopupContainer }
                 gap: 6,
               }}
             >
-              EventerNote Plus
+              EventerNote
             </a>
 
             <nav style={{ display: 'flex', alignItems: 'center', gap: 4 }}>

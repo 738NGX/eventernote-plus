@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "EventerNote Plus",
   "version": "1.0.0",
-  "description": "为 EventerNote 提供全新的现代化UI界面和高级搜索功能",
+  "description": "一款让EventerNote更好用的浏览器插件，重新制作了页面并且增加了更多新功能。",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

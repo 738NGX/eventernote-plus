@@ -14,16 +14,23 @@ import { parseNoteDeleteData } from './utils/notes/parseNoteDeleteData';
 import { NotePage } from './pages/NotePage';
 import { parseUsersList } from './utils/user/parseUsersList';
 import { UsersPage } from './pages/UsersPage';
+import { ConfigProvider } from 'antd';
+import { PlacesPage } from './pages/PlacesPage';
 
 // 获取当前页面类型
 function getPageType(disabled: boolean): string {
   const path = location.pathname;
-  
+
   // 主页 /
   if (path === '/' || /eventernote\.com\/?$/.test(location.href)) {
     return disabled ? 'disabled' : 'home';
   }
-  
+
+  // 场地情报页 /places
+  if (/^\/places\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'places';
+  }
+
   // 用户页 /users 或 /users/${username}
   if (/^\/users(\/(?!notice|timeline|setting)[^/]+)?\/?$/.test(path)) {
     return disabled ? 'disabled' : 'user';
@@ -33,7 +40,7 @@ function getPageType(disabled: boolean): string {
   if (/^\/users\/[^/]+\/following\/?$/.test(path)) {
     return disabled ? 'disabled' : 'following';
   }
-  
+
   // 粉丝 /users/${username}/follower
   if (/^\/users\/[^/]+\/follower\/?$/.test(path)) {
     return disabled ? 'disabled' : 'follower';
@@ -58,7 +65,7 @@ function getPageType(disabled: boolean): string {
   if (/^\/pages\/(company|termsofservice|privacy)\/?$/.test(path)) {
     return disabled ? 'disabled' : 'about';
   }
-  
+
   return 'unknown';
 }
 
@@ -137,7 +144,7 @@ function init() {
 
     // 在清空页面前检测用户
     const currentUser = detectCurrentUser();
-    
+
     // 在清空页面前解析页面数据
     let userPageData: ReturnType<typeof parseUserPageData> | null = null;
     if (pageType === 'user') {
@@ -163,7 +170,7 @@ function init() {
     // 注入页面上下文脚本来保存原网站的关注函数
     const injectScript = document.createElement('script');
     injectScript.src = chrome.runtime.getURL('inject.js');
-    injectScript.onload = function() {
+    injectScript.onload = function () {
       (this as HTMLScriptElement).remove();
     };
     (document.head || document.documentElement).appendChild(injectScript);
@@ -216,12 +223,14 @@ function init() {
     const getPopupContainer = () => shadow;
     if (pageType === 'home') {
       component = <App initialUser={currentUser} getPopupContainer={getPopupContainer} />;
+    } else if( pageType === 'places') {
+      component = <PlacesPage currentUser={currentUser} getPopupContainer={getPopupContainer} />;
     } else if (pageType === 'user') {
       component = <UserProfilePage currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
     } else if (pageType === 'about') {
-      component = <AboutPage currentUser={currentUser} getPopupContainer={getPopupContainer} type={ location.pathname.match(/^\/pages\/(company|termsofservice|privacy)\/?$/)?.[1] as 'company' | 'privacy' | 'termsofservice'} />;
+      component = <AboutPage currentUser={currentUser} getPopupContainer={getPopupContainer} type={location.pathname.match(/^\/pages\/(company|termsofservice|privacy)\/?$/)?.[1] as 'company' | 'privacy' | 'termsofservice'} />;
     } else if (pageType === 'eventDetail') {
-      component = <EventDetailPage  initialData={eventDetailData!} currentUser={currentUser} getPopupContainer={getPopupContainer} />;
+      component = <EventDetailPage initialData={eventDetailData!} currentUser={currentUser} getPopupContainer={getPopupContainer} />;
     } else if (pageType === 'deleteNote') {
       component = <NotePage type='delete' currentUser={currentUser} getPopupContainer={getPopupContainer} data={deleteNoteData!} />;
     } else if (pageType === 'annual-report') {
@@ -234,7 +243,11 @@ function init() {
     ReactDOM.createRoot(reactRoot).render(
       <React.StrictMode>
         <StyleProvider container={shadow} hashPriority="high">
-          {component}
+          <ConfigProvider theme={{
+            token: { colorPrimary: '#ff74b9', colorLink: '#ff74b9', colorInfo: '#ff74b9' },
+          }}>
+            {component}
+          </ConfigProvider>
         </StyleProvider>
       </React.StrictMode>
     );

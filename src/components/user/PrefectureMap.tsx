@@ -84,7 +84,7 @@ export const PrefectureMap = ({ data, isDark }: { data: PrefectureCount, isDark?
 
     // 获取颜色深度函数
     const getColor = (count: number, isDark: boolean | undefined): string => {
-      if (count === 0) return isDark ? '#334155' : '#F3F4F6';
+      if (count === 0) return isDark ? '#031125' : '#E3E4E6';
       if (count <= 5) return isDark ? '#831843' : '#F9A8D4';
       if (count <= 15) return isDark ? '#BE185D' : '#EC4899';
       if (count <= 30) return isDark ? '#EC4899' : '#BE185D';

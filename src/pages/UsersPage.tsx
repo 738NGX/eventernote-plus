@@ -36,7 +36,6 @@ export const UsersPage = ({ type, currentUser, getPopupContainer, data }: UsersP
     <ConfigProvider
       theme={{
         algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-        token: { colorPrimary: '#ff74b9' },
       }}
       getPopupContainer={getPopupContainer}
     >

@@ -207,7 +207,6 @@ export default function UserProfilePage({ currentUser, initialData, getPopupCont
       <ConfigProvider
         theme={{
           algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-          token: { colorPrimary: '#ff74b9' },
         }}
         getPopupContainer={getPopupContainer}
       >

@@ -34,7 +34,6 @@ export default function App({ initialUser, getPopupContainer }: AppProps) {
       <ConfigProvider
         theme={{
           algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-          token: { colorPrimary: '#ff74b9' },
         }}
       >
         <div className={`min-h-screen flex flex-col ${isDark ? 'bg-slate-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>

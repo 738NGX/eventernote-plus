@@ -4,18 +4,15 @@ import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
 import { UserInfo } from "../utils/user/fetchAllUserEvents";
-import { parseNoteDeleteData } from "../utils/notes/parseNoteDeleteData";
+import PrefectureSelectMap from "../components/places/PrefectureSelectMap";
+import PlacesInfoCard from "../components/places/PlacesInfoCard";
 
-type Data = ReturnType<typeof parseNoteDeleteData>
-
-interface NotePageProps {
-  type: 'delete' | 'edit';
+interface PlacesPageProps {
   currentUser: UserInfo | null;
   getPopupContainer?: () => HTMLElement | ShadowRoot;
-  data: Data;
 }
 
-export const NotePage = ({ type, currentUser, getPopupContainer, data }: NotePageProps) => {
+export const PlacesPage = ({ currentUser, getPopupContainer }: PlacesPageProps) => {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const stored = localStorage.getItem('enplus-theme');
     if (stored === 'dark' || stored === 'light') return stored;
@@ -29,24 +26,8 @@ export const NotePage = ({ type, currentUser, getPopupContainer, data }: NotePag
 
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
   const isDark = theme === 'dark';
-
-  let enContent;
-  switch (type) {
-    case 'delete':
-      enContent = <Result
-        status={data.success ? "success" : "error"}
-        title={data.success ? "取消参加活动成功" : "取消参加活动失败"}
-        extra={data.success ? [
-          <Button type="primary" href={data.url} >返回活动页</Button>,
-        ] : []}
-      />
-      break;
-    case 'edit':
-      enContent = null;
-      break;
-    default:
-      break;
-  }
+  const [selectedPref, setSelectedPref] = useState<string>('東京都');
+  
   return <StyleProvider hashPriority="high">
     <ConfigProvider
       theme={{
@@ -64,12 +45,25 @@ export const NotePage = ({ type, currentUser, getPopupContainer, data }: NotePag
                   title: <a href="/">首页</a>,
                 },
                 {
-                  title: type === 'delete' ? '删除笔记' : '编辑笔记',
+                  title: '场馆情报',
                 }
               ]}
               className='!mb-2'
             />
-            {enContent}
+            <div className="flex gap-8">
+              {/* 左侧地图 */}
+              <div className="w-2/3">
+                <PrefectureSelectMap
+                  isDark={isDark}
+                  selectedPref={selectedPref}
+                  onSelect={setSelectedPref}
+                />
+              </div>
+              {/* 右侧卡片 */}
+              <div className="flex-1">
+                <PlacesInfoCard selectedPref={selectedPref} />
+              </div>
+            </div>
           </div>
         </main>
         <Footer theme={theme} />

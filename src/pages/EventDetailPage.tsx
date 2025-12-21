@@ -63,7 +63,6 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
     <ConfigProvider
       theme={{
         algorithm: isDark ? antTheme.darkAlgorithm : antTheme.defaultAlgorithm,
-        token: { colorPrimary: '#ff74b9' },
       }}
       getPopupContainer={getPopupContainer}
     >
@@ -73,7 +72,6 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
           <ConfigProvider
             theme={{
               algorithm: antTheme.darkAlgorithm,
-              token: { colorPrimary: '#ff74b9' },
             }}
           >
             <div
