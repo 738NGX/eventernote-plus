@@ -59,3 +59,5 @@ export function getIdByPrefectureName(name: string, prefixZero: boolean = false)
   const id = entry[0];
   return prefixZero && id.length === 1 ? `0${id}` : id;
 }
+
+export const prefectureList: string[] = Object.values(prefectureMap);

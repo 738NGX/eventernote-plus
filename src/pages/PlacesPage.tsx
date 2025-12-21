@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Card, ConfigProvider, Menu, MenuProps, Result, theme as antTheme } from "antd";
+import { Breadcrumb, Button, Card, ConfigProvider, Menu, MenuProps, Result, Select, theme as antTheme } from "antd";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { UserInfo } from "../utils/user/fetchAllUserEvents";
 import PrefectureSelectMap from "../components/places/PrefectureSelectMap";
 import PlacesInfoCard from "../components/places/PlacesInfoCard";
+import { prefectureList } from "../utils/prefecture";
 
 interface PlacesPageProps {
   currentUser: UserInfo | null;
@@ -27,7 +28,7 @@ export const PlacesPage = ({ currentUser, getPopupContainer }: PlacesPageProps) 
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
   const isDark = theme === 'dark';
   const [selectedPref, setSelectedPref] = useState<string>('東京都');
-  
+
   return <StyleProvider hashPriority="high">
     <ConfigProvider
       theme={{
@@ -60,7 +61,15 @@ export const PlacesPage = ({ currentUser, getPopupContainer }: PlacesPageProps) 
                 />
               </div>
               {/* 右侧卡片 */}
-              <div className="flex-1">
+              <div className="flex-1 flex flex-col gap-4">
+                <Select
+                  showSearch={{ optionFilterProp: 'label' }}
+                  placeholder="搜索或者选择一个地区"
+                  value={selectedPref}
+                  onChange={setSelectedPref}
+                  options={prefectureList.map(name => ({ label: name, value: name }))}
+                  style={{ width: '100%' }}
+                />
                 <PlacesInfoCard selectedPref={selectedPref} />
               </div>
             </div>

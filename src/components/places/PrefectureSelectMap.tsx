@@ -1,9 +1,6 @@
-import { useEffect, useRef } from "react";
-import { getIdByPrefectureName } from "../../utils/prefecture";
-
-const allPrefNames = [
-  '北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県','茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県','新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県','徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県', '海外'
-];
+import { useEffect, useRef, useState } from "react";
+import { useTooltip, TooltipWithBounds, defaultStyles } from '@visx/tooltip';
+import { prefectureList, getIdByPrefectureName } from "../../utils/prefecture";
 
 export default function PrefectureSelectMap({ isDark, selectedPref, onSelect }: {
   isDark: boolean;
@@ -11,11 +8,19 @@ export default function PrefectureSelectMap({ isDark, selectedPref, onSelect }: 
   onSelect: (pref: string) => void;
 }) {
   const svgContainerRef = useRef<HTMLDivElement>(null);
+  const [hoveredPref, setHoveredPref] = useState<string | null>(null);
+  const {
+    showTooltip,
+    hideTooltip,
+    tooltipOpen,
+    tooltipData,
+    tooltipLeft,
+    tooltipTop,
+  } = useTooltip<{ prefecture: string }>();
 
   useEffect(() => {
     const loadSvg = async () => {
       try {
-        // 这里假定 svg 路径和 PrefectureMap 一致
         const svgPath = chrome.runtime?.getURL?.('dist/jp.svg') || '/dist/jp.svg';
         const response = await fetch(svgPath);
         if (!response.ok) throw new Error('无法加载SVG文件');
@@ -27,28 +32,38 @@ export default function PrefectureSelectMap({ isDark, selectedPref, onSelect }: 
         svgElement.setAttribute('preserveAspectRatio', 'xMidYMid meet');
         svgElement.setAttribute('width', '100%');
         svgElement.setAttribute('height', 'auto');
-        // 统一灰色
-        allPrefNames.forEach(pref => {
+        prefectureList.forEach(pref => {
           const id = getIdByPrefectureName(pref, true);
           const path = svgElement.querySelector(`#JP${id}`) as SVGPathElement | null;
           if (path) {
             path.setAttribute('fill', isDark ? '#444' : '#e5e7eb');
             path.style.transition = 'opacity 0.3s, filter 0.3s';
             path.style.cursor = 'pointer';
-            // 事件绑定前先移除旧事件（可选，防止重复绑定）
             path.replaceWith(path.cloneNode(true));
             const newPath = svgElement.querySelector(`#JP${id}`) as SVGPathElement | null;
             if (newPath) {
-              newPath.addEventListener('mouseenter', () => {
-                if (pref !== selectedPref) newPath.style.opacity = '0.3';
+              newPath.addEventListener('mouseenter', (e) => {
+                setHoveredPref(pref);
+                const containerRect = svgContainerRef.current!.getBoundingClientRect();
+                showTooltip({
+                  tooltipLeft: (e as MouseEvent).clientX - containerRect.left + 8,
+                  tooltipTop: (e as MouseEvent).clientY - containerRect.top + 8,
+                  tooltipData: { prefecture: pref },
+                });
+              });
+              newPath.addEventListener('mousemove', (e) => {
+                const containerRect = svgContainerRef.current!.getBoundingClientRect();
+                showTooltip({
+                  tooltipLeft: (e as MouseEvent).clientX - containerRect.left + 8,
+                  tooltipTop: (e as MouseEvent).clientY - containerRect.top + 8,
+                  tooltipData: { prefecture: pref },
+                });
               });
               newPath.addEventListener('mouseleave', () => {
-                newPath.style.opacity = '1';
+                setHoveredPref(null);
+                hideTooltip();
               });
-              newPath.addEventListener('click', () => {
-                onSelect(pref);
-              });
-              // 选中高亮
+              newPath.addEventListener('click', () => onSelect(pref));
               if (pref === selectedPref) {
                 newPath.setAttribute('fill', '#f472b6');
                 newPath.style.opacity = '1';
@@ -68,9 +83,46 @@ export default function PrefectureSelectMap({ isDark, selectedPref, onSelect }: 
     loadSvg();
   }, [isDark, selectedPref, onSelect]);
 
+  useEffect(() => {
+    const svg = svgContainerRef.current?.querySelector('svg');
+    if (!svg) return;
+    prefectureList.forEach(pref => {
+      const id = getIdByPrefectureName(pref, true);
+      const path = svg.querySelector(`#JP${id}`) as SVGPathElement | null;
+      if (path) {
+        if (hoveredPref) {
+          if (pref === hoveredPref) {
+            path.style.opacity = '1';
+          } else {
+            path.style.opacity = '0.2';
+          }
+        } else {
+          path.style.opacity = '1';
+        }
+      }
+    });
+  }, [hoveredPref]);
+
   return (
     <div style={{ width: '100%', height: 'auto', position: 'relative' }}>
       <div ref={svgContainerRef} style={{ width: '100%', height: 'auto' }} />
+      {tooltipOpen && tooltipData && (
+        <TooltipWithBounds
+          top={tooltipTop}
+          left={tooltipLeft}
+          style={{
+            ...defaultStyles,
+            backgroundColor: isDark ? '#333' : '#222',
+            color: '#fff',
+            padding: '8px',
+            borderRadius: '4px',
+            zIndex: 9999,
+            pointerEvents: 'none',
+          }}
+        >
+          <strong>{tooltipData.prefecture}</strong>
+        </TooltipWithBounds>
+      )}
     </div>
   );
 }
