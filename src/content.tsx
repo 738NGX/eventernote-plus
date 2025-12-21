@@ -16,6 +16,8 @@ import { parseUsersList } from './utils/user/parseUsersList';
 import { UsersPage } from './pages/UsersPage';
 import { ConfigProvider } from 'antd';
 import { PlacesPage } from './pages/PlacesPage';
+import { parseActorsPageData } from './utils/actors/parseActorsPageData';
+import { ActorsPage } from './pages/ActorsPage';
 
 // 获取当前页面类型
 function getPageType(disabled: boolean): string {
@@ -24,6 +26,11 @@ function getPageType(disabled: boolean): string {
   // 主页 /
   if (path === '/' || /eventernote\.com\/?$/.test(location.href)) {
     return disabled ? 'disabled' : 'home';
+  }
+
+  // 艺人情报页 /actors
+  if (/^\/actors\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'actors';
   }
 
   // 场地情报页 /places
@@ -151,6 +158,11 @@ function init() {
       userPageData = parseUserPageData();
       //console.log('[ENP] Parsed from DOM:', userPageData);
     }
+    let actorsPageData: ReturnType<typeof parseActorsPageData> | null = null;
+    if (pageType === 'actors') {
+      actorsPageData = parseActorsPageData();
+      console.log('[ENP] Parsed from DOM:', actorsPageData);
+    }
     let eventDetailData: ReturnType<typeof parseEventDetailData> | null = null;
     if (pageType === 'eventDetail') {
       eventDetailData = parseEventDetailData();
@@ -223,19 +235,29 @@ function init() {
     const getPopupContainer = () => shadow;
     if (pageType === 'home') {
       component = <App initialUser={currentUser} getPopupContainer={getPopupContainer} />;
-    } else if( pageType === 'places') {
+    } 
+    else if (pageType === 'actors') {
+      component = <ActorsPage currentUser={currentUser} getPopupContainer={getPopupContainer} data={actorsPageData!} />;
+    }
+    else if(pageType === 'places') {
       component = <PlacesPage currentUser={currentUser} getPopupContainer={getPopupContainer} />;
-    } else if (pageType === 'user') {
+    } 
+    else if (pageType === 'user') {
       component = <UserProfilePage currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
-    } else if (pageType === 'about') {
+    } 
+    else if (pageType === 'about') {
       component = <AboutPage currentUser={currentUser} getPopupContainer={getPopupContainer} type={location.pathname.match(/^\/pages\/(company|termsofservice|privacy)\/?$/)?.[1] as 'company' | 'privacy' | 'termsofservice'} />;
-    } else if (pageType === 'eventDetail') {
+    } 
+    else if (pageType === 'eventDetail') {
       component = <EventDetailPage initialData={eventDetailData!} currentUser={currentUser} getPopupContainer={getPopupContainer} />;
-    } else if (pageType === 'deleteNote') {
+    } 
+    else if (pageType === 'deleteNote') {
       component = <NotePage type='delete' currentUser={currentUser} getPopupContainer={getPopupContainer} data={deleteNoteData!} />;
-    } else if (pageType === 'annual-report') {
+    } 
+    else if (pageType === 'annual-report') {
       component = <AnnualReportPage username='SUFE_IDOL' year='2025' />
-    } else if (pageType === 'following' || pageType === 'follower') {
+    } 
+    else if (pageType === 'following' || pageType === 'follower') {
       component = <UsersPage type={pageType} currentUser={currentUser} getPopupContainer={getPopupContainer} data={usersListData!} />;
     }
 

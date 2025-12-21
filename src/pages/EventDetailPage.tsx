@@ -67,7 +67,7 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
     const [manifest, setManifest] = useState(null);
     useEffect(() => {
       if (!manifest) {
-        fetch(ACTOR_MANIFEST_URL)
+        fetch(ACTOR_MANIFEST_URL, { cache: 'reload' })
           .then(res => res.json())
           .then(data => setManifest(data))
           .catch(err => console.error("Manifest load failed", err));
