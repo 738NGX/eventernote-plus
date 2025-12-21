@@ -7,6 +7,9 @@ import { UserInfo } from "../utils/user/fetchAllUserEvents";
 import PrefectureSelectMap from "../components/places/PrefectureSelectMap";
 import PlacesInfoCard from "../components/places/PlacesInfoCard";
 import { prefectureList } from "../utils/prefecture";
+import { Input } from 'antd';
+
+const { Search } = Input;
 
 interface PlacesPageProps {
   currentUser: UserInfo | null;
@@ -27,7 +30,7 @@ export const PlacesPage = ({ currentUser, getPopupContainer }: PlacesPageProps) 
 
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
   const isDark = theme === 'dark';
-  const [selectedPref, setSelectedPref] = useState<string>('東京都');
+  const [selectedPref, setSelectedPref] = useState<string>('东京都');
 
   return <StyleProvider hashPriority="high">
     <ConfigProvider
@@ -62,15 +65,42 @@ export const PlacesPage = ({ currentUser, getPopupContainer }: PlacesPageProps) 
               </div>
               {/* 右侧卡片 */}
               <div className="flex-1 flex flex-col gap-4">
+                <h4>搜索会场情报</h4>
+                <Search
+                  placeholder="搜索场馆/地区..."
+                  allowClear
+                  enterButton="搜索"
+                  size="large"
+                  onSearch={kw => {
+                    if (kw && kw.trim()) {
+                      window.location.href = `/places/search?keyword=${encodeURIComponent(kw.trim())}`;
+                    }
+                  }}
+                />
+                <h4>选择或点击左侧地图来探索各个都道府县的会场！</h4>
                 <Select
-                  showSearch={{ optionFilterProp: 'label' }}
-                  placeholder="搜索或者选择一个地区"
+                  showSearch
+                  placeholder="选择一个地区"
                   value={selectedPref}
                   onChange={setSelectedPref}
                   options={prefectureList.map(name => ({ label: name, value: name }))}
                   style={{ width: '100%' }}
+                  filterOption={(input, option) =>
+                    (option?.label as string).toLowerCase().includes(input.toLowerCase())
+                  }
+                  onInputKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      const kw = (e.target as HTMLInputElement).value;
+                      if (kw && kw.trim()) {
+                        window.location.href = `/places/search?keyword=${encodeURIComponent(kw.trim())}`;
+                      }
+                    }
+                  }}
+                  allowClear
                 />
                 <PlacesInfoCard selectedPref={selectedPref} />
+                <h4>没有找到你想要的会场？</h4>
+                <Button className="!w-full" type="primary" href={`/places/add`}>增加新的会场情报</Button>
               </div>
             </div>
           </div>
