@@ -1,4 +1,4 @@
-import { Breadcrumb, Card, Statistic, ConfigProvider, Image, theme as antTheme, Tag, Button, Result, message } from "antd";
+import { Breadcrumb, Card, Statistic, ConfigProvider, Image, theme as antTheme, Tag, Button, Result, message, Avatar } from "antd";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
@@ -7,6 +7,7 @@ import { UserInfo } from "../utils/user/fetchAllUserEvents";
 import { parseEventDetailData } from "../utils/events/parseEventDetailData";
 import { CalendarOutlined, ClockCircleOutlined, EnvironmentOutlined, LinkOutlined } from "@ant-design/icons";
 import fallbackImage from "../utils/fallbackImage";
+import { ACTOR_MANIFEST_URL, CDN_BASE } from "../utils/config";
 
 const { Timer } = Statistic;
 
@@ -34,7 +35,7 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
   const isDark = theme === 'dark';
 
-  const AvatarList = ({ userList, emptyText }: { userList: any, emptyText: string }) => {
+  const UserList = ({ userList, emptyText }: { userList: any, emptyText: string }) => {
     if (userList.length === 0) {
       return <p>{emptyText}</p>
     }
@@ -56,6 +57,38 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
           <span className={`mt-2 text-sm truncate w-16 ${isDark ? '!text-white' : '!text-slate-900'}`}>{user.name}</span>
         </a>
       ))}
+    </div>
+  }
+
+  const ArtistsList = ({ performers }: { performers: any }) => {
+    if (!performers || performers.length === 0) {
+      return <p>出演人员未定</p>
+    }
+    const [manifest, setManifest] = useState(null);
+    useEffect(() => {
+      if (!manifest) {
+        fetch(ACTOR_MANIFEST_URL)
+          .then(res => res.json())
+          .then(data => setManifest(data))
+          .catch(err => console.error("Manifest load failed", err));
+      }
+    }, []);
+
+    return <div className="grid grid-cols-3 gap-2">
+      {performers.map((performer: any) => {
+        const hasAvatar = manifest && manifest[performer.id];
+
+        return <Card
+          key={performer.id}
+          hoverable
+        >
+          <Card.Meta
+            avatar={<Avatar shape="square" size={48} src={hasAvatar ? `${CDN_BASE}/actors/${performer.id}.webp` : undefined}>{performer.name[0]}</Avatar>}
+            title={<a href={performer.url}>{performer.name}</a>}
+            description={<span>ID: {performer.id}</span>}
+          />
+        </Card>
+      })}
     </div>
   }
 
@@ -189,24 +222,7 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
                   </div>
                 </Card>
                 <Card title="出演人员" hoverable>
-                  {
-                    initialData.info.performers && initialData.info.performers.length > 0 ? (
-                      <div className="flex flex-wrap gap-2">
-                        {initialData.info.performers.map((performer) => (
-                          <Tag
-                            key={performer.id}
-                            color='magenta'
-                            icon={<LinkOutlined />}
-                            href={performer.url}
-                            className="cursor-pointer hover:opacity-80 transition"
-                            style={{ margin: 0, padding: '4px 10px', fontSize: 13 }}
-                          >
-                            {performer.name}
-                          </Tag>
-                        ))}
-                      </div>
-                    ) : <p>出演人员未定</p>
-                  }
+                  <ArtistsList performers={initialData.info.performers} />
                 </Card>
                 <Card title="活动说明" hoverable>
                   <p>{initialData.info.description?.split('\n').map((line, index) => (
@@ -271,10 +287,10 @@ export const EventDetailPage = ({ initialData, currentUser, getPopupContainer }:
                   />
                 </Card>
                 {initialData.sidebar.friends.exists && <Card title={`参加此活动的好友（${initialData.sidebar.friends.count}人）`} hoverable>
-                  <AvatarList userList={initialData.sidebar.friends.list} emptyText="暂无好友参加此活动" />
+                  <UserList userList={initialData.sidebar.friends.list} emptyText="暂无好友参加此活动" />
                 </Card>}
                 <Card title={`参加此活动的人（${initialData.sidebar.participants.count}人）`} extra={<a href={initialData.sidebar.participants.see_all_url || "#"}>查看全部</a>} hoverable>
-                  <AvatarList userList={initialData.sidebar.participants.preview_list} emptyText="暂无人参加此活动" />
+                  <UserList userList={initialData.sidebar.participants.preview_list} emptyText="暂无人参加此活动" />
                 </Card>
               </div>
             </div>

@@ -1,5 +1,7 @@
-import { Card, Tag } from 'antd';
+import { Avatar, Card, Tag } from 'antd';
 import type { ArtistData } from '../../pages/UserProfilePage';
+import { useEffect, useState } from 'react';
+import { ACTOR_MANIFEST_URL, CDN_BASE } from '../../utils/config';
 
 interface FavoriteArtistsProps {
   artists: ArtistData[];
@@ -11,6 +13,16 @@ export default function FavoriteArtists({ artists, theme, canEdit }: FavoriteArt
   const isDark = theme === 'dark';
 
   if (artists.length === 0) return null;
+
+  const [manifest, setManifest] = useState(null);
+  useEffect(() => {
+    if (!manifest) {
+      fetch(ACTOR_MANIFEST_URL)
+        .then(res => res.json())
+        .then(data => setManifest(data))
+        .catch(err => console.error("Manifest load failed", err));
+    }
+  }, []);
 
   return (
     <Card
@@ -29,22 +41,18 @@ export default function FavoriteArtists({ artists, theme, canEdit }: FavoriteArt
       }
       styles={{ body: { padding: 16 } }}
     >
-      <div className="flex flex-wrap gap-2">
-        {artists.map(artist => (
-          <Tag
+      <div className="grid grid-cols-4 gap-2">
+        {artists.map((artist) => {
+          const hasAvatar = manifest && manifest[artist.id];
+          return <a
             key={artist.id}
-            color='magenta'
-            className="cursor-pointer hover:opacity-80 transition"
-            style={{ margin: 0, padding: '4px 10px', fontSize: 13 }}
+            href={`/actors/${encodeURIComponent(artist.name)}/${artist.id}`}
+            className={`flex flex-col items-center  text-center hover:opacity-80 transition`}
           >
-            <a
-              href={`/actors/${encodeURIComponent(artist.name)}/${artist.id}`}
-              className="hover:underline"
-            >
-              {artist.name}
-            </a>
-          </Tag>
-        ))}
+            <Avatar size="large" src={hasAvatar ? `${CDN_BASE}/actors/${artist.id}.webp` : undefined}>{artist.name[0].toUpperCase()}</Avatar>
+            <span className={`mt-2 text-sm truncate w-16 ${isDark ? '!text-white' : '!text-slate-900'}`}>{artist.name}</span>
+          </a>
+        })}
       </div>
     </Card>
   );
