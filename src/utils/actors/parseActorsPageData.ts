@@ -1,5 +1,4 @@
 export const parseActorsPageData = () => {
-  // ...existing code...
   // 解析页面DOM，提取必要内容
   const page = document.querySelector('.span8.page');
   if (!page) return null;
@@ -54,5 +53,4 @@ export const parseActorsPageData = () => {
     recent,
     initials
   };
-
 }

@@ -6,11 +6,12 @@ import { EventCard } from './EventCard';
 interface EventsListProps {
   events: EventData[];
   theme: 'light' | 'dark';
-  username: string;
-  title?: '最近参加的活动' | '共同参加的活动' | '收藏的艺人的近期活动';
+  username?: string;
+  href?: string;
+  title?: string;
 }
 
-export default function EventsList({ events, theme, username, title }: EventsListProps) {
+export default function EventsList({ events, theme, username, title, href }: EventsListProps) {
   const isDark = theme === 'dark';
 
   return (
@@ -19,13 +20,13 @@ export default function EventsList({ events, theme, username, title }: EventsLis
         <h3 className="text-lg font-bold">
           📅 {title}
         </h3>
-        <Button
+        {(username || href) && <Button
           type="link"
-          href={`/users/${username}/events${title === '共同参加的活动' ? '/same' : title === '收藏的艺人的近期活动' ? '/?type=3' : ''}`}
+          href={username ? `/users/${username}/events${title === '共同参加的活动' ? '/same' : title === '收藏的艺人的近期活动' ? '/?type=3' : ''}` : href}
           icon={<RightOutlined />}
         >
           查看全部
-        </Button>
+        </Button>}
       </div>
 
       {events.length === 0 ? (

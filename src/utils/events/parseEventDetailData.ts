@@ -38,12 +38,18 @@ export function parseEventInfo(): EventInfo {
       const timeText = content.innerText.trim();
       data.time = parseTime(timeText);
     } else if (label === '開催場所') {
-      data.location = { name: content.innerText.trim(), id: content.querySelector('a')?.getAttribute('href')?.split('/').pop() || '' };
+      data.location = { name: content.innerText.trim(), id: (() => {
+        let lid = content.querySelector('a')?.getAttribute('href')?.split('/').pop() || '';
+        return lid.split('?')[0].split('#')[0];
+      })() };
     } else if (label === '出演者') {
       data.performers = Array.from(content.querySelectorAll('a')).map(a => ({
         name: a.innerText.trim(),
         url: a.href,
-        id: a.getAttribute('href')?.split('/').pop() || null
+        id: (() => {
+          let aid = a.getAttribute('href')?.split('/').pop() || '';
+          return aid.split('?')[0].split('#')[0] || null;
+        })()
       }));
     } else if (label === '関連リンク') {
       const links = content.querySelectorAll('a');
@@ -146,7 +152,10 @@ export function parseEventDetailSidebarData(): EventDetailSidebarData {
         name: name?.innerText.trim() || "Unknown",
         url: a?.href || null,
         icon: img?.src || null,
-        user_id: a?.href.split('/').pop() || null
+        user_id: (() => {
+          let uid = a?.href.split('/').pop() || '';
+          return uid.split('?')[0].split('#')[0] || null;
+        })()
       };
     });
   };
@@ -184,7 +193,8 @@ export function parseEventDetailSidebarData(): EventDetailSidebarData {
 }
 
 export function parseEventDetailData() {
-  const id = location.pathname.split('/').pop() || '';
+  let id = location.pathname.split('/').pop() || '';
+  id = id.split('?')[0].split('#')[0];
   const title = document.querySelector('.gb_events_detail_title')?.textContent?.trim() || '';
   const info = parseEventInfo();
   const sidebar = parseEventDetailSidebarData();

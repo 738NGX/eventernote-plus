@@ -18,6 +18,12 @@ import { ConfigProvider } from 'antd';
 import { PlacesPage } from './pages/PlacesPage';
 import { parseActorsPageData } from './utils/actors/parseActorsPageData';
 import { ActorsPage } from './pages/ActorsPage';
+import { ActorsDetailPage } from './pages/ActorsDetailPage';
+import { parseActorsDetailData } from './utils/actors/parseActorsDetailData';
+import { parseActorsEventsData } from './utils/actors/parseActorsEventsData';
+import { parseActorsFansData } from './utils/actors/parseActorsFansData';
+import { ActorsEventsPage } from './pages/ActorsEventsPage';
+import { ActorsFansPage } from './pages/ActorsFansPage';
 
 // 获取当前页面类型
 function getPageType(disabled: boolean): string {
@@ -31,6 +37,21 @@ function getPageType(disabled: boolean): string {
   // 艺人情报页 /actors
   if (/^\/actors\/?$/.test(path)) {
     return disabled ? 'disabled' : 'actors';
+  }
+
+  // 艺人详情页 /actors/${id} 或 /actors/${name}/${id}
+  if (/^\/actors\/[^/]+(\/\d+)?\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'actorsDetail';
+  }
+
+  // 艺人活动页 /actors/${id}/events[args] 或 /actors/${name}/${id}/events[args]
+  if (/^\/actors\/[^/]+(\/\d+)?\/events(.*)?\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'actorsEvents';
+  }
+
+  // 艺人粉丝页 /actors/${id}/users[args]
+  if (/^\/actors\/[^/]+(\/\d+)?\/users(.*)?\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'actorsFans';
   }
 
   // 场地情报页 /places
@@ -156,12 +177,27 @@ function init() {
     let userPageData: ReturnType<typeof parseUserPageData> | null = null;
     if (pageType === 'user') {
       userPageData = parseUserPageData();
-      //console.log('[ENP] Parsed from DOM:', userPageData);
+      console.log('[ENP] Parsed from DOM:', userPageData);
     }
     let actorsPageData: ReturnType<typeof parseActorsPageData> | null = null;
     if (pageType === 'actors') {
       actorsPageData = parseActorsPageData();
       console.log('[ENP] Parsed from DOM:', actorsPageData);
+    }
+    let actorsDetailData: ReturnType<typeof parseActorsDetailData> | null = null;
+    if (pageType === 'actorsDetail') {
+      actorsDetailData = parseActorsDetailData();
+      console.log('[ENP] Parsed from DOM:', actorsDetailData);
+    }
+    let actorsEventsData: ReturnType<typeof parseActorsEventsData> | null = null;
+    if (pageType === 'actorsEvents') {
+      actorsEventsData = parseActorsEventsData();
+      console.log('[ENP] Parsed from DOM:', actorsEventsData);
+    }
+    let actorsFansData: ReturnType<typeof parseActorsFansData> | null = null;
+    if (pageType === 'actorsFans') {
+      actorsFansData = parseActorsFansData();
+      console.log('[ENP] Parsed from DOM:', actorsFansData);
     }
     let eventDetailData: ReturnType<typeof parseEventDetailData> | null = null;
     if (pageType === 'eventDetail') {
@@ -235,28 +271,41 @@ function init() {
     const getPopupContainer = () => shadow;
     if (pageType === 'home') {
       component = <App initialUser={currentUser} getPopupContainer={getPopupContainer} />;
-    } 
+    }
     else if (pageType === 'actors') {
       component = <ActorsPage currentUser={currentUser} getPopupContainer={getPopupContainer} data={actorsPageData!} />;
     }
-    else if(pageType === 'places') {
+    else if (pageType === 'places') {
       component = <PlacesPage currentUser={currentUser} getPopupContainer={getPopupContainer} />;
-    } 
+    }
     else if (pageType === 'user') {
       component = <UserProfilePage currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
-    } 
+    }
+    else if (pageType === 'actorsDetail') {
+      let id = window.location.pathname.split('/').pop() || '';
+      id = id.split('?')[0].split('#')[0];
+      component = <ActorsDetailPage currentUser={currentUser} getPopupContainer={getPopupContainer} data={{ ...actorsDetailData!, id }} />;
+    }
+    else if (pageType === 'actorsEvents') {
+      let id = window.location.pathname.split('/').slice(-2, -1)[0] || '';
+      component = <ActorsEventsPage currentUser={currentUser} getPopupContainer={getPopupContainer} data={{ ...actorsEventsData!, id }} />;
+    }
+    else if (pageType === 'actorsFans') {
+      let id = window.location.pathname.split('/').slice(-2, -1)[0] || '';
+      component = <ActorsFansPage currentUser={currentUser} getPopupContainer={getPopupContainer} data={{ ...actorsFansData!, id }} />;
+    }
     else if (pageType === 'about') {
       component = <AboutPage currentUser={currentUser} getPopupContainer={getPopupContainer} type={location.pathname.match(/^\/pages\/(company|termsofservice|privacy)\/?$/)?.[1] as 'company' | 'privacy' | 'termsofservice'} />;
-    } 
+    }
     else if (pageType === 'eventDetail') {
       component = <EventDetailPage initialData={eventDetailData!} currentUser={currentUser} getPopupContainer={getPopupContainer} />;
-    } 
+    }
     else if (pageType === 'deleteNote') {
       component = <NotePage type='delete' currentUser={currentUser} getPopupContainer={getPopupContainer} data={deleteNoteData!} />;
-    } 
+    }
     else if (pageType === 'annual-report') {
       component = <AnnualReportPage username='SUFE_IDOL' year='2025' />
-    } 
+    }
     else if (pageType === 'following' || pageType === 'follower') {
       component = <UsersPage type={pageType} currentUser={currentUser} getPopupContainer={getPopupContainer} data={usersListData!} />;
     }

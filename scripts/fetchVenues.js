@@ -20,7 +20,8 @@ async function fetchVenuesForPrefecture(prefectureId) {
     // Updated selector to match venue links based on observed structure
     $('ul.gb_places_list li a').each((_, element) => {
       const venueName = $(element).text().trim();
-      const venueId = $(element).attr('href').split('/').pop();
+      let venueId = $(element).attr('href').split('/').pop();
+      venueId = venueId.split('?')[0].split('#')[0];
 
       // Ensure uniqueness by using venueId as the key
       if (!venues.has(venueId)) {

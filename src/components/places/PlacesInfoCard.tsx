@@ -204,7 +204,6 @@ export default function PlacesInfoCard({ selectedPref }: { selectedPref: string 
   return (
     <Card
       style={{ width: '100%' }}
-      hoverable
     >
       <Title level={3} style={{ marginBottom: 8 }}>{selectedPref}</Title>
       <Divider style={{ margin: '8px 0' }} />

@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Card, ConfigProvider, Menu, MenuProps, Result, Table, theme as antTheme, Input, Avatar } from "antd";
+import { Breadcrumb, Button, Card, ConfigProvider, Table, theme as antTheme, Input, Avatar } from "antd";
 import { ACTOR_MANIFEST_URL, CDN_BASE } from "../utils/config";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
@@ -68,7 +68,7 @@ export const ActorsPage = ({ currentUser, getPopupContainer, data }: ActorsPageP
         title: '艺人名',
         dataIndex: 'name',
         key: 'name',
-        render: (text: string, record: any) => <a href={record.url} target="_blank" rel="noopener noreferrer">{text}</a>,
+        render: (text: string, record: any) => <a href={record.url}>{text}</a>,
       },
     ];
 
@@ -83,7 +83,7 @@ export const ActorsPage = ({ currentUser, getPopupContainer, data }: ActorsPageP
         title: '假名',
         dataIndex: 'kana',
         key: 'kana',
-        render: (text: string, record: any) => <a href={record.url} target="_blank" rel="noopener noreferrer">{text}</a>,
+        render: (text: string, record: any) => <a href={record.url}>{text}</a>,
       },
       {
         title: '人数',

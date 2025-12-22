@@ -87,7 +87,8 @@ export async function fetchAllUserEvents(username: string, year?: string): Promi
       $('li.clearfix').each((_, element) => {
         const eventTitle = $(element).find('h4 a').text().trim();
         const eventLink = $(element).find('h4 a').attr('href');
-        const eventId = eventLink?.split('/').pop() || '';
+        let eventId = eventLink?.split('/').pop() || '';
+        eventId = eventId.split('?')[0].split('#')[0];
 
         const dateText = $(element).find('.date p').first().text().trim();
         const timeText = $(element).find('.place span.s').text().trim();
@@ -97,7 +98,10 @@ export async function fetchAllUserEvents(username: string, year?: string): Promi
         const venueElement = $(element).find('.place a');
         const venue = venueElement.length
           ? {
-            id: venueElement.attr('href')?.split('/').pop() || '',
+            id: (() => {
+              let vid = venueElement.attr('href')?.split('/').pop() || '';
+              return vid.split('?')[0].split('#')[0];
+            })(),
             name: venueElement.text().trim(),
             prefecture: {
               id: '',
@@ -119,7 +123,10 @@ export async function fetchAllUserEvents(username: string, year?: string): Promi
           .find('.actor ul li a')
           .map((_, el) => ({
             name: $(el).text().trim(),
-            id: $(el).attr('href')?.split('/').pop() || '',
+            id: (() => {
+              let pid = $(el).attr('href')?.split('/').pop() || '';
+              return pid.split('?')[0].split('#')[0];
+            })(),
           }))
           .get();
 

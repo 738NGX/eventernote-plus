@@ -80,7 +80,7 @@ export const EventCard = ({ event, isDark }: { event: EventData, isDark: boolean
         </div>
 
         {/* 参加人数 */}
-        {event.participantCount > 0 && (
+        {(
           <div className={`flex-shrink-0 w-16 md:w-20 flex flex-col items-center justify-center border-l ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
             <TeamOutlined className="text-lg mb-1 text-pink-500" />
             <span className={`text-base md:text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
