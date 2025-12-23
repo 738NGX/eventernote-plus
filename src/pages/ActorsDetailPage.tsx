@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Card, ConfigProvider, Image, theme as antTheme, Table, Avatar } from "antd";
+import { Breadcrumb, Button, Card, ConfigProvider, Image, theme as antTheme, Table, Avatar, message, Modal } from "antd";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
@@ -36,6 +36,68 @@ export const ActorsDetailPage = ({ currentUser, getPopupContainer, data }: Actor
 
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
   const isDark = theme === 'dark';
+
+  const [isFavorite, setIsFavorite] = useState(data.isFavorite);
+  const [loading, setLoading] = useState(false);
+
+  function callFavoriteAction(action: 'add' | 'remove', actorId: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      const handler = (event: MessageEvent) => {
+        if (event.data?.type === 'ENP_FAVORITE_RESULT' && event.data?.actorId === actorId) {
+          window.removeEventListener('message', handler);
+          resolve(!!event.data.success);
+        }
+      };
+      window.addEventListener('message', handler);
+      window.postMessage({ type: 'ENP_FAVORITE_ACTION', action, actorId }, '*');
+      setTimeout(() => {
+        window.removeEventListener('message', handler);
+        resolve(false);
+      }, 5000);
+    });
+  }
+
+  // 收藏艺人
+  const handleAddFavorite = async () => {
+    if (!currentUser) {
+      message.info('请先登录');
+      return;
+    }
+    setLoading(true);
+    const success = await callFavoriteAction('add', data.id);
+    if (success) {
+      setIsFavorite(true);
+      message.success('收藏成功');
+    } else {
+      message.error('收藏失败');
+    }
+    setLoading(false);
+  };
+
+  // 取消收藏艺人
+  const handleRemoveFavorite = () => {
+    if (!currentUser) {
+      message.info('请先登录');
+      return;
+    }
+    Modal.confirm({
+      title: '确认取消收藏？',
+      content: '确定要将该艺人移出收藏吗？',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: async () => {
+        setLoading(true);
+        const success = await callFavoriteAction('remove', data.id);
+        if (success) {
+          setIsFavorite(false);
+          message.success('已取消收藏');
+        } else {
+          message.error('取消收藏失败');
+        }
+        setLoading(false);
+      }
+    });
+  };
 
   return <StyleProvider hashPriority="high">
     <ConfigProvider
@@ -77,8 +139,14 @@ export const ActorsDetailPage = ({ currentUser, getPopupContainer, data }: Actor
                   <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                     {data.kana}
                   </p>
-                  <Button className="!w-full mt-2" type={data.isFavorite ? 'default' : 'primary'} danger={data.isFavorite}>
-                    {data.isFavorite ? '取消收藏' : '收藏艺人'}
+                  <Button
+                    className="!w-full mt-2"
+                    type={isFavorite ? 'default' : 'primary'}
+                    danger={isFavorite}
+                    loading={loading}
+                    onClick={isFavorite ? handleRemoveFavorite : handleAddFavorite}
+                  >
+                    {isFavorite ? '取消收藏' : '收藏艺人'}
                   </Button>
                 </Card>
                 <Card title={`粉丝一览`} extra={<a href={`/actors/${data.id}/users`}>查看全部{data.fansTotal}人</a>}>
