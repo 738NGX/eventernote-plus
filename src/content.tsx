@@ -24,6 +24,10 @@ import { parseActorsEventsData } from './utils/actors/parseActorsEventsData';
 import { parseActorsFansData } from './utils/actors/parseActorsFansData';
 import { ActorsEventsPage } from './pages/ActorsEventsPage';
 import { ActorsFansPage } from './pages/ActorsFansPage';
+import { parsePrefecturePageData } from './utils/places/parsePrefecturePageData';
+import { PrefecturePage } from './pages/PrefecturePage';
+import { parsePlacesDetailData } from './utils/places/parsePlacesDetailData';
+import { PlacesDetailPage } from './pages/PlacesDetailPage';
 
 // 获取当前页面类型
 function getPageType(disabled: boolean): string {
@@ -57,6 +61,16 @@ function getPageType(disabled: boolean): string {
   // 场地情报页 /places
   if (/^\/places\/?$/.test(path)) {
     return disabled ? 'disabled' : 'places';
+  }
+
+  // 都道府县页 /places/prefecture/${id}
+  if (/^\/places\/prefecture\/\d+\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'prefecture';
+  }
+
+  // 场地页 /places/${id}
+  if (/^\/places\/\d+\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'placesDetail';
   }
 
   // 用户页 /users 或 /users/${username}
@@ -179,6 +193,16 @@ function init() {
       userPageData = parseUserPageData();
       console.log('[ENP] Parsed from DOM:', userPageData);
     }
+    let prefecturePageData: ReturnType<typeof parsePrefecturePageData> | null = null;
+    if (pageType === 'prefecture') {
+      prefecturePageData = parsePrefecturePageData();
+      console.log('[ENP] Parsed from DOM:', prefecturePageData);
+    }
+    let placesDetailData: ReturnType<typeof parsePlacesDetailData> | null = null;
+    if (pageType === 'placesDetail') {
+      placesDetailData = parsePlacesDetailData();
+      console.log('[ENP] Parsed from DOM:', placesDetailData);
+    }
     let actorsPageData: ReturnType<typeof parseActorsPageData> | null = null;
     if (pageType === 'actors') {
       actorsPageData = parseActorsPageData();
@@ -277,6 +301,12 @@ function init() {
     }
     else if (pageType === 'places') {
       component = <PlacesPage currentUser={currentUser} getPopupContainer={getPopupContainer} />;
+    }
+    else if (pageType === 'prefecture') {
+      component = <PrefecturePage currentUser={currentUser} getPopupContainer={getPopupContainer} data={prefecturePageData!} />;
+    }
+    else if (pageType === 'placesDetail') {
+      component = <PlacesDetailPage currentUser={currentUser} getPopupContainer={getPopupContainer} data={placesDetailData!} />;
     }
     else if (pageType === 'user') {
       component = <UserProfilePage currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
