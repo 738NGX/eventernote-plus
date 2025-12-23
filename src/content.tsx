@@ -22,7 +22,7 @@ import { ActorsDetailPage } from './pages/ActorsDetailPage';
 import { parseActorsDetailData } from './utils/actors/parseActorsDetailData';
 import { parseActorsEventsData } from './utils/actors/parseActorsEventsData';
 import { parseActorsFansData } from './utils/actors/parseActorsFansData';
-import { ActorsEventsPage } from './pages/ActorsEventsPage';
+import { LimitedEventsPage } from './pages/LimitedEventsPage';
 import { ActorsFansPage } from './pages/ActorsFansPage';
 import { parsePrefecturePageData } from './utils/places/parsePrefecturePageData';
 import { PrefecturePage } from './pages/PrefecturePage';
@@ -61,6 +61,11 @@ function getPageType(disabled: boolean): string {
   // 场地情报页 /places
   if (/^\/places\/?$/.test(path)) {
     return disabled ? 'disabled' : 'places';
+  }
+
+  // 场地活动页 /places/${id}/events[args]
+  if (/^\/places\/\d+\/events(.*)?\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'placesEvents';
   }
 
   // 都道府县页 /places/prefecture/${id}
@@ -214,7 +219,7 @@ function init() {
       console.log('[ENP] Parsed from DOM:', actorsDetailData);
     }
     let actorsEventsData: ReturnType<typeof parseActorsEventsData> | null = null;
-    if (pageType === 'actorsEvents') {
+    if (pageType === 'actorsEvents' || pageType === 'placesEvents') {
       actorsEventsData = parseActorsEventsData();
       console.log('[ENP] Parsed from DOM:', actorsEventsData);
     }
@@ -316,9 +321,9 @@ function init() {
       id = id.split('?')[0].split('#')[0];
       component = <ActorsDetailPage currentUser={currentUser} getPopupContainer={getPopupContainer} data={{ ...actorsDetailData!, id }} />;
     }
-    else if (pageType === 'actorsEvents') {
+    else if (pageType === 'actorsEvents' || pageType === 'placesEvents') {
       let id = window.location.pathname.split('/').slice(-2, -1)[0] || '';
-      component = <ActorsEventsPage currentUser={currentUser} getPopupContainer={getPopupContainer} data={{ ...actorsEventsData!, id }} />;
+      component = <LimitedEventsPage type={pageType === 'actorsEvents' ? 'actors' : 'places'} currentUser={currentUser} getPopupContainer={getPopupContainer} data={{ ...actorsEventsData!, id }} />;
     }
     else if (pageType === 'actorsFans') {
       let id = window.location.pathname.split('/').slice(-2, -1)[0] || '';

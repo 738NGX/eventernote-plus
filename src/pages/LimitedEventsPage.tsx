@@ -9,13 +9,14 @@ import { EventCard } from "../components/user/EventCard";
 
 type Data = ReturnType<typeof parseActorsEventsData> & { id: string }
 
-interface ActorsEventsProps {
+interface LimitedEventsProps {
+  type: 'actors' | 'places';
   currentUser: UserInfo | null;
   getPopupContainer?: () => HTMLElement | ShadowRoot;
   data: Data;
 }
 
-export const ActorsEventsPage = ({ currentUser, getPopupContainer, data }: ActorsEventsProps) => {
+export const LimitedEventsPage = ({ type, currentUser, getPopupContainer, data }: LimitedEventsProps) => {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const stored = localStorage.getItem('enplus-theme');
     if (stored === 'dark' || stored === 'light') return stored;
@@ -52,10 +53,10 @@ export const ActorsEventsPage = ({ currentUser, getPopupContainer, data }: Actor
                   title: <a href="/">首页</a>,
                 },
                 {
-                  title: <a href="/actors">艺人情报</a>,
+                  title: <a href={`/${type}`}>{type === 'actors' ? '艺人情报' : '会场情报'}</a>,
                 },
                 {
-                  title: <a href={`/actors/${data.id}`}>{data.name}</a>,
+                  title: <a href={`/${type}/${data.id}`}>{data.name}</a>,
                 },
                 {
                   title: '活动列表',
@@ -70,7 +71,7 @@ export const ActorsEventsPage = ({ currentUser, getPopupContainer, data }: Actor
                 total={data.total}
                 pageSize={limit}
                 onChange={(page, pageSize) => {
-                  window.location.href = `/actors/${data.id}/events?page=${page}&limit=${pageSize || limit}`;
+                  window.location.href = `/${type}/${data.id}/events?page=${page}&limit=${pageSize || limit}`;
                 }}
               />
             </div>
@@ -94,7 +95,7 @@ export const ActorsEventsPage = ({ currentUser, getPopupContainer, data }: Actor
                 total={data.total}
                 pageSize={limit}
                 onChange={(page, pageSize) => {
-                  window.location.href = `/actors/${data.id}/events?page=${page}&limit=${pageSize || limit}`;
+                  window.location.href = `/${type}/${data.id}/events?page=${page}&limit=${pageSize || limit}`;
                 }}
               />
             </div>

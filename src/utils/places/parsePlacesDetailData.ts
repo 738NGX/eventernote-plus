@@ -19,6 +19,8 @@ export interface PlaceDetailData {
 	seatInfoUrl: string;
 	tips: string;
 	googleMapUrl: string;
+	latitude?: string;
+	longitude?: string;
 	prefectureId: string;
 	prefectureName: string;
 	editors: PlaceDetailHistory[];
@@ -121,6 +123,22 @@ export const parsePlacesDetailData = (): PlaceDetailData => {
 	});
 
 
+	// 经纬度提取
+	let latitude: string | undefined = undefined;
+	let longitude: string | undefined = undefined;
+	const scripts = Array.from(document.querySelectorAll('script'));
+	for (const script of scripts) {
+		const text = script.textContent || '';
+		// 匹配 var lat = '...'; var lon = '...';
+		const latMatch = text.match(/var\s+lat\s*=\s*['"]([\d.\-]+)['"]/);
+		const lonMatch = text.match(/var\s+lon\s*=\s*['"]([\d.\-]+)['"]/);
+		if (latMatch && lonMatch) {
+			latitude = latMatch[1];
+			longitude = lonMatch[1];
+			break;
+		}
+	}
+
 	// 活动列表
 	const events = parseEventList(page!.querySelector('.gb_event_list'));
 
@@ -134,6 +152,8 @@ export const parsePlacesDetailData = (): PlaceDetailData => {
 		seatInfoUrl,
 		tips,
 		googleMapUrl,
+		latitude,
+		longitude,
 		prefectureId,
 		prefectureName,
 		editors,

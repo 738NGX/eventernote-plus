@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, Card, ConfigProvider, Image, theme as antTheme, Table, Avatar, message, Modal } from "antd";
+import { Breadcrumb, Button, Card, ConfigProvider, Image, theme as antTheme, Table, Avatar, message, Modal, Radio } from "antd";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { UserInfo } from "../utils/user/fetchAllUserEvents";
 import EventsList from "../components/user/EventsList";
 import fallbackImage from "../utils/fallbackImage";
-import { EditOutlined } from "@ant-design/icons";
+import { AimOutlined, EditOutlined, EnvironmentOutlined, LinkOutlined, PhoneFilled, UserOutlined } from "@ant-design/icons";
 import { parsePlacesDetailData } from "../utils/places/parsePlacesDetailData";
 
 type Data = ReturnType<typeof parsePlacesDetailData>
@@ -23,6 +23,7 @@ export const PlacesDetailPage = ({ currentUser, getPopupContainer, data }: Place
     if (stored === 'dark' || stored === 'light') return stored;
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
+  const [mapDataSource, setMapDataSource] = useState<string>('bing');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -60,7 +61,29 @@ export const PlacesDetailPage = ({ currentUser, getPopupContainer, data }: Place
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               <div className="lg:col-span-5 space-y-6">
                 <Card
-                  cover={null}
+                  cover={
+                    data.latitude && data.longitude ? (
+                      <iframe
+                        title="Google Map"
+                        width="100%"
+                        height="500"
+                        style={{ border: 0, overflow: 'hidden' }}
+                        loading="lazy"
+                        allowFullScreen
+                        referrerPolicy="no-referrer-when-downgrade"
+                        src={
+                          (() => {
+                            const dataSource: Record<string, string> = {
+                              'baidu': `https://api.map.baidu.com/marker?location=${data.latitude},${data.longitude}&output=html&coord_type=wgs84&zoom=15&src=webapp.data_display`,
+                              'bing': `https://www.bing.com/maps/embed?h=500&w=515&cp=${data.latitude}~${data.longitude}&lvl=15`,
+                              'yandex': `https://yandex.com/map-widget/v1/?ll=${data.longitude}%2C${data.latitude}&z=15&pt=${data.longitude}%2C${data.latitude}`,
+                            }
+                            return dataSource[mapDataSource];
+                          })()
+                        }
+                      />
+                    ) : null
+                  }
                   actions={[
                     <a className="!gap-2" href={`/places/${data.id}/edit`}><EditOutlined />编辑信息</a>
                   ]}
@@ -68,21 +91,41 @@ export const PlacesDetailPage = ({ currentUser, getPopupContainer, data }: Place
                   <h1 className={`text-lg font-bold !mt-0`}>
                     {data.name}
                   </h1>
-                  {data.address && <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {data.address}
+                  {data.tel && <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} flex flex-row gap-2`}>
+                    <PhoneFilled />{data.tel}
                   </p>}
-                  {data.tel && <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {data.tel}
-                  </p>}
-                  {data.website && <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {data.website}
-                  </p>}
-                  {data.capacity && <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {data.address && <a href={data.googleMapUrl || '#'} target="_blank" rel="noopener noreferrer">
+                    <p className="flex flex-row gap-2"><EnvironmentOutlined />{data.address}</p>
+                  </a>}
+                  {data.website && <a href={data.website} target="_blank" rel="noopener noreferrer">
+                    <p className="flex flex-row gap-2"><LinkOutlined />{data.website}</p>
+                  </a>}
+                  <span className="flex flex-row gap-2"><UserOutlined />坐席情报</span>
+                  {data.capacity && <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} flex flex-row gap-2`}>
                     {data.capacity}
                   </p>}
-                  {data.seatInfoUrl && <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {data.seatInfoUrl}
-                  </p>}
+                  {data.seatInfoUrl && <a href={data.seatInfoUrl} target="_blank" rel="noopener noreferrer">
+                    <p className="flex flex-row gap-2"><LinkOutlined />{data.seatInfoUrl}</p>
+                  </a>}
+                  {
+                    data.latitude && data.longitude && (
+                      <div className="flex flex-col gap-2">
+                        <span className="flex flex-row gap-2"><AimOutlined />地图数据来源</span>
+                        <Radio.Group
+                          block
+                          options={[
+                            { label: '必应地图', value: 'bing' },
+                            { label: '百度地图', value: 'baidu' },
+                            { label: 'Yandex', value: 'yandex' },
+                          ]}
+                          onChange={e => setMapDataSource(e.target.value)}
+                          value={mapDataSource}
+                          optionType="button"
+                          buttonStyle="solid"
+                        />
+                      </div>
+                    )
+                  }
                 </Card>
                 <Card title="会场tips">
                   <p>{data.tips?.split('\n').map((line, index) => (

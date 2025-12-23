@@ -13,11 +13,13 @@ export function parseActorsEventsData() {
 
   // 解析活动总数
   let total = 0;
-  const t2 = document.querySelector('.span8.page .t2');
-  if (t2) {
-    const match = t2.textContent?.match(/(\d+)件のイベント/);
-    if (match) total = parseInt(match[1], 10);
-  }
+  const t2List = document.querySelectorAll('.span8.page .t2');
+  t2List.forEach(t2 => {
+    const match = t2.textContent?.match(/(\d+)件/);
+    if (match) {
+      total = parseInt(match[1], 10);
+    }
+  });
 
   // 解析分页
   const pagination: Array<{ href: string; page: number|null }> = [];
