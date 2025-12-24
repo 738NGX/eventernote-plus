@@ -20,7 +20,7 @@ import { parseActorsPageData } from './utils/actors/parseActorsPageData';
 import { ActorsPage } from './pages/ActorsPage';
 import { ActorsDetailPage } from './pages/ActorsDetailPage';
 import { parseActorsDetailData } from './utils/actors/parseActorsDetailData';
-import { parseActorsEventsData } from './utils/actors/parseActorsEventsData';
+import { parseEventsData } from './utils/events/parseEventsData';
 import { parseActorsFansData } from './utils/actors/parseActorsFansData';
 import { LimitedEventsPage } from './pages/LimitedEventsPage';
 import { ActorsFansPage } from './pages/ActorsFansPage';
@@ -28,6 +28,8 @@ import { parsePrefecturePageData } from './utils/places/parsePrefecturePageData'
 import { PrefecturePage } from './pages/PrefecturePage';
 import { parsePlacesDetailData } from './utils/places/parsePlacesDetailData';
 import { PlacesDetailPage } from './pages/PlacesDetailPage';
+import { parseUsersEvents } from './utils/user/parseUsersEvents';
+import UsersEventsPage from './pages/UsersEventsPage';
 
 // 获取当前页面类型
 const getPageType = (disabled: boolean) => {
@@ -81,6 +83,16 @@ const getPageType = (disabled: boolean) => {
   // 用户页 /users 或 /users/${username}
   if (/^\/users(\/(?!notice|timeline|setting)[^/]+)?\/?$/.test(path)) {
     return disabled ? 'disabled' : 'user';
+  }
+
+  // 用户同场活动页 /users/${username}/events/same[args]
+  if (/^\/users\/[^/]+\/events\/same(.*)?\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'userEventsSame';
+  }
+
+  // 用户活动页 /users/${username}/events[args]
+  if (/^\/users\/[^/]+\/events(.*)?\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'userEvents';
   }
 
   // 关注 /users/${username}/following
@@ -198,6 +210,11 @@ const init = () => {
       userPageData = parseUsersPageData();
       console.log('[ENP] Parsed from DOM:', userPageData);
     }
+    let usersEventsData: ReturnType<typeof parseUsersEvents> | null = null;
+    if (pageType === 'userEvents' || 'userEventsSame') {
+      usersEventsData = parseUsersEvents();
+      console.log('[ENP] Parsed from DOM:', usersEventsData);
+    }
     let prefecturePageData: ReturnType<typeof parsePrefecturePageData> | null = null;
     if (pageType === 'prefecture') {
       prefecturePageData = parsePrefecturePageData();
@@ -218,9 +235,9 @@ const init = () => {
       actorsDetailData = parseActorsDetailData();
       console.log('[ENP] Parsed from DOM:', actorsDetailData);
     }
-    let actorsEventsData: ReturnType<typeof parseActorsEventsData> | null = null;
+    let actorsEventsData: ReturnType<typeof parseEventsData> | null = null;
     if (pageType === 'actorsEvents' || pageType === 'placesEvents') {
-      actorsEventsData = parseActorsEventsData();
+      actorsEventsData = parseEventsData();
       console.log('[ENP] Parsed from DOM:', actorsEventsData);
     }
     let actorsFansData: ReturnType<typeof parseActorsFansData> | null = null;
@@ -314,7 +331,10 @@ const init = () => {
       component = <PlacesDetailPage currentUser={currentUser} getPopupContainer={getPopupContainer} data={placesDetailData!} />;
     }
     else if (pageType === 'user') {
-      component = <UserProfilePage currentUser={currentUser} initialData={userPageData} getPopupContainer={getPopupContainer} />;
+      component = <UserProfilePage currentUser={currentUser} data={userPageData} getPopupContainer={getPopupContainer} />;
+    }
+    else if (pageType === 'userEvents' || pageType === 'userEventsSame') {
+      component = <UsersEventsPage currentUser={currentUser} data={usersEventsData!} getPopupContainer={getPopupContainer} type={pageType} />;
     }
     else if (pageType === 'actorsDetail') {
       let id = window.location.pathname.split('/').pop() || '';

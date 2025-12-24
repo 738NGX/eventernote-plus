@@ -19,11 +19,11 @@ import { ActorWordCloud, ActorCountData } from '../components/user/ActorWordClou
 import { ActorTable } from '../components/user/ActorTable';
 import ActivityHeatmapDetailed from '../components/user/ActivityHeatmapDetailed';
 
-type InitialData = ReturnType<typeof parseUsersPageData>;
+type Data = ReturnType<typeof parseUsersPageData>;
 
 interface UserProfilePageProps {
   currentUser: UserInfo | null;
-  initialData: InitialData | null;
+  data: Data | null;
   getPopupContainer?: () => HTMLElement | ShadowRoot;
 }
 
@@ -118,7 +118,7 @@ const generateActorData = (
   return { allActorData, favouriteActorData };
 };
 
-export default function UserProfilePage({ currentUser, initialData, getPopupContainer }: UserProfilePageProps) {
+export default function UserProfilePage({ currentUser, data, getPopupContainer }: UserProfilePageProps) {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const stored = localStorage.getItem('enplus-theme');
     if (stored === 'dark' || stored === 'light') return stored;
@@ -129,18 +129,18 @@ export default function UserProfilePage({ currentUser, initialData, getPopupCont
 
   // 使用从 DOM 解析的初始数据
   const [profile] = useState<UserProfileData | null>(() => {
-    console.log('Initial data from DOM:', initialData);
-    if (initialData?.profile) {
-      return initialData.profile;
+    console.log('Initial data from DOM:', data);
+    if (data?.profile) {
+      return data.profile;
     }
     return null;
   });
-  const [scheduledEvents] = useState<EventData[]>(initialData?.scheduledEvents || []);
-  const [overlapEvents] = useState<EventData[]>(initialData?.overlapEvents || []);
-  const [favouriteArtistsEvents] = useState<EventData[]>(initialData?.favouriteArtistsEvents || []);
-  const [artists] = useState<ArtistData[]>(initialData?.artists || []);
+  const [scheduledEvents] = useState<EventData[]>(data?.scheduledEvents || []);
+  const [overlapEvents] = useState<EventData[]>(data?.overlapEvents || []);
+  const [favouriteArtistsEvents] = useState<EventData[]>(data?.favouriteArtistsEvents || []);
+  const [artists] = useState<ArtistData[]>(data?.artists || []);
   const [showFavoriteArtists, setShowFavoriteArtists] = useState<boolean>(true);
-  const [activities] = useState<ActivityData[]>(initialData?.activities || []);
+  const [activities] = useState<ActivityData[]>(data?.activities || []);
   const [loading] = useState(false);
   const [selectedContent, setSelectedContent] = useState<string>('eventsList');
   const [isFetching, setIsFetching] = useState<boolean>(true);
@@ -242,7 +242,7 @@ export default function UserProfilePage({ currentUser, initialData, getPopupCont
                     {selectedContent === 'eventsList' && (
                       <>
                         <EventsList events={scheduledEvents} theme={theme} username={profile.username} title="最近参加的活动" />
-                        {overlapEvents.length > 0 && <EventsList events={overlapEvents} theme={theme} username={profile.username} title="共同参加的活动" />}
+                        {overlapEvents.length > 0 && <EventsList events={overlapEvents} theme={theme} username={profile.username} title="同场参加的活动" />}
                         {favouriteArtistsEvents.length > 0 && <EventsList events={favouriteArtistsEvents} theme={theme} username={profile.username} title="收藏的艺人的近期活动" />}
                       </>
                     )}

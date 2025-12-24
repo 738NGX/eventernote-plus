@@ -22,7 +22,7 @@ export default function EventsList({ events, theme, username, title, href }: Eve
         </h3>
         {(username || href) && <Button
           type="link"
-          href={username ? `/users/${username}/events${title === '共同参加的活动' ? '/same' : title === '收藏的艺人的近期活动' ? '/?type=3' : ''}` : href}
+          href={username ? `/users/${username}/events${title === '同场参加的活动' ? '/same' : title === '收藏的艺人的近期活动' ? '/?type=3' : ''}` : href}
           icon={<RightOutlined />}
         >
           查看全部

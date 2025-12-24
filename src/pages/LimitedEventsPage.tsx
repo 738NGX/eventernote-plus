@@ -4,10 +4,10 @@ import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
 import { UserInfo } from "../utils/user/userInfo";
-import { parseActorsEventsData } from "../utils/actors/parseActorsEventsData";
+import { parseEventsData } from "../utils/events/parseEventsData";
 import { EventCard } from "../components/user/EventCard";
 
-type Data = ReturnType<typeof parseActorsEventsData> & { id: string }
+type Data = ReturnType<typeof parseEventsData> & { id: string }
 
 interface LimitedEventsProps {
   type: 'actors' | 'places';

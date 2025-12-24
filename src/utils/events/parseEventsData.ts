@@ -1,6 +1,6 @@
-import { parseEventList } from "../events/parseEventList";
+import { parseEventList } from "./parseEventList";
 
-export function parseActorsEventsData() {
+export function parseEventsData() {
   // 解析艺人名字：从面包屑第三个 <a> 标签中提取
   let name = '';
   const breadcrumb = document.querySelector('.breadcrumb');

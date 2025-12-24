@@ -6,7 +6,7 @@ export const parseUsersEvents = () => {
   const profile = parseUsersProfile();
 
   let total = 0;
-  const t2List = document.querySelectorAll('.span8.page .t2');
+  const t2List = document.querySelectorAll('.span8.page .gb_subtitle');
   t2List.forEach(t2 => {
     const match = t2.textContent?.match(/(\d+)件/);
     if (match) {
