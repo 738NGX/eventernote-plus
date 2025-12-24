@@ -1,4 +1,5 @@
 import { Breadcrumb, Card, ConfigProvider, Pagination, theme as antTheme } from "antd";
+import EventSearchForm from "../components/event/EventSearchForm";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
@@ -6,27 +7,16 @@ import { useEffect, useState } from "react";
 import { UserInfo } from "../utils/user/userInfo";
 import { parseEventsData } from "../utils/events/parseEventsData";
 import { EventCard } from "../components/user/EventCard";
-import EventSearchForm from "../components/event/EventSearchForm";
 
-type Data = ReturnType<typeof parseEventsData> & { id: string }
+type Data = ReturnType<typeof parseEventsData>
 
-interface LimitedEventsProps {
-  type: 'actors' | 'places';
+interface EventsSearchProps {
   currentUser: UserInfo | null;
   getPopupContainer?: () => HTMLElement | ShadowRoot;
   data: Data;
 }
 
-type SearchFieldType = {
-  keyword?: string;
-  year?: string;
-  month?: string;
-  day?: string;
-  area_id?: string;
-  prefecture_id?: string;
-}
-
-export const LimitedEventsPage = ({ type, currentUser, getPopupContainer, data }: LimitedEventsProps) => {
+export const EventsSearchPage = ({ currentUser, getPopupContainer, data }: EventsSearchProps) => {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const stored = localStorage.getItem('enplus-theme');
     if (stored === 'dark' || stored === 'light') return stored;
@@ -41,13 +31,12 @@ export const LimitedEventsPage = ({ type, currentUser, getPopupContainer, data }
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
   const isDark = theme === 'dark';
 
-
   const urlParams = new URLSearchParams(window.location.search);
   const currentPage = parseInt(urlParams.get('page') || '', 10) || 1;
-  const limit = parseInt(urlParams.get('limit') || '', 10)  || 30;
+  const limit = parseInt(urlParams.get('limit') || '', 10) || 30;
 
   // 解析搜索字段
-  const searchFields: SearchFieldType = {
+  const searchFields = {
     keyword: urlParams.get('keyword') || undefined,
     year: urlParams.get('year') || undefined,
     month: urlParams.get('month') || undefined,
@@ -59,7 +48,7 @@ export const LimitedEventsPage = ({ type, currentUser, getPopupContainer, data }
   const onPageChange = (page: number, pageSize: number) => {
     urlParams.set('page', page.toString());
     urlParams.set('limit', pageSize.toString());
-    window.location.href = `/${type}/${data.id}/events?${urlParams.toString()}`;
+    window.location.href = `/events/search?${urlParams.toString()}`;
   };
 
   return <StyleProvider hashPriority="high">
@@ -79,34 +68,30 @@ export const LimitedEventsPage = ({ type, currentUser, getPopupContainer, data }
                   title: <a href="/">首页</a>,
                 },
                 {
-                  title: <a href={`/${type}`}>{type === 'actors' ? '艺人情报' : '会场情报'}</a>,
+                  title: <a href={`/events`}>活动情报</a>,
                 },
                 {
-                  title: <a href={`/${type}/${data.id}`}>{data.name}</a>,
-                },
-                {
-                  title: '活动列表',
+                  title: '活动情报搜索结果',
                 }
               ]}
               className='!mb-2'
             />
-            <div className="mb-4 w-full flex flex-col items-center justify-center gap-4">
-              <EventSearchForm
-                initialValues={searchFields}
-                onSearch={values => {
-                  // 构建url参数并跳转
-                  const params = new URLSearchParams();
-                  if (values.keyword) params.set('keyword', values.keyword);
-                  if (values.year) params.set('year', values.year);
-                  if (values.month) params.set('month', values.month);
-                  if (values.day) params.set('day', values.day);
-                  if (values.area) params.set('area_id', values.area);
-                  if (values.prefecture) params.set('prefecture_id', values.prefecture);
-                  params.set('page', '1');
-                  params.set('limit', limit.toString());
-                  window.location.href = `/${type}/${data.id}/events?${params.toString()}`;
-                }}
-              />
+            <h3>搜索到{data.total}个活动</h3>
+            <EventSearchForm
+              initialValues={searchFields}
+              onSearch={values => {
+                // 只提交搜索参数，不带page和limit
+                const params = new URLSearchParams();
+                if (values.keyword) params.set('keyword', values.keyword);
+                if (values.year) params.set('year', values.year);
+                if (values.month) params.set('month', values.month);
+                if (values.day) params.set('day', values.day);
+                if (values.area) params.set('area_id', values.area);
+                if (values.prefecture) params.set('prefecture_id', values.prefecture);
+                window.location.href = `/events/search?${params.toString()}`;
+              }}
+            />
+            <div className="mb-4 w-full flex flex-row items-center justify-center">
               <Pagination
                 showQuickJumper
                 current={currentPage}
@@ -115,19 +100,11 @@ export const LimitedEventsPage = ({ type, currentUser, getPopupContainer, data }
                 onChange={onPageChange}
               />
             </div>
-            {data.events.length === 0 ? (
-              <Card className={isDark ? 'bg-slate-800 border-slate-700' : ''}>
-                <div className={`text-center py-8 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                  暂无活动
-                </div>
-              </Card>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {data.events.map(event => (
-                  <EventCard event={event} isDark={isDark} />
-                ))}
-              </div>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {data.events.map(event => (
+                <EventCard event={event} isDark={isDark} />
+              ))}
+            </div>
             <div className="mt-4 w-full flex flex-row items-center justify-center">
               <Pagination
                 showQuickJumper

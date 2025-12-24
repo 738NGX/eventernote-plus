@@ -19,7 +19,7 @@ interface UsersEventsPageProps {
   getPopupContainer?: () => HTMLElement | ShadowRoot;
 }
 
-type FieldType = {
+type DateFilterFieldType = {
   year?: string;
   month?: string;
   day?: string;
@@ -40,23 +40,27 @@ export default function UsersEventsPage({ type, currentUser, data, getPopupConta
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
   const isDark = theme === 'dark';
 
-  const currentPageMatch = window.location.search.match(/[?&]page=(\d+)/);
-  const currentPage = currentPageMatch ? parseInt(currentPageMatch[1], 10) : 1;
-  const limitMatch = window.location.search.match(/[?&]limit=(\d+)/);
-  const limit = limitMatch ? parseInt(limitMatch[1], 10) : (type === 'userEvents' ? 30 : 10);
-
-  // 从url中匹配 year=&month=&day=
   const urlParams = new URLSearchParams(window.location.search);
-  const selectedYear = urlParams.get('year');
-  const selectedMonth = urlParams.get('month');
-  const selectedDay = urlParams.get('day');
-  const timeStr = (selectedYear || selectedMonth || selectedDay) && type === 'userEvents' ? `&year=${selectedYear || ''}&month=${selectedMonth || ''}&day=${selectedDay || ''}` : '';
+  const currentPage = parseInt(urlParams.get('page') || '', 10) || 1;
+  const limit = parseInt(urlParams.get('limit') || '', 10) || 30;
 
-  const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-    const year = values.year || '';
-    const month = values.month || '';
-    const day = values.day || '';
-    window.location.href = `/users/${encodeURIComponent(data.profile.username)}/events?year=${year}&month=${month}&day=${day}`;
+  const total = urlParams.get('year') || urlParams.get('month') || urlParams.get('day')
+    ? parseInt(document.title.match(/\((\d+)\)/)?.[1] || '0', 10) || 0
+    : data.total;
+
+  const onPageChange = (page: number, pageSize: number) => {
+    urlParams.set('page', page.toString());
+    urlParams.set('limit', pageSize.toString());
+    window.location.href = `/users/${encodeURIComponent(data.profile.username)}/events${type === 'userEvents' ? '' : '/same'}?${urlParams.toString()}`;
+  };
+
+  const onFilterDate: FormProps<DateFilterFieldType>['onFinish'] = (values) => {
+    const { year, month, day } = values;
+    const emptyParams = new URLSearchParams();
+    emptyParams.set('year', year || '');
+    emptyParams.set('month', month || '');
+    emptyParams.set('day', day || '');
+    window.location.href = `/users/${encodeURIComponent(data.profile.username)}/events?${emptyParams.toString()}`;
   };
 
   return (
@@ -98,11 +102,9 @@ export default function UsersEventsPage({ type, currentUser, data, getPopupConta
                     <Pagination
                       showQuickJumper
                       current={currentPage}
-                      total={data.total}
+                      total={total}
                       pageSize={limit}
-                      onChange={(page, pageSize) => {
-                        window.location.href = `/users/${encodeURIComponent(data.profile.username)}/events${type === 'userEvents' ? '' : '/same'}?page=${page}&limit=${pageSize || limit}${timeStr}`;
-                      }}
+                      onChange={onPageChange}
                     />
                   </div>
                   <EventsList events={data.events} theme={theme} title={`${data.profile.username}的${type === 'userEvents' ? '全部' : '同场'}活动`} />
@@ -110,11 +112,9 @@ export default function UsersEventsPage({ type, currentUser, data, getPopupConta
                     <Pagination
                       showQuickJumper
                       current={currentPage}
-                      total={data.total}
+                      total={total}
                       pageSize={limit}
-                      onChange={(page, pageSize) => {
-                        window.location.href = `/users/${encodeURIComponent(data.profile.username)}/events${type === 'userEvents' ? '' : '/same'}?page=${page}&limit=${pageSize || limit}${timeStr}`;
-                      }}
+                      onChange={onPageChange}
                     />
                   </div>
                 </div>
@@ -124,15 +124,16 @@ export default function UsersEventsPage({ type, currentUser, data, getPopupConta
                     <Card title="筛选日期">
                       <Form
                         layout="vertical"
-                        onFinish={onFinish}
+                        variant='filled'
+                        onFinish={onFilterDate}
                         initialValues={{
-                          year: selectedYear,
-                          month: selectedMonth,
-                          day: selectedDay,
+                          year: urlParams.get('year') || undefined,
+                          month: urlParams.get('month') || undefined,
+                          day: urlParams.get('day') || undefined,
                         }}
                       >
                         {/* 年份选择 */}
-                        <Form.Item<FieldType> label="年份" name="year">
+                        <Form.Item<DateFilterFieldType> label="年份" name="year">
                           <Select
                             placeholder="请选择年份"
                             allowClear
@@ -150,20 +151,20 @@ export default function UsersEventsPage({ type, currentUser, data, getPopupConta
                           />
                         </Form.Item>
                         {/* 月份选择 */}
-                        <Form.Item<FieldType> label="月份" name="month">
+                        <Form.Item<DateFilterFieldType> label="月份" name="month">
                           <Select
                             placeholder="请选择月份"
                             allowClear
                             options={(() => {
                               return Array.from({ length: 12 }, (_, i) => ({
-                                label: `${i + 1}日`,
+                                label: `${i + 1}月`,
                                 value: (i + 1).toString(),
                               }));
                             })()}
                           />
                         </Form.Item>
                         {/* 天数选择（仅在选中月份时显示） */}
-                        <Form.Item<FieldType> label="日期" name="day">
+                        <Form.Item<DateFilterFieldType> label="日期" name="day">
                           <Select
                             placeholder="请选择日期"
                             allowClear

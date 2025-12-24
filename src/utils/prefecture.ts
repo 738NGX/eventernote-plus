@@ -1,4 +1,4 @@
-const prefectureMap: Record<string, string> = {
+export const prefectureMap: Record<string, string> = {
   '1': '北海道',
   '2': '青森县',
   '3': '岩手县',
@@ -49,6 +49,15 @@ const prefectureMap: Record<string, string> = {
   '90': '海外',
 };
 
+export const areaMap: Record<string, string> = {
+  '1': '关东',
+  '2': '关西',
+  '3': '东海',
+  '4': '北海道·东北·甲信越·北陆',
+  '5': '中国・四国·九州·冲绳',
+  '6': '海外'
+};
+
 export function getPrefectureNameById(id: string): string {
   return prefectureMap[id] || '';
 }
@@ -58,6 +67,15 @@ export function getIdByPrefectureName(name: string, prefixZero: boolean = false)
   if (!entry) return null;
   const id = entry[0];
   return prefixZero && id.length === 1 ? `0${id}` : id;
+}
+
+export function getAreaNameById(id: string): string {
+  return areaMap[id] || '';
+}
+
+export function getIdByAreaName(name: string): string | null {
+  const entry = Object.entries(areaMap).find(([_, areaName]) => areaName === name);
+  return entry ? entry[0] : null;
 }
 
 export const prefectureList: string[] = Object.values(prefectureMap);

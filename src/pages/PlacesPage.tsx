@@ -65,7 +65,7 @@ export const PlacesPage = ({ currentUser, getPopupContainer }: PlacesPageProps) 
               </div>
               {/* 右侧卡片 */}
               <div className="flex-1 flex flex-col gap-4">
-                <h4>搜索会场情报</h4>
+                <h3>搜索会场情报</h3>
                 <Search
                   placeholder="搜索场馆/地区..."
                   allowClear

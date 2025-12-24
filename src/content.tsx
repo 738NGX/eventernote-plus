@@ -30,6 +30,7 @@ import { parsePlacesDetailData } from './utils/places/parsePlacesDetailData';
 import { PlacesDetailPage } from './pages/PlacesDetailPage';
 import { parseUsersEvents } from './utils/user/parseUsersEvents';
 import UsersEventsPage from './pages/UsersEventsPage';
+import { EventsSearchPage } from './pages/EventsSearchPage';
 
 // 获取当前页面类型
 const getPageType = (disabled: boolean) => {
@@ -78,6 +79,11 @@ const getPageType = (disabled: boolean) => {
   // 场地页 /places/${id}
   if (/^\/places\/\d+\/?$/.test(path)) {
     return disabled ? 'disabled' : 'placesDetail';
+  }
+
+  // 活动检索页 /events/search[args]
+  if (/^\/events\/search(.*)?\/?$/.test(path)) {
+    return disabled ? 'disabled' : 'eventsSearch';
   }
 
   // 用户页 /users 或 /users/${username}
@@ -235,10 +241,10 @@ const init = () => {
       actorsDetailData = parseActorsDetailData();
       console.log('[ENP] Parsed from DOM:', actorsDetailData);
     }
-    let actorsEventsData: ReturnType<typeof parseEventsData> | null = null;
-    if (pageType === 'actorsEvents' || pageType === 'placesEvents') {
-      actorsEventsData = parseEventsData();
-      console.log('[ENP] Parsed from DOM:', actorsEventsData);
+    let eventsData: ReturnType<typeof parseEventsData> | null = null;
+    if (pageType === 'actorsEvents' || pageType === 'placesEvents' || pageType === 'eventsSearch') {
+      eventsData = parseEventsData();
+      console.log('[ENP] Parsed from DOM:', eventsData);
     }
     let actorsFansData: ReturnType<typeof parseActorsFansData> | null = null;
     if (pageType === 'actorsFans') {
@@ -336,6 +342,9 @@ const init = () => {
     else if (pageType === 'userEvents' || pageType === 'userEventsSame') {
       component = <UsersEventsPage currentUser={currentUser} data={usersEventsData!} getPopupContainer={getPopupContainer} type={pageType} />;
     }
+    else if (pageType === 'eventsSearch') {
+      component = <EventsSearchPage currentUser={currentUser} getPopupContainer={getPopupContainer} data={eventsData!} />;
+    }
     else if (pageType === 'actorsDetail') {
       let id = window.location.pathname.split('/').pop() || '';
       id = id.split('?')[0].split('#')[0];
@@ -343,7 +352,7 @@ const init = () => {
     }
     else if (pageType === 'actorsEvents' || pageType === 'placesEvents') {
       let id = window.location.pathname.split('/').slice(-2, -1)[0] || '';
-      component = <LimitedEventsPage type={pageType === 'actorsEvents' ? 'actors' : 'places'} currentUser={currentUser} getPopupContainer={getPopupContainer} data={{ ...actorsEventsData!, id }} />;
+      component = <LimitedEventsPage type={pageType === 'actorsEvents' ? 'actors' : 'places'} currentUser={currentUser} getPopupContainer={getPopupContainer} data={{ ...eventsData!, id }} />;
     }
     else if (pageType === 'actorsFans') {
       let id = window.location.pathname.split('/').slice(-2, -1)[0] || '';
