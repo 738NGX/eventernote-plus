@@ -3,7 +3,7 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import Features from './components/Features';
 import Footer from './components/Footer';
-import { UserInfo } from './utils/user/fetchAllUserEvents';
+import { UserInfo } from './utils/user/userInfo';
 import { StyleProvider } from '@ant-design/cssinjs';
 import { ConfigProvider, theme as antTheme } from 'antd';
 

@@ -1,11 +1,10 @@
-import { Breadcrumb, Button, Card, ConfigProvider, Image, theme as antTheme, Table, Avatar, message, Modal, Radio } from "antd";
+import { Breadcrumb, Card, ConfigProvider, theme as antTheme, Radio } from "antd";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
-import { UserInfo } from "../utils/user/fetchAllUserEvents";
+import { UserInfo } from "../utils/user/userInfo";
 import EventsList from "../components/user/EventsList";
-import fallbackImage from "../utils/fallbackImage";
 import { AimOutlined, EditOutlined, EnvironmentOutlined, LinkOutlined, PhoneFilled, UserOutlined } from "@ant-design/icons";
 import { parsePlacesDetailData } from "../utils/places/parsePlacesDetailData";
 
@@ -100,13 +99,15 @@ export const PlacesDetailPage = ({ currentUser, getPopupContainer, data }: Place
                   {data.website && <a href={data.website} target="_blank" rel="noopener noreferrer">
                     <p className="flex flex-row gap-2"><LinkOutlined />{data.website}</p>
                   </a>}
-                  <span className="flex flex-row gap-2"><UserOutlined />坐席情报</span>
-                  {data.capacity && <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} flex flex-row gap-2`}>
-                    {data.capacity}
-                  </p>}
-                  {data.seatInfoUrl && <a href={data.seatInfoUrl} target="_blank" rel="noopener noreferrer">
-                    <p className="flex flex-row gap-2"><LinkOutlined />{data.seatInfoUrl}</p>
-                  </a>}
+                  {
+                    data.seatInfoUrl ? (
+                      <a href={data.seatInfoUrl} target="_blank" rel="noopener noreferrer">
+                        <p className="flex flex-row gap-2"><UserOutlined />{data.capacity || '官网坐席情报'}</p>
+                      </a>
+                    ) : data.capacity ? <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} flex flex-row gap-2`}>
+                      <UserOutlined />{data.capacity}
+                    </p> : null
+                  }
                   {
                     data.latitude && data.longitude && (
                       <div className="flex flex-col gap-2">

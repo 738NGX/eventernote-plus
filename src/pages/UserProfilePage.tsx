@@ -7,19 +7,19 @@ import FavoriteArtists from '../components/user/FavoriteArtists';
 import ActivityHeatmap from '../components/user/ActivityHeatmap';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import type { UserInfo } from '../utils/user/fetchAllUserEvents';
+import type { UserInfo } from '../utils/user/userInfo';
 import { Menu } from 'antd';
 import type { MenuProps } from 'antd';
 import { fetchAllUserEvents } from '../utils/user/fetchAllUserEvents';
 import { generatePrefectureMapData, PrefectureCount, PrefectureMap } from '../components/user/PrefectureMap';
 import { EventData } from '../utils/events/eventdata';
-import { parseUserPageData } from '../utils/user/parseUserPageData';
+import { parseUsersPageData } from '../utils/user/parseUsersPageData';
 import { VenueCount } from '../components/user/VenueCount';
 import { ActorWordCloud, ActorCountData } from '../components/user/ActorWordCloud';
 import { ActorTable } from '../components/user/ActorTable';
 import ActivityHeatmapDetailed from '../components/user/ActivityHeatmapDetailed';
 
-type InitialData = ReturnType<typeof parseUserPageData>;
+type InitialData = ReturnType<typeof parseUsersPageData>;
 
 interface UserProfilePageProps {
   currentUser: UserInfo | null;

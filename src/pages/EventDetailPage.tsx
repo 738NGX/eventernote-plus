@@ -3,7 +3,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
-import { UserInfo } from "../utils/user/fetchAllUserEvents";
+import { UserInfo } from "../utils/user/userInfo";
 import { parseEventDetailData } from "../utils/events/parseEventDetailData";
 import { CalendarOutlined, ClockCircleOutlined, EnvironmentOutlined, LinkOutlined } from "@ant-design/icons";
 import fallbackImage from "../utils/fallbackImage";

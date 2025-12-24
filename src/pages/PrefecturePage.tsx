@@ -1,10 +1,11 @@
-import { Breadcrumb, ConfigProvider, Table, theme as antTheme } from "antd";
+import { Breadcrumb, ConfigProvider, Input, Table, theme as antTheme } from "antd";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
-import { UserInfo } from "../utils/user/fetchAllUserEvents";
+import { UserInfo } from "../utils/user/userInfo";
 import { parsePrefecturePageData } from "../utils/places/parsePrefecturePageData";
+const { Search } = Input;
 
 type Data = ReturnType<typeof parsePrefecturePageData>
 
@@ -28,6 +29,8 @@ export const PrefecturePage = ({ currentUser, getPopupContainer, data }: Prefect
 
   const toggleTheme = () => setTheme(t => t === 'light' ? 'dark' : 'light');
   const isDark = theme === 'dark';
+
+  const [displayPlaces, setDisplayPlaces] = useState(data.places);
 
   return <StyleProvider hashPriority="high">
     <ConfigProvider
@@ -54,7 +57,21 @@ export const PrefecturePage = ({ currentUser, getPopupContainer, data }: Prefect
               ]}
               className='!mb-2'
             />
-            <h1>探索{data.prefectureName}的{data.places.length}个会场</h1>
+            <h3>探索{data.prefectureName}的{data.places.length}个会场</h3>
+            <p>输入关键词筛选：</p>
+            <Search
+              placeholder="请输入会场名关键词"
+              allowClear
+              onChange={e => {
+                const keyword = e.target.value.trim();
+                if (keyword === '') {
+                  setDisplayPlaces(data.places);
+                } else {
+                  setDisplayPlaces(data.places.filter(place => place.name.includes(keyword)));
+                }
+              }}
+              className="mb-4 max-w-md"
+            />
             <Table
               columns={[
                 {
@@ -64,7 +81,7 @@ export const PrefecturePage = ({ currentUser, getPopupContainer, data }: Prefect
                   render: (text, record) => <a href={`/places/${record.id}`}>{text}</a>,
                 },
               ]}
-              dataSource={data.places}
+              dataSource={displayPlaces}
               showHeader={false}
               pagination={false}
             />

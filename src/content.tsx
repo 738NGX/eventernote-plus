@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import UserProfilePage from './pages/UserProfilePage';
 import './index.css';
-import { detectCurrentUser } from './utils/user/fetchAllUserEvents';
+import { detectCurrentUser } from './utils/user/detectCurrentUser';
 import { StyleProvider } from '@ant-design/cssinjs';
-import { parseUserPageData } from './utils/user/parseUserPageData';
+import { parseUsersPageData } from './utils/user/parseUsersPageData';
 import { AboutPage } from './pages/AboutPage';
 import { parseEventDetailData } from './utils/events/parseEventDetailData';
 import { EventDetailPage } from './pages/EventDetailPage';
@@ -30,7 +30,7 @@ import { parsePlacesDetailData } from './utils/places/parsePlacesDetailData';
 import { PlacesDetailPage } from './pages/PlacesDetailPage';
 
 // 获取当前页面类型
-function getPageType(disabled: boolean): string {
+const getPageType = (disabled: boolean) => {
   const path = location.pathname;
 
   // 主页 /
@@ -117,7 +117,7 @@ function getPageType(disabled: boolean): string {
 }
 
 // 根据唯一确定的方式获取主题
-function getThemeColors() {
+const getThemeColors = () => {
   let theme = localStorage.getItem('enplus-theme');
 
   // 如果 localStorage 中没有值，根据系统偏好初始化主题
@@ -168,7 +168,7 @@ if (document.body) {
 }
 
 // 移除全局遮罩
-function removeLoadingOverlay() {
+const removeLoadingOverlay = () => {
   const overlay = document.getElementById("global-loading-overlay");
   if (overlay) {
     overlay.remove();
@@ -176,7 +176,7 @@ function removeLoadingOverlay() {
 }
 
 // Content script 入口
-function init() {
+const init = () => {
   chrome.storage.sync.get(['disableUIReplace'], (result) => {
     const disabled = result.disableUIReplace || false;
 
@@ -193,9 +193,9 @@ function init() {
     const currentUser = detectCurrentUser();
 
     // 在清空页面前解析页面数据
-    let userPageData: ReturnType<typeof parseUserPageData> | null = null;
+    let userPageData: ReturnType<typeof parseUsersPageData> | null = null;
     if (pageType === 'user') {
-      userPageData = parseUserPageData();
+      userPageData = parseUsersPageData();
       console.log('[ENP] Parsed from DOM:', userPageData);
     }
     let prefecturePageData: ReturnType<typeof parsePrefecturePageData> | null = null;

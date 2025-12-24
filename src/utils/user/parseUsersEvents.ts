@@ -1,17 +1,10 @@
+import { parseUsersProfile } from "./parseUsersProfile"
 import { parseEventList } from "../events/parseEventList";
+import { parseBreadcrumb } from "../parseBreadcrumb";
 
-export function parseActorsEventsData() {
-  // 解析艺人名字：从面包屑第三个 <a> 标签中提取
-  let name = '';
-  const breadcrumb = document.querySelector('.breadcrumb');
-  if (breadcrumb) {
-    const links = breadcrumb.querySelectorAll('a');
-    if (links.length >= 3) {
-      name = links[2].textContent?.trim() || '';
-    }
-  }
+export const parseUsersEvents = () => {
+  const profile = parseUsersProfile();
 
-  // 解析活动总数
   let total = 0;
   const t2List = document.querySelectorAll('.span8.page .t2');
   t2List.forEach(t2 => {
@@ -25,9 +18,12 @@ export function parseActorsEventsData() {
   const eventListEl = document.querySelector('.gb_event_list');
   const events = parseEventList(eventListEl);
 
+  const breadcrumb = parseBreadcrumb();
+
   return {
-    name,
+    ...profile,
     total,
     events,
-  };
+    breadcrumb,
+  }
 }

@@ -41,17 +41,17 @@ const plus_features = [
   {
     icon: '🥰',
     title: '更现代化的界面设计',
-    desc: '使用React和Ant Design重新设计了界面，支持明暗主题切换，使其更加美观和易用。实现了中文本地化，更适合中文用户使用。未来将进一步支持多语言切换。',
+    desc: 'UI界面进行了中文汉化并使用React和Ant Design重新设计，支持明暗主题切换，使其更加美观和易用。',
   },
   {
     icon: '🛠️',
     title: '更多丰富的功能',
-    desc: '增加了更多个人活动统计信息、年度报告等原版没有的功能。新的功能也在不断开发中。也欢迎各位在Github Issues中提出新的功能建议。',
+    desc: '增加了更多个人活动统计信息、年度报告等原版没有的功能。新的功能也在不断开发中。也欢迎在Github Issues中提出新的功能建议。',
   },
   {
     icon: '📲',
-    title: '多平台支持',
-    desc: '在未来会上线手机应用，满足随时查看管理活动的需求。',
+    title: '简单易用',
+    desc: '仅需安装浏览器插件即可体验全部功能。无缝兼容原版网站的数据。未来还将进一步上线手机版应用。',
   },
 ];
 
@@ -121,7 +121,7 @@ export default function Features({ theme }: FeaturesProps) {
 
         {/* 功能区标题 */}
         <h2 className={`text-2xl font-bold text-center mb-12 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-          在此基础之上诞生的EventerNote Plus，使得EN变得更加好用。
+          在此基础之上诞生的EventerNote Plus，做出了更多优化改进。
         </h2>
 
         {/* 6个功能卡片 3x2 */}

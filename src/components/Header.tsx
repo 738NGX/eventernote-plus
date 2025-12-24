@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { AutoComplete, Input, Button, Avatar, ConfigProvider, theme as antTheme, Popover } from 'antd';
 import { StyleProvider } from '@ant-design/cssinjs';
 import { UserOutlined, SunOutlined, MoonOutlined, GithubFilled, UsergroupAddOutlined, SettingOutlined, BellOutlined, LogoutOutlined, HomeOutlined } from '@ant-design/icons';
-import type { UserInfo } from '../utils/user/fetchAllUserEvents';
+import type { UserInfo } from '../utils/user/userInfo';
 
 
 interface HeaderProps {

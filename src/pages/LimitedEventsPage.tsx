@@ -3,7 +3,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
-import { UserInfo } from "../utils/user/fetchAllUserEvents";
+import { UserInfo } from "../utils/user/userInfo";
 import { parseActorsEventsData } from "../utils/actors/parseActorsEventsData";
 import { EventCard } from "../components/user/EventCard";
 

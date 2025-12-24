@@ -7,7 +7,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
-import { UserInfo } from "../utils/user/fetchAllUserEvents";
+import { UserInfo } from "../utils/user/userInfo";
 
 export const AboutPage = ({ type, currentUser, getPopupContainer }: { type: 'company' | 'privacy' | 'termsofservice', currentUser: UserInfo | null, getPopupContainer?: () => HTMLElement | ShadowRoot; }) => {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
