@@ -331,7 +331,7 @@ const init = () => {
           const year = annualMatch.params.year as string;
           const username = annualMatch.params.username as string;
           document.title = `${username} 的 ${year} 年度报告 - EventerNote Plus`;
-          component = <AnnualReportPage username={username} year={year} />;
+          component = <AnnualReportPage username={username} year={year} getPopupContainer={getPopupContainer} />;
         } else {
           console.error('Invalid match for annual report URL');
           component = null;

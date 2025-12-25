@@ -5,11 +5,12 @@ import { useState } from 'react';
 interface ActivityHeatmapProps {
   activities: ActivityData[];
   theme: 'light' | 'dark';
+  title?: string;
 }
 
 const MONTHS = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
 
-export default function ActivityHeatmap({ activities, theme }: ActivityHeatmapProps) {
+export default function ActivityHeatmap({ title, activities, theme }: ActivityHeatmapProps) {
   const isDark = theme === 'dark';
   const [showNumber, setShowNumber] = useState(false);
 
@@ -29,7 +30,7 @@ export default function ActivityHeatmap({ activities, theme }: ActivityHeatmapPr
       className={isDark ? 'bg-slate-800 border-slate-700' : ''}
       title={
         <span className={isDark ? 'text-white' : ''}>
-          📊 活动参加数
+          {title || '📊 活动参加数'}
         </span>
       }
       extra={<Switch checkedChildren="展示数字" unCheckedChildren="隐藏数字" onChange={(checked: boolean) => setShowNumber(checked)} value={showNumber} />}

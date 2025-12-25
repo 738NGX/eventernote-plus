@@ -18,6 +18,7 @@ import { VenueCount } from '../components/user/VenueCount';
 import { ActorWordCloud, ActorCountData } from '../components/user/ActorWordCloud';
 import { ActorTable } from '../components/user/ActorTable';
 import ActivityHeatmapDetailed from '../components/user/ActivityHeatmapDetailed';
+import { calculateActivityHeatmapDetailedData } from '../utils/events/calculateActivityHeatmapDetailedData';
 
 type Data = ReturnType<typeof parseUsersPageData>;
 
@@ -68,25 +69,6 @@ const calculateVenueRanking = (events: EventData[]): [string, number][] => {
   });
   return Object.entries(venueCount).sort((a, b) => b[1] - a[1]);
 };
-
-const calculateActivityHeatmapDetailedData = (events: EventData[]): Record<string, Record<string, number>> => {
-  const heatmapData: Record<string, Record<string, number>> = {};
-  events.forEach((event: EventData) => {
-    const year = event.date.slice(0, 4);
-    const monthDay = event.date.slice(5, 10); // MM-DD
-
-    if (!heatmapData[year]) {
-      heatmapData[year] = {};
-    }
-    if (heatmapData[year][monthDay]) {
-      heatmapData[year][monthDay] += 1;
-    }
-    else {
-      heatmapData[year][monthDay] = 1;
-    }
-  });
-  return heatmapData;
-}
 
 const generateActorData = (
   events: EventData[],

@@ -1,48 +1,41 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { fetchAnnualReportData } from "../utils/user/fetchAnnualReport";
-import ActivityHeatmap from "../components/user/ActivityHeatmap";
 import ActivityHeatmapDetailed from "../components/user/ActivityHeatmapDetailed";
-import { ActorWordCloud } from "../components/user/ActorWordCloud";
-import { VenueCount } from "../components/user/VenueCount";
 import { PrefectureMap, generatePrefectureMapData } from "../components/user/PrefectureMap";
-import { Card, Skeleton, Statistic, Tag, Divider, Button } from "antd";
-import { CrownOutlined, EnvironmentOutlined, UserOutlined, CalendarOutlined, TeamOutlined } from "@ant-design/icons";
-
+import { Card, Skeleton,  Divider, theme as antTheme, ConfigProvider, Avatar, Table } from "antd";
 import type { EventData } from "../utils/events/eventdata";
+import { EventCard } from "../components/event/EventCard";
+import { StyleProvider } from "@ant-design/cssinjs";
+import { calculateActivityHeatmapDetailedData } from "../utils/events/calculateActivityHeatmapDetailedData";
+
 type FollowingEvent = { following: { id: string; name: string; profileUrl: string; avatar: string }; events: EventData[] };
 
 function getFirstEvent(events: EventData[]): EventData | null {
   if (!events || events.length === 0) return null;
   return [...events].sort((a, b) => a.date.localeCompare(b.date))[0];
 }
-function getLastEvent(events: EventData[]): EventData | null {
-  if (!events || events.length === 0) return null;
-  return [...events].sort((a, b) => b.date.localeCompare(a.date))[0];
-}
-function getUniqueArtists(events: EventData[]): Set<string> {
-  const set = new Set<string>();
-  events?.forEach((e: EventData) => e.performers?.forEach((p: { id: string }) => set.add(p.id)));
-  return set;
-}
-function getNewArtists(events: EventData[], prevEvents: EventData[]): Set<string> {
-  const prevSet = new Set<string>();
-  prevEvents?.forEach((e: EventData) => e.performers?.forEach((p: { id: string }) => prevSet.add(p.id)));
-  const currSet = getUniqueArtists(events);
-  return new Set([...currSet].filter(x => !prevSet.has(x)));
-}
-function getSeason(dateStr: string): '春' | '夏' | '秋' | '冬' {
-  const m = parseInt(dateStr.slice(5, 7));
-  if ([3,4,5].includes(m)) return '春';
-  if ([6,7,8].includes(m)) return '夏';
-  if ([9,10,11].includes(m)) return '秋';
-  return '冬';
-}
-function getSeasonEvents(events: EventData[]): Record<'春'|'夏'|'秋'|'冬', EventData[]> {
-  const map: Record<'春'|'夏'|'秋'|'冬', EventData[]> = { 春: [], 夏: [], 秋: [], 冬: [] };
-  events?.forEach((e: EventData) => { map[getSeason(e.date)].push(e); });
+
+function getUniqueArtists(events: EventData[]) {
+  const map = new Map<string, { id: string, name: string }>();
+  events?.forEach((e: EventData) =>
+    e.performers?.forEach((p) => map.set(p.id, p))
+  );
   return map;
 }
+
+function getNewArtists(events: EventData[], prevEvents: EventData[]) {
+  const prevIds = new Set<string>();
+  prevEvents?.forEach((e: EventData) =>
+    e.performers?.forEach((p) => prevIds.add(p.id))
+  );
+  const currMap = getUniqueArtists(events);
+  // 只保留今年第一次见到的艺人
+  return new Map(
+    [...currMap.entries()].filter(([id]) => !prevIds.has(id))
+  );
+}
+
 function getMost<T extends object, K extends keyof T>(events: T[], key: K): T | null {
   if (!events || events.length === 0) return null;
   return events.reduce((a, b) => (a[key] > b[key] ? a : b));
@@ -74,7 +67,7 @@ function getWithFollowings(events: EventData[], followingsEvents: FollowingEvent
   return events.find(e => e.id === maxId);
 }
 
-export const AnnualReportPage = ({ username, year }: { username: string, year: string }) => {
+export const AnnualReportPage = ({ username, year, getPopupContainer }: { username: string, year: string, getPopupContainer: any }) => {
   const [dataPromise] = useState(async () => {
     return await fetchAnnualReportData(username, year);
   });
@@ -98,8 +91,6 @@ export const AnnualReportPage = ({ username, year }: { username: string, year: s
     getData();
   }, [dataPromise]);
 
-  // 数据分析
-
   // 只统计指定年份的活动
   const userEvents: EventData[] = data?.userEvents || [];
   const followingsEvents: FollowingEvent[] = data?.followingsEvents || [];
@@ -108,10 +99,8 @@ export const AnnualReportPage = ({ username, year }: { username: string, year: s
 
   const firstEvent = getFirstEvent(userEvents); // 用户历史最早活动
   const firstEventOfYear = getFirstEvent(thisYearEvents); // 本年第一场
-  const lastEventOfYear = getLastEvent(thisYearEvents);
   const uniqueArtists = getUniqueArtists(thisYearEvents);
   const newArtists = getNewArtists(thisYearEvents, prevEvents);
-  const seasonEvents = getSeasonEvents(thisYearEvents);
   const mostActiveDay = getMostActiveDay(thisYearEvents);
   const mostPeopleEvent = getMost(thisYearEvents, 'participantCount');
   const leastPeopleEvent = getLeast(thisYearEvents, 'participantCount');
@@ -121,86 +110,122 @@ export const AnnualReportPage = ({ username, year }: { username: string, year: s
   // 年度艺人/场馆
   const artistCount: { [key: string]: number } = {};
   thisYearEvents.forEach(e => e.performers.forEach(p => { artistCount[p.name] = (artistCount[p.name] || 0) + 1; }));
-  const topArtists: [string, number][] = Object.entries(artistCount).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 3);
+  const topArtists: [string, number][] = Object.entries(artistCount).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 10);
   const venueCount: { [key: string]: number } = {};
   thisYearEvents.forEach(e => { const v = e.venue?.name; if (v) venueCount[v] = (venueCount[v] || 0) + 1; });
-  const topVenues: [string, number][] = Object.entries(venueCount).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 3);
-
-  // 年度活动关键词（艺人名/场馆名/地名/活动名）
-  const keywords = [...topArtists.map(a => a[0]), ...topVenues.map(v => v[0])];
-
-  // 季节代表活动
-  const seasonRep = Object.fromEntries(Object.entries(seasonEvents).map(([k, v]) => [k, getFirstEvent(v)]));
+  const topVenues: [string, number][] = Object.entries(venueCount).sort((a, b) => (b[1] as number) - (a[1] as number)).slice(0, 10);
 
   // 月度活动统计
-  const monthStat = Array(12).fill(0);
-  thisYearEvents.forEach(e => { const m = parseInt(e.date.slice(5, 7)); if (m) monthStat[m - 1] += 1; });
+  const activityHeatmapDetailedData = useMemo<Record<string, Record<string, number>>>(() => calculateActivityHeatmapDetailedData(thisYearEvents), [thisYearEvents]);
 
   // 年度之最活动（让用户自选，暂用最多人活动/最活跃日/第一场等）
 
-  return (
-    <div className="max-w-3xl mx-auto py-8 px-2 md:px-0">
-      <Card className="mb-6 shadow-lg">
-        <h1 className="text-2xl font-bold mb-2">{year} 年度活动报告</h1>
-        <div className="text-gray-500 mb-2">@{username}，感谢你在 EventerNote 记录下的每一份热爱。</div>
-        {isFetching || !data ? <Skeleton active paragraph={{ rows: 8 }} /> : <>
-          <div className="mb-4">
-            <Statistic title="今年参加活动总数" value={thisYearEvents.length} prefix={<CalendarOutlined />} />
-            <Statistic title="参与艺人总数" value={uniqueArtists.size} prefix={<UserOutlined />} />
-            <Statistic title="新接触艺人数" value={newArtists.size} prefix={<CrownOutlined />} />
-          </div>
-          <Divider>年度回顾</Divider>
-          <div className="mb-4">
+  return <StyleProvider hashPriority="high">
+    <ConfigProvider
+      theme={{
+        algorithm: antTheme.defaultAlgorithm,
+      }}
+      getPopupContainer={getPopupContainer}
+    >
+      <div className="max-w-4xl mx-auto py-8 px-2 md:px-0">
+        <Card className="mb-6 shadow-lg">
+          <h1 className="text-2xl font-bold mb-2">@{username} 的 {year} 年度活动报告</h1>
+          <div className="text-gray-500 mb-2">感谢你记录下的每一份热爱。</div>
+          {isFetching || !data ? <Skeleton active paragraph={{ rows: 8 }} /> : <>
+            <Divider>初见</Divider>
             {firstEvent && (
-              <div className="mb-2">你的首次活动是 <Tag color="blue">{firstEvent.title}</Tag>，举办于 <b>{firstEvent.date}</b>，距今已有 <b>{Math.floor((new Date().getTime() - new Date(firstEvent.date).getTime()) / (1000*60*60*24))}</b> 天。</div>
+              <div className="mb-4 flex flex-col gap-4">
+                <p className="text-lg">还记得吗？你参加的第一次活动是</p>
+                <EventCard event={firstEvent} isDark={false} />
+                <p className="text-lg">距今已有<b>{Math.floor((new Date().getTime() - new Date(firstEvent.date).getTime()) / (1000 * 60 * 60 * 24))}</b> 天了，还记得第一次给你带来的悸动吗？</p>
+              </div>
             )}
+            <Divider>回顾</Divider>
+            <p className="text-lg mb-4">今年你共参加了 <b>{thisYearEvents.length}</b> 场活动，见证了 <b>{uniqueArtists.size}</b> 位艺人的现场演出。</p>
+            <p className="text-lg mb-4">其中 <b>{newArtists.values().next().value?.name}</b> 等 <b>{newArtists.size}</b> 位是你今年第一次见面的艺人。</p>
             {firstEventOfYear && (
-              <div className="mb-2">今年的第一场活动是 <Tag color="green">{firstEventOfYear.title}</Tag>，举办于 <b>{firstEventOfYear.date}</b>。</div>
+              <div className="mb-4 flex flex-col gap-4">
+                <p className="text-lg">你今年参加的第一场活动是</p>
+                <EventCard event={firstEventOfYear} isDark={false} />
+                <p className="text-lg">你一定很爱 <b>{firstEventOfYear.performers[0].name}</b>，才会选择第一场就看TA的活动。</p>
+              </div>
             )}
-            <div className="mb-2">今年你共参加了 <b>{thisYearEvents.length}</b> 场活动，见证了 <b>{uniqueArtists.size}</b> 位艺人的现场。</div>
-            <div className="mb-2">其中 <b>{newArtists.size}</b> 位是你今年首次接触的全新艺人。</div>
-          </div>
-          <Divider>年度关键词</Divider>
-          <div className="mb-4">
-            <ActorWordCloud data={keywords.map((k, i) => ({ id: k, text: k, value: 10 - i }))} dark={theme === 'dark'} />
-          </div>
-          <Divider>春夏秋冬 · 代表活动</Divider>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            {Object.entries(seasonRep).map(([season, event]) => event && (
-              <Card key={season} title={season + '季代表'}>
-                <div><b>{event.title}</b></div>
-                <div>{event.date} @ {event.venue?.name}</div>
-              </Card>
-            ))}
-          </div>
-          <Divider>月度活动热力图</Divider>
-          <div className="mb-4">
-            <ActivityHeatmap activities={[
-              { year: parseInt(year), months: monthStat, total: thisYearEvents.length }
-            ]} theme={theme} />
-          </div>
-          <Divider>都道府县分布</Divider>
-          <div className="mb-4">
+            <Divider>今年的活动日历</Divider>
+            <div className="w-full flex items-center justify-center">
+              {Object.entries(activityHeatmapDetailedData).sort((a, b) => b[0].localeCompare(a[0])).map(([year, data]) => (
+                <ActivityHeatmapDetailed key={year} username={username} year={parseInt(year)} data={data} theme={theme} />
+              ))}
+            </div>
+            <Divider>今年的活动地图</Divider>
             <PrefectureMap data={prefectureMapData} />
-          </div>
-          <Divider>特别的活动</Divider>
-          <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card title="今年的第一场活动" size="small">{getFirstEvent(userEvents)?.title} <br /> {getFirstEvent(userEvents)?.date}</Card>
-            <Card title="活动最多的一天" size="small">{mostActiveDay.date} <br /> 共 {mostActiveDay.count} 场</Card>
-            <Card title="最多人参加的活动" size="small">{mostPeopleEvent?.title} <br /> {mostPeopleEvent?.participantCount} 人</Card>
-            <Card title="最少人参加的活动" size="small">{leastPeopleEvent?.title} <br /> {leastPeopleEvent?.participantCount} 人</Card>
-            <Card title="和关注者一起参与最多的活动" size="small">{withFollowingsEvent?.title} <br /> {withFollowingsEvent?.date}</Card>
-          </div>
-          <Divider>年度之最</Divider>
-          <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card title="年度艺人" size="small">{topArtists[0]?.[0]} <br /> 共 {topArtists[0]?.[1]} 场</Card>
-            <Card title="年度场馆" size="small">{topVenues[0]?.[0]} <br /> 共 {topVenues[0]?.[1]} 场</Card>
-            <Card title="年度活动（自动推荐）" size="small">{mostPeopleEvent?.title} <br /> {mostPeopleEvent?.date}</Card>
-          </div>
-          <Divider>详细数据</Divider>
-          <VenueCount venueRanking={Object.entries(venueCount)} userEvents={thisYearEvents} />
-        </>}
-      </Card>
-    </div>
-  );
+            <Divider>特别的回忆</Divider>
+            <div className="mb-4 flex flex-col gap-4">
+              <p className="text-lg">{mostActiveDay.date}是今年中你最忙碌的一天，这一天你参加了 <b>{mostActiveDay.count}</b> 场活动</p>
+              {
+                thisYearEvents.filter(e => e.date === mostActiveDay.date).map(e => (
+                  <EventCard key={e.id} event={e} isDark={false} />
+                ))
+              }
+              <p className="text-lg">今年你参加了热门活动</p>
+              <EventCard event={mostPeopleEvent!} isDark={false} />
+              <p className="text-lg">和 <b>{mostPeopleEvent?.participantCount}</b> 人一起灵魂共振</p>
+              <p className="text-lg">你也参加了</p>
+              <EventCard event={leastPeopleEvent!} isDark={false} />
+              <p className="text-lg">这是属于你和另外 <b>{leastPeopleEvent?.participantCount}</b> 人的小众宝藏</p>
+              <p className="text-lg">这次的活动一定给你留下了宝贵回忆</p>
+              <EventCard event={withFollowingsEvent!} isDark={false} />
+              <p className="text-lg">因为你和他们一起参与了这次活动</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {
+                  followingsEvents.filter(f => f.events.some(e => e.id === withFollowingsEvent?.id)).map(f => (
+                    <Card
+                      key={f.following.id}
+                      hoverable
+                    >
+                      <Card.Meta
+                        avatar={<Avatar shape="square" size={64} alt={f.following.name} src={f.following.avatar} />}
+                        title={<a href={f.following.profileUrl}>{f.following.name}</a>}
+                        description={<span>UID: {f.following.id}</span>}
+                      />
+                    </Card>
+                  ))
+                }
+              </div>
+            </div>
+            <Divider>你的年度之最</Divider>
+            <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Card title="年度艺人" size="small">
+                <p className="text-lg font-bold">{topArtists[0]?.[0]} <br /> 见面 {topArtists[0]?.[1]} 次</p>
+                <Table
+                  size="small"
+                  pagination={false}
+                  columns={[
+                    { title: '排行', dataIndex: 'rank', key: 'rank', render: (_: any, __: any, index: number) => `${index + 1}#` },
+                    { title: '艺人', dataIndex: 'name', key: 'name' },
+                    { title: '场次', dataIndex: 'count', key: 'count', render: (count: number) => `${count} 回` },
+                  ]}
+                  dataSource={topArtists.map(([name, count], index) => ({ key: index, name, count }))}
+                  showHeader={false}
+                />
+              </Card>
+              <Card title="年度场馆" size="small">
+                <p className="text-lg font-bold">{topVenues[0]?.[0]} <br /> 造访 {topVenues[0]?.[1]} 次</p>
+                <Table
+                  size="small"
+                  pagination={false}
+                  columns={[
+                    { title: '排行', dataIndex: 'rank', key: 'rank', render: (_: any, __: any, index: number) => `${index + 1}#` },
+                    { title: '场馆', dataIndex: 'name', key: 'name' },
+                    { title: '场次', dataIndex: 'count', key: 'count', render: (count: number) => `${count} 回` },
+                  ]}
+                  dataSource={topVenues.map(([name, count], index) => ({ key: index, name, count }))}
+                  showHeader={false}
+                />
+              </Card>
+            </div>
+          </>}
+        </Card>
+      </div>
+    </ConfigProvider>
+  </StyleProvider>;
 }
