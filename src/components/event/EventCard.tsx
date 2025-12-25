@@ -1,7 +1,7 @@
 import { EventData } from "../../utils/events/eventdata";
 import { Card, Tag } from 'antd';
 import { CalendarOutlined, EnvironmentOutlined, TeamOutlined, RightOutlined } from '@ant-design/icons';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import fallbackImage from "../../utils/fallbackImage";
 
 export const EventCard = ({ event, isDark }: { event: EventData, isDark: boolean }) => {
@@ -12,6 +12,10 @@ export const EventCard = ({ event, isDark }: { event: EventData, isDark: boolean
       setImgSrc(fallbackImage);
     }
   };
+
+  useEffect(() => {
+    setImgSrc(`https://eventernote.s3.amazonaws.com/images/events/${event.id}_s.jpg`);
+  }, [event.id]);
 
   return <>
     <Card

@@ -8,6 +8,7 @@ import type { EventData } from "../utils/events/eventdata";
 import { EventCard } from "../components/event/EventCard";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { calculateActivityHeatmapDetailedData } from "../utils/events/calculateActivityHeatmapDetailedData";
+import { AnnualBestEvents } from "../components/annual/AnnualBestEvents";
 
 type FollowingEvent = { following: { id: string; name: string; profileUrl: string; avatar: string }; events: EventData[] };
 
@@ -223,6 +224,7 @@ export const AnnualReportPage = ({ username, year, getPopupContainer }: { userna
                 />
               </Card>
             </div>
+            <AnnualBestEvents allEvents={thisYearEvents} />
           </>}
         </Card>
       </div>
