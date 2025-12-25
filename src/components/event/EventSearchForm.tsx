@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Select, Row, Col, Radio } from "antd";
-import {areaMap,prefectureMap} from "../../utils/prefecture";
+import { areaMap, prefectureMap } from "../../utils/prefecture";
 
 const { Option } = Select;
 
@@ -132,8 +132,11 @@ const EventSearchForm: React.FC<EventSearchFormProps> = ({ onSearch, initialValu
           </Form.Item>
         </Col>
         <Col span={24} style={{ textAlign: 'left' }}>
-          <Button type="primary" htmlType="submit" style={{ minWidth: 120 }}>
+          <Button type="primary" htmlType="submit" style={{ minWidth: 120, marginRight: 16 }}>
             搜索活动
+          </Button>
+          <Button href={`/events/search?year=${new Date().getFullYear()}&month=${new Date().getMonth() + 1}&day=${new Date().getDate()}`} style={{ minWidth: 120 }}>
+            搜索今日活动
           </Button>
         </Col>
       </Row>

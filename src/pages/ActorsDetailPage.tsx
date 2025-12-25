@@ -5,7 +5,7 @@ import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
 import { UserInfo } from "../utils/user/userInfo";
 import { parseActorsDetailData } from "../utils/actors/parseActorsDetailData";
-import EventsList from "../components/user/EventsList";
+import EventsList from "../components/event/EventsList";
 import { CDN_BASE } from "../utils/config";
 import fallbackImage from "../utils/fallbackImage";
 import { EditOutlined, PlusOutlined } from "@ant-design/icons";

@@ -6,7 +6,7 @@ import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
 import { UserInfo } from "../utils/user/userInfo";
 import { parseEventsData } from "../utils/events/parseEventsData";
-import { EventCard } from "../components/user/EventCard";
+import { EventCard } from "../components/event/EventCard";
 
 type Data = ReturnType<typeof parseEventsData>
 
@@ -76,7 +76,7 @@ export const EventsSearchPage = ({ currentUser, getPopupContainer, data }: Event
               ]}
               className='!mb-2'
             />
-            <h3 className="mb-4">🔍 搜索到{data.total}个活动</h3>
+            <h3 className="mb-8">🔍 搜索到{data.total}个活动</h3>
             <EventSearchForm
               initialValues={searchFields}
               onSearch={values => {

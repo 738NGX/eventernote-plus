@@ -8,6 +8,7 @@ import PrefectureSelectMap from "../components/places/PrefectureSelectMap";
 import PlacesInfoCard from "../components/places/PlacesInfoCard";
 import { prefectureList } from "../utils/prefecture";
 import { Input } from 'antd';
+import { PlusOutlined } from "@ant-design/icons";
 
 const { Search } = Input;
 
@@ -100,7 +101,7 @@ export const PlacesPage = ({ currentUser, getPopupContainer }: PlacesPageProps) 
                 />
                 <PlacesInfoCard selectedPref={selectedPref} />
                 <h4>没有找到你想要的会场？</h4>
-                <Button className="!w-full" type="primary" href={`/places/add`}>增加新的会场情报</Button>
+                <Button icon={<PlusOutlined />} size="large" className="!w-full" type="primary" href={`/places/add`}>登记新的会场情报</Button>
               </div>
             </div>
           </div>

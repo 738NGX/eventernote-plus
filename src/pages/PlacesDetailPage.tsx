@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
 import { UserInfo } from "../utils/user/userInfo";
-import EventsList from "../components/user/EventsList";
+import EventsList from "../components/event/EventsList";
 import { AimOutlined, EditOutlined, EnvironmentOutlined, LinkOutlined, PhoneFilled, UserOutlined } from "@ant-design/icons";
 import { parsePlacesDetailData } from "../utils/places/parsePlacesDetailData";
 

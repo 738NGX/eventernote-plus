@@ -16,10 +16,10 @@ export default function EventsList({ events, theme, username, title, href }: Eve
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-lg font-bold">
+      {(title || username || href) && <div className="flex items-center justify-between mb-2">
+        {title && <h3 className="text-lg font-bold">
           📅 {title}
-        </h3>
+        </h3>}
         {(username || href) && <Button
           type="link"
           href={username ? `/users/${username}/events${title === '同场参加的活动' ? '/same' : title === '收藏的艺人的近期活动' ? '/?type=3' : ''}` : href}
@@ -27,7 +27,7 @@ export default function EventsList({ events, theme, username, title, href }: Eve
         >
           查看全部
         </Button>}
-      </div>
+      </div>}
 
       {events.length === 0 ? (
         <Card className={isDark ? 'bg-slate-800 border-slate-700' : ''}>

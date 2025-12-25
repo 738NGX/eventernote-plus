@@ -6,6 +6,7 @@ import { StyleProvider } from "@ant-design/cssinjs";
 import { useEffect, useState } from "react";
 import { UserInfo } from "../utils/user/userInfo";
 import { parseActorsPageData } from "../utils/actors/parseActorsPageData";
+import { PlusOutlined } from "@ant-design/icons";
 
 type Data = ReturnType<typeof parseActorsPageData>
 
@@ -95,7 +96,7 @@ export const ActorsPage = ({ currentUser, getPopupContainer, data }: ActorsPageP
 
     return (
       <div className="space-y-6">
-        <h3>搜索和新增艺人情报</h3>
+        <h3>搜索艺人情报</h3>
         {/* 搜索栏和新增按钮 */}
         <div className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-2 md:space-y-0 mb-4">
           <Input.Search
@@ -106,7 +107,7 @@ export const ActorsPage = ({ currentUser, getPopupContainer, data }: ActorsPageP
             onSearch={handleSearch}
             className="flex-1"
           />
-          <Button type="primary"  size="large" className="w-full md:w-auto" href="/actors/add">新增艺人情报</Button>
+          <Button icon={<PlusOutlined />} type="primary"  size="large" className="w-full md:w-auto" href="/actors/add">登记新的艺人情报</Button>
         </div>
 
         {/* 三列表格 */}
@@ -122,7 +123,7 @@ export const ActorsPage = ({ currentUser, getPopupContainer, data }: ActorsPageP
               showHeader={false}
             />
           </Card>
-          <Card title="新着艺人" className="overflow-x-auto !p-0">
+          <Card title="最近登记的艺人" className="overflow-x-auto !p-0">
             <Table
               columns={columns}
               dataSource={recent}

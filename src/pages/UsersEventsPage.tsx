@@ -8,7 +8,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import type { UserInfo } from '../utils/user/userInfo';
 import { parseUsersEvents } from '../utils/user/parseUsersEvents';
-import EventsList from '../components/user/EventsList';
+import EventsList from '../components/event/EventsList';
 
 type Data = ReturnType<typeof parseUsersEvents>;
 

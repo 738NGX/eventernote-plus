@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Breadcrumb, Card, ConfigProvider, Skeleton, Switch, theme as antTheme } from 'antd';
 import { StyleProvider } from '@ant-design/cssinjs';
 import UserHeader from '../components/user/UserHeader';
-import EventsList from '../components/user/EventsList';
+import EventsList from '../components/event/EventsList';
 import FavoriteArtists from '../components/user/FavoriteArtists';
 import ActivityHeatmap from '../components/user/ActivityHeatmap';
 import Header from '../components/Header';
@@ -23,7 +23,7 @@ type Data = ReturnType<typeof parseUsersPageData>;
 
 interface UserProfilePageProps {
   currentUser: UserInfo | null;
-  data: Data | null;
+  data: Data;
   getPopupContainer?: () => HTMLElement | ShadowRoot;
 }
 
