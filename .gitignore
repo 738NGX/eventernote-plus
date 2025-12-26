@@ -22,6 +22,7 @@ npm-debug.log*
 *.zip
 *.crx
 *.pem
+release/
 
 # Node.js (如果未来添加构建工具)
 node_modules/
